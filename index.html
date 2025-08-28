@@ -134,9 +134,9 @@ const SAMPLE = {
     { id:'m-2', name:'버블링', level:12, region:'빅토리아 아일랜드', img:'https://placehold.co/160x120?text=Bubble+Ring' }
   ],
   items: [
-    { id:'4000012', name:'초록버섯의 갓', type:'소재', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
-    { id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' },
-    { id:'2000006', name:'레몬', type:'소비', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }
+    { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻을 수 있는 갓. 제작과 퀘스트 재료로 사용.', sources:['초록버섯 드랍','빅토리아 아일랜드 사냥터'], img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
+    { id:'4000013', name:'버블링의 큰 방울', type:'소재', category:'재료', desc:'버블링에서 떨어지는 큰 방울. 퀘스트에 자주 쓰임.', sources:['버블링 드랍','빅토리아 아일랜드 수로'], img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' },
+    { id:'2000006', name:'레몬', type:'소비', category:'소모품', desc:'비타민이 풍부한 레몬. 체력을 소량 회복.', sources:['상점 구매','이벤트 보상'], img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }
   ],
   quests: [
     { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰', region:'빅토리아 아일랜드', type:'아이템수집', minLevel:15,
@@ -200,6 +200,30 @@ let expBucket = 10000;
 let expRatioMin = 0;
 
 // --------- util ---------
+// --- 아이템 <-> 퀘스트 관계 맵 ---
+function buildItemQuestLinks(items, quests){
+  const requiredBy = {}; // itemId -> [quest]
+  const rewardedBy = {}; // itemId -> [quest]
+  items.forEach(it=>{ requiredBy[it.id]=[]; rewardedBy[it.id]=[]; });
+  quests.forEach(q=>{
+    (q.reqItems||[]).forEach(r=>{ if(requiredBy[r.itemId]) requiredBy[r.itemId].push(q); });
+    (q.rewards||[]).forEach(rv=>{ if(rv.itemId && rewardedBy[rv.itemId]) rewardedBy[rv.itemId].push(q); });
+  });
+  return { requiredBy, rewardedBy };
+}
+function sourcesLine(it){
+  const arr = Array.isArray(it.sources) ? it.sources : [];
+  if(arr.length===0) return '';
+  if(arr.length===1) return arr[0];
+  if(arr.length===2) return arr[0]+' · '+arr[1];
+  return arr.slice(0,2).join(' · ') + ` 외 ${arr.length-2}곳`;
+}
+
+
+function questsNeedingItem(itemId){
+  return (SAMPLE.quests||[]).filter(q=> (q.reqItems||[]).some(r=> r.itemId===itemId));
+}
+
 function applyActiveTabClasses(){
   tabs.forEach(b=>{
     if(b.dataset.tab === activeTab){
@@ -289,26 +313,52 @@ function render(){
     }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 퀘스트가 없습니다.</div>';
   }
 
+  
+  
   // Items
   if(showItem){
     const type = typeSelect.value || 'all';
+    const links = buildItemQuestLinks(SAMPLE.items, SAMPLE.quests);
     const data = SAMPLE.items.filter(it=>{
       const hit = !q || it.name.includes(q);
       const typeOk = type==='all' || (it.type===type);
       return hit && typeOk;
     });
-    listItems.innerHTML = data.map(it=>`
+    listItems.innerHTML = data.map(it=>{
+      const reqCount = (links.requiredBy[it.id]||[]).length;
+      const rewCount = (links.rewardedBy[it.id]||[]).length;
+      const src = sourcesLine(it);
+      return `
       <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
         ${safeImg(it.img, it.name, 'w-full h-36 object-contain rounded-lg mb-2 bg-white')}
         <h3 class="font-semibold">${it.name}</h3>
-        <div class="text-xs text-gray-600">${it.type||'-'}</div>
+        <div class="flex items-center gap-2 text-xs text-gray-600 mt-0.5">
+          <span class="px-2 py-0.5 rounded-full border bg-white">${it.category || it.type || '-'}</span>
+          <span>${it.type||'-'}</span>
+        </div>
+        ${ it.desc ? `<p class="text-sm text-gray-700 mt-1 line-clamp-2">${it.desc}</p>` : '' }
+        ${ src ? `<div class="text-xs text-gray-600 mt-1">획득처: ${src}</div>` : '' }
+        <div class="text-xs text-gray-600 mt-2 flex flex-wrap gap-3">
+          <a href="item.html?id=${encodeURIComponent(it.id)}#required" class="text-blue-600 hover:underline">필요 퀘스트 ${reqCount}개</a>
+          <a href="item.html?id=${encodeURIComponent(it.id)}#rewarded" class="text-blue-600 hover:underline">보상 퀘스트 ${rewCount}개</a>
+        </div>
         <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
-      </article>
-    `).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
+      </article>`;
+    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
   }
-}
 
-// --------- 초기화 ---------
+        <h3 class="font-semibold">${it.name}</h3>
+        <div class="text-xs text-gray-600 mb-1">${it.type||'-'}${it.category ? ' · '+it.category : ''}</div>
+        ${it.desc ? `<p class="text-sm text-gray-700 mb-2">${it.desc}</p>` : ''}
+        ${Array.isArray(it.acquire) && it.acquire.length ? `<div class="text-sm"><span class="text-xs text-gray-500">획득처</span><ul class="list-disc ml-5 mt-1">${it.acquire.map(a=>`<li>${a}</li>`).join('')}</ul></div>` : ''}
+        ${needQs.length ? `<div class="text-sm mt-2"><span class="text-xs text-gray-500">필요 퀘스트</span><ul class="list-disc ml-5 mt-1">${needQs.map(q=>`<li><a class='text-blue-600 hover:underline' href='quest.html?id=${encodeURIComponent(q.id)}'>${q.code ? q.code+' · ' : ''}${q.title}</a></li>`).join('')}</ul></div>` : ''}
+        <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-3 text-sm text-blue-600 hover:underline">상세보기</a>
+      </article>`;
+    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
+  }
+
+  // --------- 초기화
+ ---------
 function buildRegions(){
   const regs = new Set(['all']);
   SAMPLE.monsters.forEach(m=> regs.add(m.region||''));
