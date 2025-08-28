@@ -6,21 +6,9 @@
   <title>Quest Detail • 로나월드</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-
   <style>
-    /* 1) 먼저 사용자의 PC에 설치된 구매 폰트를 찾습니다 (배포 없이 사용 가능) */
-    @font-face {
-      font-family: 'MyGameFont';
-      src: local('MyGameFont'); /* 여기의 이름을 실제 폰트 이름으로 바꾸세요 */
-      font-weight: 100 900;
-      font-style: normal;
-      font-display: swap;
-    }
-    /* 2) 방문자에게는 무료 웹폰트(Noto Sans KR)로 안전하게 폴백 */
-    :root {
-      --ui-font: 'MyGameFont', 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, 
-                 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    }
+    @font-face { font-family:'MyGameFont'; src: local('MyGameFont'); font-weight:100 900; font-style:normal; font-display:swap; }
+    :root { --ui-font: 'MyGameFont','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,'Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
     body { font-family: var(--ui-font); }
   </style>
 </head>
@@ -28,24 +16,24 @@
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <a href="index.html?tab=quests" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(퀘스트)으로</a>
   <div id="status" class="mb-3 text-xs text-gray-500"></div>
-  <article id="detail" class="border rounded-xl bg-white p-4"></article>
+  <article id="detail" class="p-2"></article>
   <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드</p></footer>
 </div>
 
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-// --- 샘플 퀘스트 데이터 (완료 장소=커닝시티, 완료 NPC=넬라) ---
+// --- 샘플 퀘스트 데이터 ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
     code: '넬라 1-1',
     title: '마파의 의뢰',
     startNpc: '넬라',
-    startNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB', // 선택 필드
+    startNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
     completeNpc: '넬라',
-    completeNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB', // 없으면 startNpcImg 사용
-    npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB', // 구버전 호환
+    completeNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
+    npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
     startPlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
     completePlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
     region: '커닝시티',
@@ -79,12 +67,12 @@ try {
 // --- 헬퍼 ---
 function safeImg(src, cls, alt='img'){
   const esc = String(src||'');
-  if(!esc) return '<div class="w-16 h-16 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500">NO IMG</div>';
-  return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-16 h-16 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO IMG'}))">`;
+  if(!esc) return '<div class="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] text-gray-500">NO IMG</div>';
+  return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO IMG'}))">`;
 }
 function miniCard(title, imgSrc, nameText){
-  return `<div class="border rounded-xl p-3 bg-white flex items-center gap-3">
-    ${ safeImg(imgSrc, 'w-16 h-16 object-contain rounded-lg border bg-white', title) }
+  return `<div class="flex items-center gap-3">
+    ${ safeImg(imgSrc, 'w-16 h-16 object-contain rounded-lg', title) }
     <div class="text-sm">
       <div class="text-gray-500">${title}</div>
       <div class="font-medium">${nameText||'-'}</div>
@@ -92,21 +80,21 @@ function miniCard(title, imgSrc, nameText){
   </div>`;
 }
 function reqItemView(r){
-  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg border bg-white p-1', r.name) : '';
-  return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
+  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg', r.name) : '';
+  return `<div class='flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
 }
 function rewardView(r){
   if(typeof r.exp==='number'){
-    return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'><div class='text-sm'>EXP ${r.exp.toLocaleString()}</div></div>`;
+    return `<div class='flex items-center gap-2'><div class='text-sm'>EXP ${r.exp.toLocaleString()}</div></div>`;
   }
-  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg border bg-white p-1', r.name) : '';
-  return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
+  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg', r.name) : '';
+  return `<div class='flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
 }
 function chatBubble(d, npcImg){
   const isPlayer = (d.speaker||'').includes('플레이어');
   const row = isPlayer ? 'flex flex-row-reverse items-start gap-2' : 'flex items-start gap-2';
-  const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border';
-  const avatar = (!isPlayer && npcImg) ? safeImg(npcImg, 'w-8 h-8 rounded-lg border object-contain bg-white', 'NPC') : '<span class="w-8 h-8"></span>';
+  const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'; // 박스 제거, 연한 배경만
+  const avatar = (!isPlayer && npcImg) ? safeImg(npcImg, 'w-8 h-8 rounded-lg object-contain', 'NPC') : '<span class="w-8 h-8"></span>';
   return `<div class="${row}">${avatar}<div class="max-w-[80%]"><div class="text-[11px] text-gray-500">${d.speaker}</div><div class="rounded-2xl px-3 py-2 ${bubble}">${d.text}</div></div></div>`;
 }
 
@@ -128,13 +116,13 @@ if(!q){
 
   detail.innerHTML = `
     <div class='space-y-6'>
-      <h2 class='text-xl font-semibold mb-2'>${q.code? q.code + ' · ' : ''}${q.title}</h2>
-      <div class='text-sm text-gray-500'>${q.region||'-'}${q.minLevel? ' · Lv.'+q.minLevel+'+':''}${q.type? ' · '+q.type:''}</div>
+      <h2 class='text-xl font-semibold mb-1'>${q.code? q.code + ' · ' : ''}${q.title}</h2>
+      <div class='text-sm text-gray-500 mb-2'>${q.region||'-'}${q.minLevel? ' · Lv.'+q.minLevel+'+':''}${q.type? ' · '+q.type:''}</div>
 
       <!-- 시작: NPC(사진+이름) + 장소(사진+이름) -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>시작</h3>
-        <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+        <div class='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           ${ miniCard('시작 NPC', npcStartImg, q.startNpc) }
           ${ miniCard('시작 장소', q.startPlace?.img, q.startPlace?.name || q.region) }
         </div>
@@ -143,13 +131,13 @@ if(!q){
       <!-- 퀘스트 조건 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>퀘스트 조건</h3>
-        <div class='flex flex-wrap gap-3'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
+        <div class='flex flex-wrap gap-4'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
       <!-- 대사 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>대사</h3>
-        <div class='border rounded-xl bg-gray-50 p-3 space-y-3 max-h-96 overflow-y-auto'>
+        <div class='p-1 space-y-3 max-h-96 overflow-y-auto'>
           ${ normalDialogs.length ? normalDialogs.map(d=>chatBubble(d,q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
@@ -157,7 +145,7 @@ if(!q){
       <!-- 완료: NPC(사진+이름) + 장소(사진+이름) -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료</h3>
-        <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+        <div class='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           ${ miniCard('완료 NPC', npcCompleteImg, q.completeNpc) }
           ${ miniCard('완료 장소', q.completePlace?.img, q.completePlace?.name || q.region) }
         </div>
@@ -166,13 +154,13 @@ if(!q){
       <!-- 완료 보상 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 보상</h3>
-        <div class='flex flex-wrap gap-3'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
+        <div class='flex flex-wrap gap-4'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
       <!-- 완료 대사 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 대사</h3>
-        <div class="border rounded-xl bg-gray-50 p-3 space-y-3">
+        <div class='p-1 space-y-3'>
           ${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
