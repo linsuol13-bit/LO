@@ -5,167 +5,197 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Quest Detail • 로나월드</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    @font-face { font-family:'MyGameFont'; src: local('MyGameFont'); font-weight:100 900; font-style:normal; font-display:swap; }
-    :root { --ui-font: 'MyGameFont','Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,'Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
-    body { font-family: var(--ui-font); }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    /* 최소 폴백: Tailwind가 없어도 카드/텍스트는 보이게 */
+    .rounded-xl{border-radius:0.75rem} .rounded-lg{border-radius:0.5rem}
+    .border{border:1px solid #e5e7eb} .bg-white{background:#fff}
+    .flex{display:flex} .items-center{align-items:center} .items-start{align-items:flex-start}
+    .justify-center{justify-content:center} .gap-3{gap:0.75rem} .gap-4{gap:1rem}
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html?tab=quests" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(퀘스트)으로</a>
-  <div id="status" class="mb-3 text-xs text-gray-500"></div>
-  <article id="detail" class="p-2"></article>
-  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드</p></footer>
+  <a href="index.html?tab=quests" class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline">← 퀘스트 목록으로</a>
+  <article id="detail"></article>
 </div>
 
 <script>
-document.getElementById('yy').textContent = new Date().getFullYear();
+'use strict';
 
-// --- 샘플 퀘스트 데이터 (지역 표기: 빅토리아 아일랜드로 변경) ---
-const EMBEDDED = {
-  quests: [{
-    id: 'q-nella-1-1',
-    code: '넬라 1-1',
-    title: '마파의 의뢰',
-    startNpc: '넬라',
-    startNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
-    completeNpc: '넬라',
-    completeNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
-    npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
-    startPlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
-    completePlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
-    region: '빅토리아 아일랜드',
-    type: '아이템수집',
-    reqItems: [
-      { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
-      { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' }
-    ],
-    rewards: [
-      { itemId:'2000006', qty:50, name:'레몬', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' },
-      { exp:5600 }
-    ],
-    dialogues: [
-      { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
-      { speaker:'플레이어', text:'네, 진행하겠습니다.' },
-      { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
-    ]
-  }]
+/* ================= Utils ================ */
+/** 이미지 박스(항상 64×64 또는 48×48 박스가 나온다). 이미지가 없으면 회색 아이콘 */
+function imgBox(src, alt, size){ // size: 16(64px) | 12(48px)
+  const px = (size === 12) ? 48 : 64;
+  const placeholder = "data:image/svg+xml;utf8," + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>"+
+    "<rect x='3' y='3' width='18' height='18' rx='2' fill='none' stroke='%23D1D5DB'/>"+
+    "<path d='M7 15l3-3 4 4 3-3 3 3' fill='none' stroke='%23D1D5DB'/></svg>"
+  );
+  const url = src ? String(src) : placeholder;
+  return `<div class="rounded-lg border bg-white flex items-center justify-center overflow-hidden"
+               style="width:${px}px;height:${px}px">
+            <img src="${url}" alt="${alt||''}" loading="lazy"
+                 style="max-width:100%;max-height:100%;object-fit:contain">
+          </div>`;
+}
+
+const GDRIVE = (id)=> `https://drive.google.com/uc?export=view&id=${id}`;
+
+/* ================= Images ================ */
+const IMG = {
+  // 제공해 주신 링크 반영
+  nella: "https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB",
+  greenCap: "https://drive.google.com/uc?export=view&id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a", // 초록버섯
+  lemon: GDRIVE('1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw'),
+  bubbleDrop: GDRIVE('1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95'),
+  victoria: 'https://placehold.co/120x120?text=Victoria',
+  kerning: 'https://placehold.co/120x120?text=Kerning'
 };
 
-// --- 상태/데이터 ---
-const statusEl = document.getElementById('status');
-const params = new URLSearchParams(location.search);
-let quests = [];
-try {
-  quests = JSON.parse(localStorage.getItem('mapledex.quests')) || EMBEDDED.quests;
-} catch(e) {
-  quests = EMBEDDED.quests;
-}
+/* ================= Data ================== */
+const quests = [{
+  id: 'q-nella-1-1',
+  code: '넬라 1-1',
+  title: '마파의 의뢰',
+  type: '아이템 수집',
+  region: '빅토리아 아일랜드',
+  minLevel: 15,
+  // 시작 장소를 커닝시티로 변경
+  start: { npc:{ name:'넬라', img:IMG.nella }, place:{ name:'커닝시티', img:IMG.kerning } },
+  finish:{ npc:{ name:'넬라', img:IMG.nella }, place:{ name:'커닝시티', img:IMG.kerning } },
+  // 아이템들은 박스 + 링크(있으면) 표기
+  reqItems:[
+    { name:'초록버섯의 갓', qty:50, img:IMG.greenCap, itemId:'4000012' },
+    { name:'버블링의 큰 방울', qty:50, img:IMG.bubbleDrop } // itemId가 생기면 자동 링크
+  ],
+  rewards:[
+    { name:'레몬', qty:50, img:IMG.lemon, itemId:'2000006' },
+    { exp:5600 }
+  ],
+  dialogues:[
+    { who:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지? 난 이마을의 정보통으로 통하는 넬라야. 이 마을에서 일어나는 여러가지 소식들을 빠짐없이 모두 알고 있지.' },
+    { who:'넬라', text:'1000메소만 준다면 이 마을사람들의 여러 가지 정보를 모아서 너와 연결시켜 줄게. 그러니까 마을사람 중 누군가가 도움이 필요한 일이 있으면 너에게 소개시켜 준다는 말씀! 어때? 해볼래?' },
+    { who:'넬라', text:'좋아! 1000 메소도 받았겠다. 약속은 지켜야 겠지? 우선 당장 급한 의뢰가 들어와 있으니 서둘러 주길 바래. 이 마을에서 방어구점을 운영하고 있는 마파 씨가 최근 새로운 방어구를 만들기 위해 독특한 재료를 모으고 있는 모양이야.' },
+    { who:'라',   text:'초록버섯의 갓 50개와 버블링의 큰 방울 50개가 필요하다는데 너라면 이런것 모으는 것 쯤은 아무것도 아니겠지? 물론 사례는 섭섭하지 않을 정도로 해 준다고 약속했으니 걱정말라고. 그럼 모으는 대로 다시 나에게 돌아와 줘. 기다리고 있을게!' }
+  ],
+  completionDialogue:{ who:'넬라', text:'엇... 생각보다 빨리 돌아왔는걸? 역시 내가 사람보는 눈은 있다니까! 좋아! 이렇게 의뢰를 무사히 해결해 줬으니 사례를 해야겠지. 마파씨가 여행에 도움이 되라는 뜻에서 레몬을 잔뜩 맡기셨으니 받으라고~' }
+}];
 
-// --- 헬퍼 ---
-function safeImg(src, cls, alt='img'){
-  const esc = String(src||'');
-  if(!esc) return '<div class="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] text-gray-500">NO IMG</div>';
-  return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO IMG'}))">`;
+/* ============== Helpers ================ */
+function speakerImage(name){
+  if (name === '넬라') return IMG.nella;
+  return '';
 }
-function miniCard(title, imgSrc, nameText){
-  return `<div class="flex items-center gap-3">
-    ${ safeImg(imgSrc, 'w-16 h-16 object-contain rounded-lg', title) }
-    <div class="text-sm">
-      <div class="text-gray-500">${title}</div>
-      <div class="font-medium">${nameText||'-'}</div>
+function duoRow(labelLeft, imgLeft, nameLeft, labelRight, imgRight, nameRight){
+  return `<div class="flex items-center gap-4">
+    <div class="flex items-center gap-3">
+      ${imgBox(imgLeft, nameLeft, 16)}
+      <div class="text-sm"><div class="text-gray-500">${labelLeft}</div><div class="font-medium">${nameLeft||'-'}</div></div>
+    </div>
+    <div class="text-gray-300">|</div>
+    <div class="flex items-center gap-3">
+      ${imgBox(imgRight, nameRight, 16)}
+      <div class="text-sm"><div class="text-gray-500">${labelRight}</div><div class="font-medium">${nameRight||'-'}</div></div>
     </div>
   </div>`;
 }
 function reqItemView(r){
-  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg', r.name) : '';
-  return `<div class='flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
+  const left = imgBox(r.img, r.name, 16);
+  const title = `${r.name} ×${r.qty}`;
+  if (r.itemId){
+    return `<a class="flex items-center gap-3 group" href="item.html?id=${r.itemId}">
+      ${left}
+      <div class="min-w-0"><div class="text-sm font-medium text-blue-600 group-hover:underline">${title}</div></div>
+    </a>`;
+  }
+  return `<div class="flex items-center gap-3">${left}<div class="min-w-0"><div class="text-sm font-medium">${title}</div></div></div>`;
 }
 function rewardView(r){
-  if(typeof r.exp==='number'){
-    return `<div class='flex items-center gap-2'><div class='text-sm'>EXP ${r.exp.toLocaleString()}</div></div>`;
-  }
-  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg', r.name) : '';
-  return `<div class='flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
-}
-function chatBubble(d, npcImg){
-  const isPlayer = (d.speaker||'').includes('플레이어');
-  const row = isPlayer ? 'flex flex-row-reverse items-start gap-2' : 'flex items-start gap-2';
-  const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border';
-  const avatar = (!isPlayer && npcImg) ? safeImg(npcImg, 'w-8 h-8 rounded-lg object-contain', 'NPC') : '<span class="w-8 h-8"></span>';
-  return `<div class="${row}">${avatar}<div class="max-w-[80%]"><div class="text-[11px] text-gray-500">${d.speaker}</div><div class="rounded-2xl px-3 py-2 ${bubble}">${d.text}</div></div></div>`;
-}
-
-// --- 렌더 ---
-let id = params.get('id');
-statusEl.textContent = `상태: quests=${quests.length} · id="${id||''}"`;
-if(!id && quests.length){ id = quests[0].id; history.replaceState({},'',location.pathname+'?id='+id); }
-const q = quests.find(x=> x.id===id);
-const detail = document.getElementById('detail');
-
-if(!q){
-  detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>퀘스트를 찾을 수 없어요</div>";
-}else{
-  const npcStartImg = q.startNpcImg || q.npcImg || '';
-  const npcCompleteImg = q.completeNpcImg || q.npcImg || q.startNpcImg || '';
-
-  const normalDialogs = (q.dialogues||[]).filter(d=> !(d.text||'').includes('레몬'));
-  const completionDialogs = (q.dialogues||[]).filter(d=> (d.text||'').includes('레몬'));
-
-  detail.innerHTML = `
-    <div class='space-y-6'>
-      <h2 class='text-xl font-semibold mb-1'>${q.code? q.code + ' · ' : ''}${q.title}</h2>
-      <div class='text-sm text-gray-500 mb-2'>${q.region||'-'}${q.minLevel? ' · Lv.'+q.minLevel+'+':''}${q.type? ' · '+q.type:''}</div>
-
-      <!-- 시작: NPC(사진+이름) + 장소(사진+이름) -->
-      <section>
-        <h3 class='text-sm font-semibold mb-2'>시작</h3>
-        <div class='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-          ${ miniCard('시작 NPC', npcStartImg, q.startNpc) }
-          ${ miniCard('시작 장소', q.startPlace?.img, q.startPlace?.name || q.region) }
-        </div>
-      </section>
-
-      <!-- 퀘스트 조건 -->
-      <section>
-        <h3 class='text-sm font-semibold mb-2'>퀘스트 조건</h3>
-        <div class='flex flex-wrap gap-4'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
-      </section>
-
-      <!-- 대사 (네모칸) -->
-      <section>
-        <h3 class='text-sm font-semibold mb-2'>대사</h3>
-        <div class='border rounded-xl bg-gray-50 p-3 space-y-3 max-h-96 overflow-y-auto'>
-          ${ normalDialogs.length ? normalDialogs.map(d=>chatBubble(d,q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
-        </div>
-      </section>
-
-      <!-- 완료: NPC(사진+이름) + 장소(사진+이름) -->
-      <section>
-        <h3 class='text-sm font-semibold mb-2'>완료</h3>
-        <div class='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-          ${ miniCard('완료 NPC', npcCompleteImg, q.completeNpc) }
-          ${ miniCard('완료 장소', q.completePlace?.img, q.completePlace?.name || q.region) }
-        </div>
-      </section>
-
-      <!-- 완료 보상 -->
-      <section>
-        <h3 class='text-sm font-semibold mb-2'>완료 보상</h3>
-        <div class='flex flex-wrap gap-4'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
-      </section>
-
-      <!-- 완료 대사 (네모칸) -->
-      <section>
-        <h3 class='text-sm font-semibold mb-2'>완료 대사</h3>
-        <div class='border rounded-xl bg-gray-50 p-3 space-y-3'>
-          ${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
-        </div>
-      </section>
+  if (typeof r.exp === 'number'){
+    return `<div class="flex items-center gap-3">
+      ${imgBox('', 'EXP', 16)}
+      <div class="text-sm font-medium">경험치 ${r.exp.toLocaleString()} exp</div>
     </div>`;
+  }
+  const left = imgBox(r.img, r.name, 16);
+  const title = `${r.name} ×${r.qty}`;
+  if (r.itemId){
+    return `<a class="flex items-center gap-3 group" href="item.html?id=${r.itemId}">
+      ${left}
+      <div class="min-w-0"><div class="text-sm font-medium text-blue-600 group-hover:underline">${title}</div></div>
+    </a>`;
+  }
+  return `<div class="flex items-center gap-3">${left}<div class="text-sm font-medium">${title}</div></div>`;
 }
+function dialogueView(d){
+  const sImg = speakerImage(d.who);
+  return `<div class="flex items-start gap-3">
+    ${imgBox(sImg, d.who, 16)}
+    <div class="text-sm"><b>${d.who||''}:</b> ${d.text||''}</div>
+  </div>`;
+}
+
+/* ============== Render ================== */
+(function(){
+  const $detail = document.getElementById('detail');
+  const id = new URLSearchParams(location.search).get('id') || 'q-nella-1-1';
+  let q = quests.find(x=> x.id===id);
+  if (!q && quests.length){
+    q = quests[0];
+    history.replaceState({}, '', location.pathname + '?id=' + q.id);
+  }
+  if (!q){
+    $detail.innerHTML = '<div class="p-6 text-center text-sm text-gray-500 bg-white rounded-xl border">퀘스트를 찾을 수 없습니다.</div>';
+    return;
+  }
+
+  $detail.innerHTML = `
+    <header class="mb-4">
+      <h1 class="text-2xl font-bold">${q.code ? q.code + ' · ' : ''}${q.title}</h1>
+      <p class="text-sm text-gray-600">${q.region||'-'} · ${q.type||'-'}${q.minLevel ? ' · Lv.'+q.minLevel : ''}</p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="rounded-xl border bg-white p-4">
+        <h2 class="text-sm font-semibold mb-3">시작</h2>
+        ${duoRow('시작 NPC', q.start?.npc?.img, q.start?.npc?.name, '시작 장소', q.start?.place?.img, q.start?.place?.name)}
+      </div>
+      <div class="rounded-xl border bg-white p-4">
+        <h2 class="text-sm font-semibold mb-3">완료</h2>
+        ${duoRow('완료 NPC', q.finish?.npc?.img, q.finish?.npc?.name, '완료 장소', q.finish?.place?.img, q.finish?.place?.name)}
+      </div>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-sm font-semibold mb-2">대사</h2>
+      <div class="rounded-xl border bg-white p-4 space-y-2">
+        ${(q.dialogues||[]).map(dialogueView).join('')}
+      </div>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-sm font-semibold mb-2">퀘스트 조건</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        ${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">조건 없음</div>'}
+      </div>
+    </section>
+
+    <section class="mb-4">
+      <h2 class="text-sm font-semibold mb-2">완료 보상</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        ${(q.rewards||[]).map(rewardView).join('')}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-sm font-semibold mb-2">완료 대사</h2>
+      <div class="rounded-xl border bg-white p-4">
+        ${dialogueView(q.completionDialogue||{})}
+      </div>
+    </section>
+  `;
+})();
 </script>
 </body>
 </html>
