@@ -10,13 +10,18 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html?tab=items" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(아이템)으로</a>
+  <a href="index.html?tab=items" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 아이템 목록으로</a>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
 </div>
 
 <script>
-// SAMPLE synced minimal copy (items + quests for linking)
 const SAMPLE = {
+  monsters: [
+    { id:'m-1', name:'초록버섯', level:10, regions:['빅토리아 아일랜드','커닝시티 인근'],
+      img:'https://placehold.co/320x240?text=Green+Mush', drops:['4000012'] },
+    { id:'m-2', name:'버블링', level:12, regions:['빅토리아 아일랜드','수로'],
+      img:'https://placehold.co/320x240?text=Bubble+Ring', drops:['4000013'] }
+  ],
   items: [
     { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻을 수 있는 갓. 제작과 퀘스트 재료로 사용.', sources:['초록버섯 드랍','빅토리아 아일랜드 사냥터'], img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
     { id:'4000013', name:'버블링의 큰 방울', type:'소재', category:'재료', desc:'버블링에서 떨어지는 큰 방울. 퀘스트에 자주 쓰임.', sources:['버블링 드랍','빅토리아 아일랜드 수로'], img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' },
@@ -25,22 +30,23 @@ const SAMPLE = {
   quests: [
     { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰',
       reqItems:[
-        { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
-        { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' }
+        { itemId:'4000012', qty:50, name:'초록버섯의 갓' },
+        { itemId:'4000013', qty:50, name:'버블링의 큰 방울' }
       ],
-      rewards:[ { itemId:'2000006', qty:50, name:'레몬', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' } ]
+      rewards:[ { itemId:'2000006', qty:50, name:'레몬' }, {exp:5600} ]
     }
   ]
 };
 
+function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
+
 const params = new URLSearchParams(location.search);
-const id = params.get('id')||'';
+const id = params.get('id') || '';
 const it = SAMPLE.items.find(x=> x.id===id);
 const qRequired = SAMPLE.quests.filter(q=> (q.reqItems||[]).some(r=> r.itemId===id));
 const qRewarded = SAMPLE.quests.filter(q=> (q.rewards||[]).some(r=> r.itemId===id));
 
-function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
-
+const mDroppers = monstersDroppingItem(id);
 const detail = document.getElementById('detail');
 if(!it){
   detail.innerHTML = '<div class="p-6 text-center text-sm text-gray-500">아이템을 찾을 수 없어요</div>';
@@ -67,10 +73,26 @@ if(!it){
     </section>
 
     <section id="rewarded" class="mt-6">
-      <h3 class="text-sm font-semibold mb-2">이 아이템을 주는 퀘스트</h3>
+      <h3 class="text-sm font-semibold mb-2">이 아이템을 보상으로 주는 퀘스트</h3>
       ${ qRewarded.length ? qRewarded.map(q=>`
         <a href="quest.html?id=${encodeURIComponent(q.id)}" class="block text-sm text-blue-600 hover:underline">${q.code ? q.code+' · ' : ''}${q.title}</a>
       `).join('') : '<div class="text-sm text-gray-500">없음</div>' }
+    </section>
+
+    <section id="droppers" class="mt-6">
+      <h3 class="text-sm font-semibold mb-2">이 아이템을 주는 몬스터</h3>
+      ${
+        mDroppers.length ? (`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">` + mDroppers.map(m=>`
+          <article class="flex items-center gap-3 rounded-lg border p-2 bg-white">
+            ${safeImg(m.img, m.name, 'w-12 h-12 object-contain rounded-lg bg-white')}
+            <div class="min-w-0">
+              <div class="text-sm font-medium truncate">${m.name}</div>
+              <div class="text-xs text-gray-600">Lv.${m.level || '-'}</div>
+              <a href="monster.html?id=${encodeURIComponent(m.id)}" class="text-xs text-blue-600 hover:underline">몬스터 상세</a>
+            </div>
+          </article>
+        `).join('') + `</div>`) : '<div class="text-sm text-gray-500">정보 없음</div>'
+      }
     </section>
   `;
 }
