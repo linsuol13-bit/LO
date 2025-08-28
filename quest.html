@@ -22,7 +22,6 @@
 <script>
 'use strict';
 
-/* ================= Utils ================ */
 function imgBox(src, alt, size){ // size: 16(64px) | 12(48px)
   const px = (size === 12) ? 48 : 64;
   const placeholder = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -38,7 +37,6 @@ function imgBox(src, alt, size){ // size: 16(64px) | 12(48px)
           </div>`;
 }
 
-/* ================= Images ================ */
 const IMG = {
   nella: "https://drive.google.com/thumbnail?id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB&sz=w512",
   greenCap: "https://drive.google.com/thumbnail?id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a&sz=w512",
@@ -48,7 +46,6 @@ const IMG = {
   kerning: "https://placehold.co/120x120?text=Kerning"
 };
 
-/* ================= Data ================== */
 const quests = [{
   id: 'q-nella-1-1',
   code: '넬라 1-1',
@@ -70,12 +67,11 @@ const quests = [{
     { who:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지? 난 이마을의 정보통으로 통하는 넬라야. 이 마을에서 일어나는 여러가지 소식들을 빠짐없이 모두 알고 있지.' },
     { who:'넬라', text:'1000메소만 준다면 이 마을사람들의 여러 가지 정보를 모아서 너와 연결시켜 줄게. 그러니까 마을사람 중 누군가가 도움이 필요한 일이 있으면 너에게 소개시켜 준다는 말씀! 어때? 해볼래?' },
     { who:'넬라', text:'좋아! 1000 메소도 받았겠다. 약속은 지켜야 겠지? 우선 당장 급한 의뢰가 들어와 있으니 서둘러 주길 바래. 이 마을에서 방어구점을 운영하고 있는 마파 씨가 최근 새로운 방어구를 만들기 위해 독특한 재료를 모으고 있는 모양이야.' },
-    { who:'라',   text:'초록버섯의 갓 50개와 버블링의 큰 방울 50개가 필요하다는데 너라면 이런것 모으는 것 쯤은 아무것도 아니겠지? 물론 사례는 섭섭하지 않을 정도로 해 준다고 약속했으니 걱정말라고. 그럼 모으는 대로 다시 나에게 돌아와 줘. 기다리고 있을게!' }
+    { who:'넬라', text:'<span class="font-bold text-blue-600">초록버섯의 갓 50개</span>와 <span class="font-bold text-blue-600">버블링의 큰 방울 50개</span>가 필요하다는데 너라면 이런것 모으는 것 쯤은 아무것도 아니겠지? 물론 사례는 섭섭하지 않을 정도로 해 준다고 약속했으니 걱정말라고. 그럼 모으는 대로 다시 나에게 돌아와 줘. 기다리고 있을게!' }
   ],
   completionDialogue:{ who:'넬라', text:'엇... 생각보다 빨리 돌아왔는걸? 역시 내가 사람보는 눈은 있다니까! 좋아! 이렇게 의뢰를 무사히 해결해 줬으니 사례를 해야겠지. 마파씨가 여행에 도움이 되라는 뜻에서 레몬을 잔뜩 맡기셨으니 받으라고~' }
 }];
 
-/* ============== Helpers ================ */
 function speakerImage(name){
   if (name === '넬라') return IMG.nella;
   return '';
@@ -125,11 +121,10 @@ function dialogueView(d){
   const sImg = speakerImage(d.who);
   return `<div class="flex items-start gap-3">
     ${imgBox(sImg, d.who, 16)}
-    <div class="text-sm"><b>${d.who||''}:</b> ${d.text||''}</div>
+    <div class="text-sm leading-snug mt-0.5"><b>${d.who||''}:</b> ${d.text||''}</div>
   </div>`;
 }
 
-/* ============== Render ================== */
 (function(){
   const $detail = document.getElementById('detail');
   const id = new URLSearchParams(location.search).get('id') || 'q-nella-1-1';
