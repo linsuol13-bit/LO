@@ -55,7 +55,7 @@
           <label class="text-xs text-gray-500">지역</label>
           <select id="regionSelect" class="w-full rounded-lg border px-3 py-2"></select>
         </div>
-        <div class="md:col-span-2 flex gap-2">
+        <div class="md:col-span-2 flex gap-2 hidden">
           <div class="w-1/2">
             <label class="text-xs text-gray-500">레벨 최소</label>
             <input type="number" id="lvMin" value="1" min="1" max="300" class="w-full rounded-lg border px-3 py-2" />
@@ -67,6 +67,23 @@
         </div>
 
         <!-- Items 탭 전용 -->
+        
+        <!-- 레벨 범위 (슬라이더) -->
+        <div class="md:col-span-2">
+          <label class="text-xs text-gray-500">레벨 범위</label>
+          <div class="mt-2 space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMinBadge">1</span>
+              <input type="range" id="lvMinRange" min="1" max="300" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+              <input type="range" id="lvMaxRange" min="1" max="300" value="200" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer -ml-2">
+              <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMaxBadge">200</span>
+            </div>
+            <div class="flex justify-between text-[11px] text-gray-500">
+              <span>1</span><span>50</span><span>100</span><span>150</span><span>200</span><span>250</span><span>300</span>
+            </div>
+          </div>
+        </div>
+
         <div id="itemTypeWrap" class="hidden md:col-span-2">
           <label class="text-xs text-gray-500">아이템 타입</label>
           <div class="grid grid-cols-2 gap-2">
@@ -206,6 +223,12 @@ const regionSelect = document.getElementById('regionSelect');
 const lvMin        = document.getElementById('lvMin');
 const lvMax        = document.getElementById('lvMax');
 
+// 레벨 슬라이더 요소
+const lvMinRange = document.getElementById('lvMinRange');
+const lvMaxRange = document.getElementById('lvMaxRange');
+const lvMinBadge = document.getElementById('lvMinBadge');
+const lvMaxBadge = document.getElementById('lvMaxBadge');
+
 // 아이템 탭 컨트롤
 const typeSelect   = document.getElementById('typeSelect');
 const itemTypeWrap = document.getElementById('itemTypeWrap');
@@ -235,6 +258,21 @@ let globalQ = '';
 let regionFilter = 'all';
 let levelRange = [Number(lvMin.value)||1, Number(lvMax.value)||300];
 let typeFilter = 'all';
+
+// 슬라이더 초기화 함수
+function updateLevelRangeUI(fromInit=false){
+  if(!lvMinRange || !lvMaxRange) return;
+  let min = Math.min(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+  let max = Math.max(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+  // 최소 간격 0 (겹침 허용). 필요 시 변경 가능
+  lvMinRange.value = String(min);
+  lvMaxRange.value = String(max);
+  levelRange = [min, max];
+  if(lvMinBadge) lvMinBadge.textContent = String(min);
+  if(lvMaxBadge) lvMaxBadge.textContent = String(max);
+  if(!fromInit) render();
+}
+
 let itemLocalQ = '';
 let questItemQ = '';
 let sortKey = null;
@@ -410,6 +448,12 @@ function render(){
   buildItemTypes();
   buildSortOptions();
   applyActiveTabClasses();
+  // 슬라이더 초기값 동기화
+  if(lvMinRange && lvMaxRange){
+    lvMinRange.value = String(levelRange[0]);
+    lvMaxRange.value = String(levelRange[1]);
+    updateLevelRangeUI(true);
+  }
   render();
 })();
 
@@ -426,7 +470,19 @@ tabs.forEach(btn=>{
 
 searchInput.addEventListener('input', ()=>{ globalQ = searchInput.value; render(); });
 regionSelect.addEventListener('change', ()=>{ regionFilter = regionSelect.value; render(); });
-[lvMin, lvMax].forEach(el=> el.addEventListener('input', ()=>{ levelRange=[Number(lvMin.value)||1, Number(lvMax.value)||300]; render(); }));
+[lvMin, lvMax].forEach(el=> el.addEventListener('input', ()=>{ levelRange=[Number(lvMin.value)||1, Number(lvMax.value)||300]; updateLevelRangeUI(); }));
+
+// 슬라이더 이벤트
+if(lvMinRange && lvMaxRange){
+  lvMinRange.addEventListener('input', ()=>{
+    if(Number(lvMinRange.value) > Number(lvMaxRange.value)) lvMaxRange.value = lvMinRange.value;
+    updateLevelRangeUI();
+  });
+  lvMaxRange.addEventListener('input', ()=>{
+    if(Number(lvMaxRange.value) < Number(lvMinRange.value)) lvMinRange.value = lvMaxRange.value;
+    updateLevelRangeUI();
+  });
+}
 typeSelect.addEventListener('change', ()=>{ typeFilter = typeSelect.value; render(); });
 itemLocalSearch.addEventListener('input', ()=>{ itemLocalQ = itemLocalSearch.value; render(); });
 questItemSearch.addEventListener('input', ()=>{ questItemQ = questItemSearch.value; render(); });
