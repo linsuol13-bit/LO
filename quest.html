@@ -17,7 +17,7 @@
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-// --- 내장 샘플 (Drive 링크 + 시작 장소/완료NPC 포함) ---
+// --- 내장 샘플 (Drive 링크 + 시작/완료 장소 & 시작/완료 NPC 포함) ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
@@ -27,6 +27,7 @@ const EMBEDDED = {
     completeNpc: '넬라',
     npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
     startPlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
+    completePlace: { name: '커닝시티 방어구점', img: 'https://placehold.co/240x135?text=%EB%B0%A9%EC%96%B4%EA%B5%AC%EC%A0%90' },
     region: '커닝시티',
     type: '아이템수집',
     reqItems: [
@@ -154,6 +155,18 @@ if(!q){
         <h3 class='text-sm font-semibold mb-2'>대사</h3>
         <div id="chatBox" class="border rounded-xl bg-gray-50 p-3 max-h-96 overflow-y-auto space-y-3">
           ${ normalDialogs.length ? normalDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
+        </div>
+      </section>
+
+      <!-- 완료 장소 (신규 섹션: 완료 보상 위) -->
+      <section>
+        <h3 class='text-sm font-semibold mb-2'>완료 장소</h3>
+        <div class='flex items-center gap-3'>
+          ${q.completePlace?.img ? safeImg(q.completePlace.img, 'w-40 h-24 object-cover rounded-lg border bg-white', 'Complete Place') : '<div class="w-40 h-24 rounded-lg border bg-gray-100 flex items-center justify-center text-xs text-gray-500">NO IMG</div>'}
+          <div class='text-sm'>
+            <div class='font-medium'>${q.completePlace?.name || q.region || '-'}</div>
+            <div class='text-gray-500'>퀘스트 완료 위치</div>
+          </div>
         </div>
       </section>
 
