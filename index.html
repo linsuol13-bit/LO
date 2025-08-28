@@ -313,8 +313,6 @@ function render(){
     }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 퀘스트가 없습니다.</div>';
   }
 
-  
-  
   // Items
   if(showItem){
     const type = typeSelect.value || 'all';
@@ -325,37 +323,13 @@ function render(){
       return hit && typeOk;
     });
     listItems.innerHTML = data.map(it=>{
-      const reqCount = (links.requiredBy[it.id]||[]).length;
-      const rewCount = (links.rewardedBy[it.id]||[]).length;
-      const src = sourcesLine(it);
+      const reqQs = links.requiredBy[it.id] || [];
+      const rewQs = links.rewardedBy[it.id] || [];
+      const srcTxt = sourcesLine(it);
       return `
       <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
         ${safeImg(it.img, it.name, 'w-full h-36 object-contain rounded-lg mb-2 bg-white')}
-        <h3 class="font-semibold">${it.name}</h3>
-        <div class="flex items-center gap-2 text-xs text-gray-600 mt-0.5">
-          <span class="px-2 py-0.5 rounded-full border bg-white">${it.category || it.type || '-'}</span>
-          <span>${it.type||'-'}</span>
-        </div>
-        ${ it.desc ? `<p class="text-sm text-gray-700 mt-1 line-clamp-2">${it.desc}</p>` : '' }
-        ${ src ? `<div class="text-xs text-gray-600 mt-1">획득처: ${src}</div>` : '' }
-        <div class="text-xs text-gray-600 mt-2 flex flex-wrap gap-3">
-          <a href="item.html?id=${encodeURIComponent(it.id)}#required" class="text-blue-600 hover:underline">필요 퀘스트 ${reqCount}개</a>
-          <a href="item.html?id=${encodeURIComponent(it.id)}#rewarded" class="text-blue-600 hover:underline">보상 퀘스트 ${rewCount}개</a>
-        </div>
-        <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
-      </article>`;
-    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
-  }
 
-        <h3 class="font-semibold">${it.name}</h3>
-        <div class="text-xs text-gray-600 mb-1">${it.type||'-'}${it.category ? ' · '+it.category : ''}</div>
-        ${it.desc ? `<p class="text-sm text-gray-700 mb-2">${it.desc}</p>` : ''}
-        ${Array.isArray(it.acquire) && it.acquire.length ? `<div class="text-sm"><span class="text-xs text-gray-500">획득처</span><ul class="list-disc ml-5 mt-1">${it.acquire.map(a=>`<li>${a}</li>`).join('')}</ul></div>` : ''}
-        ${needQs.length ? `<div class="text-sm mt-2"><span class="text-xs text-gray-500">필요 퀘스트</span><ul class="list-disc ml-5 mt-1">${needQs.map(q=>`<li><a class='text-blue-600 hover:underline' href='quest.html?id=${encodeURIComponent(q.id)}'>${q.code ? q.code+' · ' : ''}${q.title}</a></li>`).join('')}</ul></div>` : ''}
-        <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-3 text-sm text-blue-600 hover:underline">상세보기</a>
-      </article>`;
-    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
-  }
 
   // --------- 초기화
  ---------
