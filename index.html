@@ -5,34 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로나월드 • 몬스터 • 퀘스트 • 아이템</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
-  </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
   <div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-    <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">로나월드</h1>
-        <p class="text-sm text-gray-500">몬스터 · 퀘스트 · 아이템</p>
-      </div>
+    <header class="mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">로나월드</h1>
+      <p class="text-sm text-gray-500">몬스터 · 퀘스트 · 아이템</p>
     </header>
 
-    <!-- Controls (퀘스트 탭에서만 레벨 필터 노출) -->
+    <!-- Controls -->
     <section class="mb-4 border bg-white rounded-xl p-4">
       <div class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
         <div class="md:col-span-2">
           <label class="text-xs text-gray-500">검색</label>
           <input id="searchInput" placeholder="이름/지역/설명" class="w-full rounded-lg border px-3 py-2" />
         </div>
-        <div id="questLevelWrap" class="md:col-span-1 hidden">
+        <div id="questLevelWrap" class="md:col-span-1">
           <label class="text-xs text-gray-500">내 레벨</label>
-          <input id="playerLevel" type="number" inputmode="numeric" min="1" max="200"
-                 placeholder="예: 120" class="w-full rounded-lg border px-3 py-2" />
-          <p class="mt-1 text-[11px] text-gray-500">비워두면 모든 퀘스트 표시</p>
-        </div>
-        <div class="md:col-span-3 text-xs text-gray-500">
-          <span class="block md:mt-6">Tip: 퀘스트 탭에서 “내 레벨”을 입력하면 <b>그 레벨 이상에서 시작 가능한 퀘스트</b>만 보입니다.</span>
+          <input id="playerLevel" type="number" inputmode="numeric" min="1" max="200" placeholder="예: 120" class="w-full rounded-lg border px-3 py-2" />
+          <p class="mt-1 text-[11px] text-gray-500">비우면 전체 퀘스트</p>
         </div>
       </div>
     </section>
@@ -56,157 +47,203 @@
   </div>
 
 <script>
-'use strict';
+(function(){
+  'use strict';
 
-/* ===================== 샘플 데이터 ===================== */
-window.monsters = [
-  { id:'m-green-slime', name:'초록버섯', level:13, regions:['빅토리아'], img:'', drops:[{itemId:'4000012', name:'초록버섯의 갓'}] },
-  { id:'m-bubbling',    name:'버블링',   level:15, regions:['커닝시티'], img:'', drops:[{name:'버블링의 큰 방울'}] }
-];
+  // ===== 샘플 데이터 =====
+  window.monsters = [
+    { id:'m-green-slime', name:'초록버섯', level:13, regions:['빅토리아'], img:'', drops:[{itemId:'4000012', name:'초록버섯의 갓'}] },
+    { id:'m-bubbling',    name:'버블링',   level:15, regions:['커닝시티'], img:'', drops:[{name:'버블링의 큰 방울'}] }
+  ];
 
-window.quests = [
-  { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰', type:'아이템 수집',
-    region:'빅토리아 아일랜드', minLevel:15,
-    summary:'초록버섯의 갓 50개, 버블링의 큰 방울 50개',
-  },
-  { id:'q-herb-2', code:'신입 2-1', title:'허브 채집', type:'아이템 수집',
-    region:'엘리넬', minLevel:30,
-    summary:'일반 허브 30개 모으기',
-  },
-  { id:'q-boss-1', code:'루더스 3-3', title:'루미너스 토벌', type:'보스',
-    region:'루더스 레이크', minLevel:120,
-    summary:'루미너스 처치',
-  }
-];
-
-window.items = [
-  { id:'4000012', name:'초록버섯의 갓', category:'재료', from:['초록버섯'], neededBy:['넬라 1-1'], gives:[] },
-  { id:'2000006', name:'레몬', category:'소모품', from:['퀘스트 보상'], neededBy:[], gives:['넬라 1-1'] }
-];
-
-/* ===================== 공통 유틸 ===================== */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-const fmtLv = (q) => 'Lv.' + (q.minLevel ?? 1);
-
-/* ===================== 렌더러 ===================== */
-function renderMonsters() {
-  const q = $('#searchInput')?.value?.trim()?.toLowerCase() || '';
-  const list = window.monsters.filter(m => {
-    const t = (m.name + ' ' + (m.regions||[]).join(' ')).toLowerCase();
-    return !q || t.includes(q);
-  });
-  $('#listMonsters').innerHTML = list.map(m => `
-    <a href="monster.html?id=${m.id}" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">
-      <div class="text-xs text-gray-500">Lv.${m.level} · ${(m.regions||[]).join(', ')||'-'}</div>
-      <div class="mt-1 font-semibold">${m.name}</div>
-    </a>
-  `).join('') || emptyCard('몬스터');
-}
-
-function renderQuests() {
-  const q = $('#searchInput')?.value?.trim()?.toLowerCase() || '';
-  const myLv = getPlayerLevel(); // null이면 전체
-  const filtered = window.quests.filter(x => {
-    const txt = (x.code + ' ' + x.title + ' ' + (x.region||'') + ' ' + (x.type||'') + ' ' + (x.summary||'')).toLowerCase();
-    const textOk = !q || txt.includes(q);
-    if (!textOk) return false;
-    if (myLv == null) return true;        // 레벨 미입력 → 전체
-    const min = x.minLevel ?? 1;
-    return min <= myLv;                   // 내 레벨 이상에서 시작 가능한 퀘스트
-  });
-  $('#listQuests').innerHTML = filtered.map(x => `
-    <a href="quest.html?id=${x.id}" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">
-      <div class="text-xs text-gray-500">${x.region||'-'} · ${x.type||'-'} · ${fmtLv(x)}</div>
-      <div class="mt-1 font-semibold">${x.code ? x.code + ' · ' : ''}${x.title}</div>
-      ${x.summary ? `<div class="mt-1 text-xs text-gray-600">${x.summary}</div>`:''}
-    </a>
-  `).join('') || emptyCard('퀘스트');
-}
-
-function renderItems() {
-  const q = $('#searchInput')?.value?.trim()?.toLowerCase() || '';
-  const list = window.items.filter(it => {
-    const txt = (it.name + ' ' + (it.category||'') + ' ' + (it.from||[]).join(' ') + ' ' + (it.neededBy||[]).join(' ') + ' ' + (it.gives||[]).join(' ')).toLowerCase();
-    return !q || txt.includes(q);
-  });
-  $('#listItems').innerHTML = list.map(it => `
-    <a href="item.html?id=${it.id}" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">
-      <div class="text-xs text-gray-500">${it.category||'-'}</div>
-      <div class="mt-1 font-semibold">${it.name}</div>
-      <div class="mt-1 text-xs text-gray-600">획득처: ${(it.from||[]).join(', ')||'-'}</div>
-      ${it.neededBy?.length ? `<div class="mt-1 text-[11px] text-gray-500">필요 퀘스트: ${it.neededBy.join(', ')}</div>`:''}
-      ${it.gives?.length ? `<div class="mt-1 text-[11px] text-gray-500">보상 퀘스트: ${it.gives.join(', ')}</div>`:''}
-    </a>
-  `).join('') || emptyCard('아이템');
-}
-
-function emptyCard(label){
-  return `<div class="text-sm text-gray-500 p-4 rounded-xl border bg-white">${label}가 없습니다.</div>`;
-}
-
-/* ===================== 레벨 필터 ===================== */
-function getPlayerLevel(){
-  const el = $('#playerLevel');
-  if (!el) return null;
-  const v = parseInt(el.value, 10);
-  return Number.isFinite(v) ? v : null;
-}
-
-/* ===================== 탭/이벤트 ===================== */
-function setActiveTab(tab){
-  // 버튼 스타일
-  $$('.tab-btn').forEach(b=>{
-    if (b.dataset.tab===tab) {
-      b.classList.add('bg-gray-900','text-white');
-      b.classList.remove('text-gray-700');
-    } else {
-      b.classList.remove('bg-gray-900','text-white');
-      b.classList.add('text-gray-700');
+  window.quests = [
+    { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰', type:'아이템 수집',
+      region:'빅토리아 아일랜드', minLevel:15,
+      summary:'초록버섯의 갓 50개, 버블링의 큰 방울 50개',
+      rewards:[ {exp:5600} ]
+    },
+    { id:'q-herb-2', code:'신입 2-1', title:'허브 채집', type:'아이템 수집',
+      region:'엘리넬', minLevel:30,
+      summary:'일반 허브 30개 모으기',
+      rewards:[ {exp:12000} ]
+    },
+    { id:'q-boss-1', code:'루더스 3-3', title:'루미너스 토벌', type:'보스',
+      region:'루더스 레이크', minLevel:120,
+      summary:'루미너스 처치',
+      rewards:[ {exp:250000} ]
     }
-  });
-  // 섹션 표시
-  $('#listMonsters').classList.toggle('hidden', tab!=='monsters');
-  $('#listQuests').classList.toggle('hidden', tab!=='quests');
-  $('#listItems').classList.toggle('hidden', tab!=='items');
+  ];
 
-  // 퀘스트 탭일 때만 레벨 입력칸 보이기
-  $('#questLevelWrap').classList.toggle('hidden', tab!=='quests');
+  window.items = [
+    { id:'4000012', name:'초록버섯의 갓', category:'재료', from:['초록버섯'], neededBy:['넬라 1-1'], gives:[] },
+    { id:'2000006', name:'레몬', category:'소모품', from:['퀘스트 보상'], neededBy:[], gives:['넬라 1-1'] }
+  ];
 
-  // 렌더
-  if (tab==='monsters') renderMonsters();
-  if (tab==='quests')   renderQuests();
-  if (tab==='items')    renderItems();
+  // ===== EXP 테이블 (1~200) =====
+  var EXP_BUCKET = {
+    1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,
+    11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,
+    21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,
+    31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,
+    41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,
+    51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,
+    61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,
+    71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,
+    81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,
+    91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,
+    101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,
+    111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,
+    121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,
+    131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,
+    141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,
+    151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,
+    161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,
+    171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,
+    181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,
+    191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324
+  };
 
-  // URL에 탭 보존
-  const url = new URL(location.href);
-  url.searchParams.set('tab', tab);
-  history.replaceState({}, '', url.toString());
-}
+  // ===== 유틸 =====
+  var $ = function(sel){ return document.querySelector(sel); };
+  var $$ = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+  function fmtNum(n){ return (n&&n.toLocaleString) ? n.toLocaleString() : String(n); }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // 초기 연도
-  $('#yy').textContent = new Date().getFullYear();
+  function getPlayerLevel(){
+    var el = $('#playerLevel');
+    if (!el) return null;
+    var v = parseInt(el.value, 10);
+    return isFinite(v) ? v : null;
+  }
+  function pickQuestExp(q){
+    if (!q || !q.rewards) return null;
+    for (var i=0;i<q.rewards.length;i++){
+      var r = q.rewards[i];
+      if (r && typeof r.exp==='number') return r.exp;
+    }
+    return null;
+  }
+  function calcExpRatio(myLv, quest){
+    if (myLv==null) return null;
+    var bucket = EXP_BUCKET[myLv];
+    var exp = pickQuestExp(quest);
+    if (!bucket || !exp) return null;
+    var pct = (exp/bucket)*100;
+    if (pct<0) pct=0; if (pct>100) pct=100;
+    return pct;
+  }
 
-  // 탭 버튼 바인딩
-  $$('.tab-btn').forEach(b=>{
-    b.addEventListener('click', ()=> setActiveTab(b.dataset.tab));
-  });
+  // ===== 렌더 =====
+  function renderMonsters(){
+    var q = ($('#searchInput')&&$('#searchInput').value||'').trim().toLowerCase();
+    var list = window.monsters.filter(function(m){
+      var t = (m.name+' '+(m.regions||[]).join(' ')).toLowerCase();
+      return !q || t.indexOf(q)>-1;
+    });
+    $('#listMonsters').innerHTML = list.map(function(m){
+      return '<a href="monster.html?id='+m.id+'" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">'+
+        '<div class="text-xs text-gray-500">Lv.'+m.level+' · '+((m.regions||[]).join(', ')||'-')+'</div>'+
+        '<div class="mt-1 font-semibold">'+m.name+'</div>'+
+      '</a>';
+    }).join('') || emptyCard('몬스터');
+  }
 
-  // 검색/레벨 입력 반응
-  $('#searchInput').addEventListener('input', ()=>{
-    const tab = new URL(location.href).searchParams.get('tab') || 'quests';
+  function renderQuests(){
+    var q = ($('#searchInput')&&$('#searchInput').value||'').trim().toLowerCase();
+    var myLv = getPlayerLevel(); // null이면 전체
+    var filtered = window.quests.filter(function(x){
+      var txt = ( (x.code||'')+' '+(x.title||'')+' '+(x.region||'')+' '+(x.type||'')+' '+(x.summary||'') ).toLowerCase();
+      if (q && txt.indexOf(q)===-1) return false;
+      if (myLv==null) return true; // 전체
+      var min = (x.minLevel!=null)? x.minLevel : 1;
+      return min <= myLv; // 내 레벨 이상에서 시작
+    });
+
+    $('#listQuests').innerHTML = filtered.map(function(x){
+      var ratio = calcExpRatio(myLv, x); // null이면 미표시
+      var ratioBar = (ratio==null) ? '' :
+        '<div class="mt-2">'+
+          '<div class="flex items-center justify-between text-[11px] text-gray-500 mb-1">'+
+            '<span>EXP 비율</span>'+
+            '<span>'+ratio.toFixed(1)+'%</span>'+
+          '</div>'+
+          '<div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">'+
+            '<div class="h-2 bg-blue-500" style="width:'+ratio+'%;"></div>'+
+          '</div>'+
+        '</div>';
+      var expText = (function(){
+        var exp = pickQuestExp(x);
+        return exp ? '<div class="mt-1 text-[11px] text-gray-500">획득 EXP: '+fmtNum(exp)+'</div>' : '';
+      })();
+
+      return '<a href="quest.html?id='+x.id+'" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">'+
+        '<div class="text-xs text-gray-500">'+(x.region||'-')+' · '+(x.type||'-')+' · Lv.'+(x.minLevel||1)+'</div>'+
+        '<div class="mt-1 font-semibold">'+(x.code? x.code+' · ':'')+x.title+'</div>'+
+        (x.summary? '<div class="mt-1 text-xs text-gray-600">'+x.summary+'</div>' : '')+
+        expText+
+        ratioBar+
+      '</a>';
+    }).join('') || emptyCard('퀘스트');
+  }
+
+  function renderItems(){
+    var q = ($('#searchInput')&&$('#searchInput').value||'').trim().toLowerCase();
+    var list = window.items.filter(function(it){
+      var txt = ( (it.name||'')+' '+(it.category||'')+' '+(it.from||[]).join(' ')+' '+(it.neededBy||[]).join(' ')+' '+(it.gives||[]).join(' ') ).toLowerCase();
+      return !q || txt.indexOf(q)>-1;
+    });
+    $('#listItems').innerHTML = list.map(function(it){
+      return '<a href="item.html?id='+it.id+'" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">'+
+        '<div class="text-xs text-gray-500">'+(it.category||'-')+'</div>'+
+        '<div class="mt-1 font-semibold">'+it.name+'</div>'+
+        '<div class="mt-1 text-xs text-gray-600">획득처: '+((it.from||[]).join(', ')||'-')+'</div>'+
+        (it.neededBy && it.neededBy.length ? '<div class="mt-1 text-[11px] text-gray-500">필요 퀘스트: '+it.neededBy.join(', ')+'</div>' : '')+
+        (it.gives && it.gives.length ? '<div class="mt-1 text-[11px] text-gray-500">보상 퀘스트: '+it.gives.join(', ')+'</div>' : '')+
+      '</a>';
+    }).join('') || emptyCard('아이템');
+  }
+
+  function emptyCard(label){
+    return '<div class="text-sm text-gray-500 p-4 rounded-xl border bg-white">'+label+'가 없습니다.</div>';
+  }
+
+  // ===== 탭/이벤트 =====
+  function setActiveTab(tab){
+    $$('.tab-btn').forEach(function(b){
+      if (b.dataset.tab===tab){ b.classList.add('bg-gray-900','text-white'); b.classList.remove('text-gray-700'); }
+      else { b.classList.remove('bg-gray-900','text-white'); b.classList.add('text-gray-700'); }
+    });
+    $('#listMonsters').classList.toggle('hidden', tab!=='monsters');
+    $('#listQuests').classList.toggle('hidden', tab!=='quests');
+    $('#listItems').classList.toggle('hidden', tab!=='items');
+
     if (tab==='monsters') renderMonsters();
     if (tab==='quests')   renderQuests();
     if (tab==='items')    renderItems();
-  });
-  const lvEl = $('#playerLevel');
-  lvEl.addEventListener('input', renderQuests);
 
-  // 초기 탭
-  const initialTab = new URL(location.href).searchParams.get('tab') || 'quests';
-  setActiveTab(initialTab);
-});
+    var url = new URL(location.href);
+    url.searchParams.set('tab', tab);
+    history.replaceState({}, '', url.toString());
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    var y = document.getElementById('yy'); if (y) y.textContent = new Date().getFullYear();
+
+    $$('.tab-btn').forEach(function(b){ b.addEventListener('click', function(){ setActiveTab(b.dataset.tab); }); });
+
+    var s = $('#searchInput');
+    if (s) s.addEventListener('input', function(){
+      var tab = (new URL(location.href)).searchParams.get('tab') || 'quests';
+      if (tab==='monsters') renderMonsters();
+      if (tab==='quests')   renderQuests();
+      if (tab==='items')    renderItems();
+    });
+    var lv = $('#playerLevel');
+    if (lv) lv.addEventListener('input', renderQuests);
+
+    var initial = (new URL(location.href)).searchParams.get('tab') || 'quests';
+    setActiveTab(initial);
+  });
+})();
 </script>
 </body>
 </html>
