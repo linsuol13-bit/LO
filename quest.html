@@ -11,108 +11,142 @@
   <a href="index.html" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록으로</a>
   <div id="status" class="mb-3 text-xs text-gray-500"></div>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
-  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드 demo.</p></footer>
+  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드</p></footer>
 </div>
+
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-const LS = { monsters: "mapledex.monsters", quests: "mapledex.quests", items: "mapledex.items" };
-function readJSON(key, fallback){ try{ const raw=localStorage.getItem(key); return raw? JSON.parse(raw): fallback }catch(e){ return fallback } }
-let quests   = readJSON(LS.quests, []);
-let items    = readJSON(LS.items, []);
-
-// Embedded fallback
+// --- 내장 샘플 (항상 표시 보장) ---
 const EMBEDDED = {
-  quests: [{ id: 'q-nella-1-1', code: '넬라 1-1', title: '마파의 의뢰', startNpc: '넬라', npcImg:'Nella.png', region:'커닝시티', type:'아이템수집',
-             reqItems:[{itemId:'4000012', qty:50, img:'GreenCap.png'},{itemId:'4000013', qty:50, img:'Bubble.png'}],
-             rewards:[{itemId:'2000006', qty:50, name:'레몬', img:'Lemon.png'},{exp:5600}],
-             dialogues:[
-               {speaker:'넬라', text:'어머? 못보던 사람인걸? ...'},
-               {speaker:'플레이어', text:'네, 진행하겠습니다.'},
-               {speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요.'}
-             ] }],
-  items: [ {id:'4000012', name:'초록버섯의 갓', type:'소재', img:'GreenCap.png'},
-           {id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'Bubble.png'},
-           {id:'2000006', name:'레몬', type:'소비', img:'Lemon.png'} ]
+  quests: [{
+    id: 'q-nella-1-1',
+    code: '넬라 1-1',
+    title: '마파의 의뢰',
+    startNpc: '넬라',
+    npcImg: 'Nella.png',
+    region: '커닝시티',
+    type: '아이템수집',
+    reqItems: [
+      { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'GreenCap.png' },
+      { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'Bubble.png' }
+    ],
+    rewards: [
+      { itemId:'2000006', qty:50, name:'레몬', img:'Lemon.png' },
+      { exp:5600 }
+    ],
+    dialogues: [
+      { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
+      { speaker:'플레이어', text:'네, 진행하겠습니다.' },
+      { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' } // 완료 대사(레몬 포함)
+    ]
+  }],
+  items: [
+    {id:'4000012', name:'초록버섯의 갓', type:'소재', img:'GreenCap.png'},
+    {id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'Bubble.png'},
+    {id:'2000006', name:'레몬', type:'소비', img:'Lemon.png'}
+  ]
 };
 
-if(!quests.length){ quests = EMBEDDED.quests; localStorage.setItem(LS.quests, JSON.stringify(quests)); }
-if(!items.length){ items = EMBEDDED.items; localStorage.setItem(LS.items, JSON.stringify(items)); }
-
+// --- 상태/데이터 ---
+const statusEl = document.getElementById('status');
 const params = new URLSearchParams(location.search);
-let id = params.get('id');
-document.getElementById('status').textContent = `상태: quests=${quests.length} · id="${id||''}"`;
-if(!id && quests.length){ id = quests[0].id; history.replaceState({}, '', location.pathname + '?id=' + encodeURIComponent(id)); }
-const q = quests.find(x=> x.id===id);
+let quests = [];
+let items = [];
+try {
+  // 로컬스토리지에 있으면 사용, 없으면 내장
+  quests = JSON.parse(localStorage.getItem('mapledex.quests')) || EMBEDDED.quests;
+  items  = JSON.parse(localStorage.getItem('mapledex.items'))  || EMBEDDED.items;
+} catch(e) {
+  quests = EMBEDDED.quests; items = EMBEDDED.items;
+}
 
+// --- 헬퍼 ---
+function safeImg(src, cls, alt='img'){
+  return `<img src="${src}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO\\nIMG'}))">`;
+}
 function reqItemView(r){
   const it = items.find(x=> x.id===r.itemId);
-  const imgUrl = r.img || (it ? it.img : null);
+  const name = r.name || (it? it.name : r.itemId);
+  const imgUrl = r.img || (it? it.img : null);
+  const img = imgUrl ? safeImg(imgUrl, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', name) : '';
   return `<a href="item.html?id=${r.itemId}" class='border rounded-lg p-2 bg-white hover:bg-gray-50 flex items-center gap-2'>
-    ${imgUrl? `<img src='${imgUrl}' class='w-10 h-10 rounded-lg border'/>` : ''}
-    <div class='text-sm'>${it? it.name: r.itemId} ${r.qty? 'x'+r.qty:''}</div>
-  </a>`;
+    ${img}<div class='text-sm'>${name} ${r.qty? 'x'+r.qty:''}</div></a>`;
 }
 function rewardView(r){
+  if(typeof r.exp==='number'){
+    return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'><div class='text-sm'>EXP ${r.exp.toLocaleString()}</div></div>`;
+  }
   const it = r.itemId? items.find(x=> x.id===r.itemId) : null;
-  const imgUrl = r.img || (it ? it.img : null);
-  const left = typeof r.exp==='number'? \`EXP \${r.exp.toLocaleString()}\` : '';
-  const right = it? \`\${it.name}\${r.qty? ' x'+r.qty:''}\` : (r.name? \`\${r.name}\${r.qty? ' x'+r.qty:''}\` : '');
-  const badge = imgUrl? \`<img src='\${imgUrl}' class='w-10 h-10 rounded-lg border'/>\` : '';
-  const text = [left,right].filter(Boolean).join(', ');
-  return \`<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>\${badge}<div class='text-sm'>\${text||'-'}</div></div>\`;
+  const name = r.name || (it? it.name : r.itemId);
+  const imgUrl = r.img || (it? it.img : null);
+  const img = imgUrl ? safeImg(imgUrl, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', name) : '';
+  return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${name}${r.qty? ' x'+r.qty:''}</div></div>`;
 }
 function chatBubble(d, npcImg){
   const isPlayer = (d.speaker||'').includes('플레이어');
   const row = isPlayer ? 'flex flex-row-reverse items-start gap-2' : 'flex items-start gap-2';
   const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border';
   const nameCls = 'text-[11px] text-gray-500 px-1';
-  const avatar = (!isPlayer && npcImg) ? \`<img src='\${npcImg}' alt='NPC' class='w-8 h-8 rounded-lg border object-contain bg-white'/>\` : '<span class="w-8 h-8"></span>';
-  return \`<div class="\${row}">\${avatar}<div class="max-w-[80%]"><div class="\${nameCls}">\${d.speaker||''}</div><div class="rounded-2xl px-3 py-2 \${bubble}">\${d.text||''}</div></div></div>\`;
+  const avatar = (!isPlayer && npcImg) ? safeImg(npcImg, 'w-8 h-8 rounded-lg border object-contain bg-white', 'NPC') : '<span class="w-8 h-8"></span>';
+  return `<div class="${row}">${avatar}<div class="max-w-[80%]"><div class="${nameCls}">${d.speaker||''}</div><div class="rounded-2xl px-3 py-2 ${bubble}">${d.text||''}</div></div></div>`;
 }
 
+// --- 렌더 ---
+document.getElementById('yy').textContent = new Date().getFullYear();
+let id = params.get('id');
+statusEl.textContent = `상태: quests=${quests.length} · id="${id||''}"`;
+
+// id 없으면 첫 퀘스트로 고정
+if(!id && quests.length){
+  id = quests[0].id;
+  history.replaceState({}, '', location.pathname + '?id=' + encodeURIComponent(id));
+}
+
+const q = quests.find(x=> x.id===id);
 const detail = document.getElementById('detail');
+
 if(!q){
   detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>퀘스트를 찾을 수 없어요</div>";
 } else {
   const allDialogs = Array.isArray(q.dialogues)? q.dialogues : [];
-  const completionDialogs = allDialogs.filter(d=> (d.text||'').includes('레몬'));
+  const completionDialogs = allDialogs.filter(d=> (d.text||'').includes('레몬')); // 완료 대사
   const normalDialogs = allDialogs.filter(d=> !(d.text||'').includes('레몬'));
 
-  detail.innerHTML = \`
+  detail.innerHTML = `
     <div class='space-y-5'>
       <div class='flex items-center gap-4'>
-        \${q.npcImg? \`<img src='\${q.npcImg}' alt='NPC' class='max-h-40 object-contain rounded-xl border bg-white p-2'/>\` : ''}
+        ${safeImg(q.npcImg || '', 'max-h-40 object-contain rounded-xl border bg-white p-2', 'NPC')}
         <div>
-          <h2 class='text-xl font-semibold'>\${q.code? q.code + ' · ' : ''}\${q.title}</h2>
-          <div class='text-sm text-gray-500'>\${q.region||'-'}\${q.minLevel? ' · Lv.'+q.minLevel+'+':''}\${q.type? ' · '+q.type:''}</div>
+          <h2 class='text-xl font-semibold'>${q.code? q.code + ' · ' : ''}${q.title}</h2>
+          <div class='text-sm text-gray-500'>${q.region||'-'}${q.minLevel? ' · Lv.'+q.minLevel+'+':''}${q.type? ' · '+q.type:''}</div>
         </div>
       </div>
 
       <section>
         <h3 class='text-sm font-semibold mb-2'>조건 아이템</h3>
-        <div class='flex flex-wrap gap-3'>\${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
+        <div class='flex flex-wrap gap-3'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
       <section id="dialogueSection">
         <h3 class='text-sm font-semibold mb-2'>대사</h3>
         <div id="chatBox" class="border rounded-xl bg-gray-50 p-3 max-h-96 overflow-y-auto space-y-3">
-          \${ normalDialogs.length ? normalDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
+          ${ normalDialogs.length ? normalDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
 
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 보상</h3>
-        <div class='flex flex-wrap gap-3'>\${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
+        <div class='flex flex-wrap gap-3'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
       <section id="completionDialogue">
         <h3 class='text-sm font-semibold mb-2'>완료 대사</h3>
         <div class="border rounded-xl bg-gray-50 p-3 space-y-3">
-          \${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
+          ${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
-    </div>\`;
+    </div>`;
 }
 </script>
 </body>
