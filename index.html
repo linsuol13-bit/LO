@@ -5,649 +5,365 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로나월드 • Monsters • Items • Quests</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>html{scroll-behavior:smooth}</style>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-
   <style>
-    /* 1) 먼저 사용자의 PC에 설치된 구매 폰트를 찾습니다 (배포 없이 사용 가능) */
-    @font-face {
-      font-family: 'MyGameFont';
-      src: local('MyGameFont'); /* 여기의 이름을 실제 폰트 이름으로 바꾸세요 */
-      font-weight: 100 900;
-      font-style: normal;
-      font-display: swap;
-    }
-    /* 2) 방문자에게는 무료 웹폰트(Noto Sans KR)로 안전하게 폴백 */
-    :root {
-      --ui-font: 'MyGameFont', 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, 
-                 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    }
+    :root { --ui-font: 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
     body { font-family: var(--ui-font); }
+    /* range track height fix for webkit */
+    input[type="range"] { height: 2px; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
-  <div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-    <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">로나월드</h1>
+<div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+  <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">로나월드</h1>
+      <p class="text-sm text-gray-500">몬스터 위치 · 아이템 · 퀘스트 목록</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="exportBtn" class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">Export JSON</button>
+      <label class="inline-flex items-center">
+        <input id="importInput" type="file" accept="application/json" class="hidden" />
+        <span class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50 cursor-pointer">Import JSON</span>
+      </label>
+      <button id="resetBtn" class="inline-flex items-center gap-2 rounded-lg bg-gray-900 text-white px-3 py-2 text-sm hover:bg-gray-800">샘플 초기화</button>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <section class="mb-6 border bg-white rounded-xl p-4 relative" style="z-index:0;">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+      <div class="md:col-span-2">
+        <label class="text-xs text-gray-500">검색</label>
+        <input id="searchInput" placeholder="이름/지역/아이템 검색" class="w-full rounded-lg border px-3 py-2" />
       </div>
-      <div class="flex items-center gap-2">
-        <button id="exportBtn" class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">Export JSON</button>
-        <label class="inline-flex items-center">
-          <input id="importInput" type="file" accept="application/json" class="hidden" />
-          <span class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50 cursor-pointer">Import JSON</span>
-        </label>
-        <button id="resetBtn" class="inline-flex items-center gap-2 rounded-lg bg-gray-900 text-white px-3 py-2 text-sm hover:bg-gray-800">샘플 초기화</button>
+      <div class="md:col-span-2">
+        <label class="text-xs text-gray-500">지역</label>
+        <select id="regionSelect" class="w-full rounded-lg border px-3 py-2"></select>
       </div>
-    </header>
 
-    <!-- Controls -->
-    <section class="mb-6 border bg-white rounded-xl p-4" style="z-index:0; position:relative;">
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
-        <div class="md:col-span-2">
-          <label class="text-xs text-gray-500">검색</label>
-          <div class="relative">
-            <input id="searchInput" placeholder="이름/지역/아이템 검색" class="w-full rounded-lg border px-3 py-2 pl-8" />
-            <svg class="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2a8 8 0 105.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>
+      <!-- Level range (dual slider) -->
+      <div class="md:col-span-2">
+        <label class="text-xs text-gray-500">레벨 범위</label>
+        <div class="mt-2 space-y-2">
+          <div class="flex items-center gap-3">
+            <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMinBadge">1</span>
+            <input type="range" id="lvMinRange" min="1" max="200" step="1" value="1" list="lvTicks" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            <input type="range" id="lvMaxRange" min="1" max="200" step="1" value="200" list="lvTicks" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer -ml-2">
+            <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMaxBadge">200</span>
           </div>
-        </div>
-        <div class="md:col-span-2">
-          <label class="text-xs text-gray-500">지역</label>
-          <select id="regionSelect" class="w-full rounded-lg border px-3 py-2"></select>
-        </div>
-        <div class="md:col-span-2 flex gap-2 hidden">
-          <div class="w-1/2">
-            <label class="text-xs text-gray-500">레벨 최소</label>
-            <input type="number" id="lvMin" value="1" min="1" max="300" class="w-full rounded-lg border px-3 py-2" />
+          <datalist id="lvTicks">
+            <option value="1"><option value="25"><option value="50"><option value="75"><option value="100"><option value="150"><option value="200">
+          </datalist>
+          <div class="flex justify-between text-[11px] text-gray-500">
+            <span>1</span><span>25</span><span>50</span><span>75</span><span>100</span><span>150</span><span>200</span>
           </div>
-          <div class="w-1/2">
-            <label class="text-xs text-gray-500">레벨 최대</label>
-            <input type="number" id="lvMax" value="200" min="1" max="300" class="w-full rounded-lg border px-3 py-2" />
-          </div>
-        </div>
-
-        <!-- Items 탭 전용 -->
-        
-        
-        <!-- 레벨 범위 (슬라이더) -->
-        <div class="md:col-span-2">
-          <label class="text-xs text-gray-500">레벨 범위</label>
-          <div class="mt-2 space-y-2">
-            <div class="flex items-center gap-3">
-              <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMinBadge">1</span>
-              <input type="range" id="lvMinRange" min="1" max="200" step="1" value="1" list="lvTicks"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-              <input type="range" id="lvMaxRange" min="1" max="200" step="1" value="200" list="lvTicks"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer -ml-2">
-              <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMaxBadge">200</span>
-            </div>
-            <datalist id="lvTicks">
-              <option value="1"><option value="25"><option value="50"><option value="75">
-              <option value="100"><option value="125"><option value="150"><option value="175"><option value="200">
-            </datalist>
-            <div class="flex justify-between text-[11px] text-gray-500">
-              <span>1</span><span>25</span><span>50</span><span>75</span><span>100</span><span>125</span><span>150</span><span>175</span><span>200</span>
-            </div>
-          </div>
-        </div>
-
-
-        <div id="itemTypeWrap" class="hidden md:col-span-2">
-          <label class="text-xs text-gray-500">아이템 타입</label>
-          <div class="grid grid-cols-2 gap-2">
-            <select id="typeSelect" class="w-full rounded-lg border px-3 py-2"></select>
-            <input id="itemLocalSearch" placeholder="아이템 이름 검색" class="w-full rounded-lg border px-3 py-2" />
-          </div>
-        </div>
-
-        <!-- Quests 탭 전용 -->
-        <div id="questItemSearchWrap" class="md:col-span-2">
-          <label class="text-xs text-gray-500">퀘스트 보상 아이템 검색</label>
-          <input id="questItemSearch" placeholder="획득 아이템 이름 검색" class="w-full rounded-lg border px-3 py-2" />
-        </div>
-        <div id="questTypeWrap" class="md:col-span-2">
-          <label class="text-xs text-gray-500">퀘스트 조건</label>
-          <select id="questConditionSelect" multiple class="w-full rounded-lg border px-3 py-2 min-h-[3.2rem]">
-            <option value="all" selected>전체</option>
-            <option value="대화">대화</option>
-            <option value="아이템수집">아이템수집</option>
-            <option value="몬스터 사냥">몬스터 사냥</option>
-          </select>
-        </div>
-
-        <!-- Sort -->
-        
-        <!-- Quests 탭 전용 (추가: 경험치 획득 비율 & 플레이어 레벨) -->
-        <div id="questExpWrap" class="md:col-span-2">
-          <label class="text-xs text-gray-500">경험치 획득 비율(이상)</label>
-          <div class="mt-2 space-y-2">
-            <div class="flex items-center gap-3">
-              <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="expRatioBadge">0%</span>
-              <input type="range" id="expRatioMinRange" min="0" max="100" step="5" value="0" list="expTicks"
-                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-              <span class="text-[11px] text-gray-500">이상</span>
-            </div>
-            <datalist id="expTicks">
-              <option value="0"><option value="25"><option value="50"><option value="75"><option value="100">
-            </datalist>
-          </div>
-        </div>
-        <div id="playerLevelWrap" class="md:col-span-2">
-          <label class="text-xs text-gray-500">플레이어 레벨</label>
-          <input id="playerLevelInput" type="number" min="1" max="200" value="100" class="w-full rounded-lg border px-3 py-2" />
-          <p class="text-[11px] text-gray-500 mt-1">퀘스트 최소 레벨과의 차이로 가중치를 계산해요.</p>
-        </div>
-
-        <div id="sortWrap" class="md:col-span-2">
-          <label class="text-xs text-gray-500">정렬</label>
-          <select id="sortSelect" class="w-full rounded-lg border px-3 py-2"></select>
         </div>
       </div>
-    </section>
 
-    <!-- Tabs (기본: 퀘스트 활성) -->
-    <nav class="mb-4 inline-flex rounded-xl bg-white border p-1 relative z-10">
-      <button data-tab="monsters" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">몬스터</button>
-      <button data-tab="quests" class="tab-btn px-3 py-2 text-sm rounded-lg bg-gray-900 text-white">퀘스트</button>
-      <button data-tab="items" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">아이템</button>
-    </nav>
+      <!-- Items tab only -->
+      <div id="itemTypeWrap" class="hidden md:col-span-2">
+        <label class="text-xs text-gray-500">아이템 타입</label>
+        <select id="typeSelect" class="w-full rounded-lg border px-3 py-2"></select>
+      </div>
 
-    <div id="status" class="mb-3 text-xs text-gray-500"></div>
-    <section id="listMonsters" class="hidden grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-    <section id="listQuests" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-    <section id="listItems" class="hidden grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+      <!-- Quests tab only -->
+      <div id="questItemWrap" class="hidden md:col-span-2">
+        <label class="text-xs text-gray-500">퀘스트 보상 아이템 검색</label>
+        <input id="questItemSearch" placeholder="획득 아이템 이름 검색" class="w-full rounded-lg border px-3 py-2" />
+      </div>
+      <div id="questTypeWrap" class="hidden md:col-span-2">
+        <label class="text-xs text-gray-500">퀘스트 조건</label>
+        <select id="questConditionSelect" class="w-full rounded-lg border px-3 py-2" multiple>
+          <option value="all">전체</option>
+          <option value="대화">대화</option>
+          <option value="아이템수집">아이템수집</option>
+          <option value="몬스터사냥">몬스터사냥</option>
+        </select>
+        <p class="text-[11px] text-gray-500 mt-1">여러 항목 선택 가능 (Ctrl/⌘ 클릭)</p>
+      </div>
+      <div id="questExpWrap" class="hidden md:col-span-2">
+        <label class="text-xs text-gray-500">경험치 획득 비율(이상)</label>
+        <div class="mt-2 space-y-2">
+          <div class="flex items-center gap-3">
+            <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="expRatioBadge">0%</span>
+            <input type="range" id="expRatioMinRange" min="0" max="100" step="5" value="0" list="expTicks" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            <span class="text-[11px] text-gray-500">이상</span>
+          </div>
+          <datalist id="expTicks">
+            <option value="0"><option value="25"><option value="50"><option value="75"><option value="100">
+          </datalist>
+        </div>
+      </div>
+      <div id="playerLevelWrap" class="hidden md:col-span-2">
+        <label class="text-xs text-gray-500">플레이어 레벨</label>
+        <input id="playerLevelInput" type="number" min="1" max="200" value="100" class="w-full rounded-lg border px-3 py-2" />
+      </div>
+      <div id="expBucketWrap" class="hidden md:col-span-2">
+        <label class="text-xs text-gray-500">경험치 통 (다음 레벨까지 필요 EXP)</label>
+        <input id="expBucketInput" type="number" min="1" value="10000" class="w-full rounded-lg border px-3 py-2" />
+      </div>
+    </div>
+  </section>
 
-    <footer class="mt-10 text-center text-xs text-gray-500">
-      <hr class="my-4" />
-      <p>© <span id="yy"></span> 로나월드</p>
-    </footer>
-  </div>
+  <!-- Tabs -->
+  <nav class="mb-4 inline-flex rounded-xl bg-white border p-1 sticky top-0 z-10">
+    <button data-tab="monsters" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">몬스터</button>
+    <button data-tab="quests" class="tab-btn px-3 py-2 text-sm rounded-lg bg-gray-900 text-white">퀘스트</button>
+    <button data-tab="items" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">아이템</button>
+  </nav>
+
+  <!-- Lists -->
+  <section id="listMonsters" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+  <section id="listQuests" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+  <section id="listItems" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+
+  <footer class="mt-10 text-center text-xs text-gray-500">
+    <hr class="my-4" />
+    <p>© <span id="yy"></span> 로나월드</p>
+  </footer>
+</div>
 
 <script>
-(() => {
-// -------------------- 내장 샘플 (Drive 링크 + 시작 장소/완료NPC 추가) --------------------
-const EMBEDDED = {
-  items: [
-    { id: "2000006", name: "레몬", type: "소비", img: "https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw" },
-    { id: "4000012", name: "초록버섯의 갓", type: "소재", img: "https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO" },
-    { id: "4000013", name: "버블링의 큰 방울", type: "소재", img: "https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95" }
-  ],
+document.getElementById('yy').textContent = new Date().getFullYear();
+
+// --------- 데이터 (샘플) ---------
+const SAMPLE = {
   monsters: [
-    {
-      id: "m-slime",
-      name: "슬라임",
-      level: 5,
-      regions: ["헤네시스 남쪽 숲"],
-      img: "https://maplestory.io/api/KMS/389/mob/100100/stand/0",
-      drops: [{ id:"2000006", name:"레몬", img:"https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw" }]
-    }
+    { id:'m-1', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://placehold.co/160x120?text=Green+Mush' },
+    { id:'m-2', name:'버블링', level:12, region:'빅토리아 아일랜드', img:'https://placehold.co/160x120?text=Bubble+Ring' }
+  ],
+  items: [
+    { id:'4000012', name:'초록버섯의 갓', type:'소재', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
+    { id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' },
+    { id:'2000006', name:'레몬', type:'소비', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }
   ],
   quests: [
-    { id: "q-nella-1-1",
-      code: "넬라 1-1",
-      title: "마파의 의뢰",
-      minLevel: 15,
-      startNpc: "넬라",
-      completeNpc: "넬라",
-      npcImg: "https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB",
-      startPlace: {
-        name: "커닝시티",
-        img: "https://placehold.co/160x90?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0"
-      },
-      region: "커닝시티",
-      type: "아이템수집",
-      reqItems: [
-        { itemId: "4000012", qty: 50, name: "초록버섯의 갓", img: "https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO" },
-        { itemId: "4000013", qty: 50, name: "버블링의 큰 방울", img: "https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95" }
+    { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰', region:'빅토리아 아일랜드', type:'아이템수집', minLevel:15,
+      startNpc:'넬라', completeNpc:'넬라',
+      startPlace:{name:'커닝시티', img:'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0'},
+      completePlace:{name:'커닝시티', img:'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0'},
+      npcImg:'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
+      reqItems:[
+        { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
+        { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' }
       ],
-      rewards: [
-        { itemId: "2000006", qty: 50, name: "레몬", img: "https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw" },
-        { exp: 5600 }
-      ],
-      dialogues: [
-        { speaker: "넬라", text: "어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?" },
-        { speaker: "플레이어", text: "네, 진행하겠습니다." },
-        { speaker: "넬라", text: "레몬을 잔뜩 맡기셨어요. 보상 받아가~" }
+      rewards:[ { exp:5600 } ],
+      dialogues:[
+        { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
+        { speaker:'플레이어', text:'네, 진행하겠습니다.' },
+        { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
       ]
     }
   ]
 };
 
-// -------------------- LocalStorage IO --------------------
-const LS = { monsters: "mapledex.monsters", quests: "mapledex.quests", items: "mapledex.items" };
-const readJSON  = (k,f)=>{ try{ const r=localStorage.getItem(k); return r? JSON.parse(r): f }catch(_){ return f } };
-const writeJSON = (k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(_){} };
+// 레벨별 경험치 통
+const EXP_TABLE = {1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324};
 
-// -------------------- 상태/데이터 --------------------
-let monsters = readJSON(LS.monsters, []);
-let quests   = readJSON(LS.quests,   []);
-let items    = readJSON(LS.items,    []);
-
-// 첫 실행이면 샘플 주입
-if(!monsters.length && !quests.length && !items.length){
-  monsters = EMBEDDED.monsters; quests = EMBEDDED.quests; items = EMBEDDED.items;
-  writeJSON(LS.monsters, monsters); writeJSON(LS.quests, quests); writeJSON(LS.items, items);
-}
-
-// -------------------- 엘리먼트 --------------------
-document.getElementById('yy').textContent = new Date().getFullYear();
-const statusEl = document.getElementById('status');
-
+// --------- 상태 ---------
 const tabs = Array.from(document.querySelectorAll('.tab-btn'));
-function applyActiveTabClasses(){
-  tabs.forEach(b=>{
-    if(b.dataset.tab === activeTab){
-      b.classList.add('bg-gray-900','text-white');
-      b.classList.remove('text-gray-700');
-    }else{
-      b.classList.remove('bg-gray-900','text-white');
-      b.classList.add('text-gray-700');
-    }
-  });
-}
 const listMonsters = document.getElementById('listMonsters');
-const listQuests   = document.getElementById('listQuests');
-const listItems    = document.getElementById('listItems');
+const listQuests = document.getElementById('listQuests');
+const listItems = document.getElementById('listItems');
 
-const searchInput  = document.getElementById('searchInput');
+const searchInput = document.getElementById('searchInput');
 const regionSelect = document.getElementById('regionSelect');
-const lvMin        = document.getElementById('lvMin');
-const lvMax        = document.getElementById('lvMax');
-
-// 레벨 슬라이더 요소
 const lvMinRange = document.getElementById('lvMinRange');
 const lvMaxRange = document.getElementById('lvMaxRange');
 const lvMinBadge = document.getElementById('lvMinBadge');
 const lvMaxBadge = document.getElementById('lvMaxBadge');
 
-// 아이템 탭 컨트롤
-const typeSelect   = document.getElementById('typeSelect');
 const itemTypeWrap = document.getElementById('itemTypeWrap');
-const itemLocalSearch = document.getElementById('itemLocalSearch');
+const typeSelect = document.getElementById('typeSelect');
 
-// 퀘스트 탭 컨트롤
-const questExpWrap = document.getElementById('questExpWrap');
-const playerLevelWrap = document.getElementById('playerLevelWrap');
-const expRatioMinRange = document.getElementById('expRatioMinRange');
-const expBucketInput = document.getElementById('expBucketInput');
-const expBucketWrap = document.getElementById('expBucketWrap');
-const expRatioBadge = document.getElementById('expRatioBadge');
-const playerLevelInput = document.getElementById('playerLevelInput');
-
+const questItemWrap = document.getElementById('questItemWrap');
 const questItemSearch = document.getElementById('questItemSearch');
-const questItemSearchWrap = document.getElementById('questItemSearchWrap');
 const questTypeWrap = document.getElementById('questTypeWrap');
 const questConditionSelect = document.getElementById('questConditionSelect');
+const questExpWrap = document.getElementById('questExpWrap');
+const expRatioMinRange = document.getElementById('expRatioMinRange');
+const expRatioBadge = document.getElementById('expRatioBadge');
+const playerLevelWrap = document.getElementById('playerLevelWrap');
+const playerLevelInput = document.getElementById('playerLevelInput');
+const expBucketWrap = document.getElementById('expBucketWrap');
+const expBucketInput = document.getElementById('expBucketInput');
 
-// 정렬
-const sortWrap = document.getElementById('sortWrap');
-const sortSelect = document.getElementById('sortSelect');
-
-// Export/Import/Reset
-const exportBtn = document.getElementById('exportBtn');
-const importInput = document.getElementById('importInput');
-const resetBtn = document.getElementById('resetBtn');
-
-// -------------------- UI 상태 --------------------
-// 기본 탭 (URL의 ?tab=monsters|quests|items 우선)
+// URL의 ?tab= 쿼리 반영
 const _paramTab = new URLSearchParams(location.search).get('tab');
 const _validTabs = new Set(['monsters','quests','items']);
-let activeTab = _validTabs.has(_paramTab) ? _paramTab : 'quests'; // 기본 탭
-let globalQ = '';
-let regionFilter = 'all';
-let levelRange = [Number(lvMin.value)||1, Number(lvMax.value)||300];
-let typeFilter = 'all';
+let activeTab = _validTabs.has(_paramTab) ? _paramTab : 'quests';
 
-// 슬라이더 초기화 함수
-function updateLevelRangeUI(fromInit=false){
-  if(!lvMinRange || !lvMaxRange) return;
-  let min = Math.min(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
-  let max = Math.max(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
-  // 최소 간격 0 (겹침 허용). 필요 시 변경 가능
-  lvMinRange.value = String(min);
-  lvMaxRange.value = String(max);
-  levelRange = [min, max];
-  if(lvMinBadge) lvMinBadge.textContent = String(min);
-  if(lvMaxBadge) lvMaxBadge.textContent = String(max);
-  if(!fromInit) render();
-}
+let levelRange = [1,200];
+let playerLevel = 100;
+let expBucket = 10000;
+let expRatioMin = 0;
 
-let itemLocalQ = '';
-let questItemQ = '';
-let sortKey = null;
-let playerLevel = 100; // 기본값 (표 기반 자동 채움에 사용 가능)
-let expRatioMin = 0; // %
-let expBucket = 10000; // 다음 레벨 필요 경험치
-
-// --- 레벨별 경험치 통 (다음 레벨까지 필요 EXP) 테이블 ---
-const EXP_TABLE = {
-  1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,
-  11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,
-  21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,
-  31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,
-  41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,
-  51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,
-  61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,
-  71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,
-  81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,
-  91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,
-  101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,
-  111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,
-  121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,
-  131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,
-  141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,
-  151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,
-  161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,
-  171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,
-  181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,
-  191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324
-};
-
-
-function sumQuestExp(q){
-  return (q.rewards||[]).reduce((acc, r)=> acc + (typeof r.exp==='number' ? r.exp : 0), 0);
-}
-function computeExpRatio(q, bucket){
-  const b = Number(bucket||0);
-  if(!b) return 0;
-  const exp = sumQuestExp(q);
-  return Math.round((exp / b) * 100);
-}
-
-
-// -------------------- 헬퍼 --------------------
-function buildRegions(){
-  const set = new Set();
-  monsters.forEach(m=> (m.regions||[]).forEach(r=> set.add(r)));
-  quests.forEach(q=> q.region && set.add(q.region));
-  const list = ['all', ...Array.from(set).sort()];
-  regionSelect.innerHTML = list.map(r=>`<option value="${r}">${r==='all'?'전체':r}</option>`).join('');
-}
-function buildItemTypes(){
-  const set = new Set(); items.forEach(i=> i.type && set.add(i.type));
-  const list = ['all', ...Array.from(set).sort()];
-  typeSelect.innerHTML = list.map(t=>`<option value="${t}">${t==='all'?'전체':t}</option>`).join('');
-}
-function buildSortOptions(){
-  let opts = [];
-  if(activeTab==='monsters'){
-    opts = [
-      {v:'m_lv_asc', t:'레벨 오름차순'},
-      {v:'m_lv_desc', t:'레벨 내림차순'},
-      {v:'m_name_asc', t:'이름 오름차순'},
-      {v:'m_region_asc', t:'지역 오름차순'},
-    ];
-  } else if(activeTab==='quests'){
-    opts = [
-      {v:'q_lv_asc', t:'레벨 오름차순'},
-      {v:'q_lv_desc', t:'레벨 내림차순'},
-      {v:'q_name_asc', t:'이름 오름차순'},
-      {v:'q_region_asc', t:'지역 오름차순'},
-    ];
-  } else {
-    opts = [
-      {v:'i_name_asc', t:'이름 오름차순'},
-      {v:'i_type_asc', t:'타입 오름차순'},
-    ];
-  }
-  sortSelect.innerHTML = opts.map(o=> `<option value="${o.v}">${o.t}</option>`).join('');
-}
-const EmptyCard = (msg)=> `<div class="border rounded-xl bg-white p-6 text-sm text-gray-500 text-center col-span-full">${msg}</div>`;
-const MonsterCard = (m)=> `
-  <article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='monster.html?id=${m.id}'">
-    <div class='flex justify-between mb-2'><h3 class='font-semibold truncate'>${m.name}</h3><span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${m.level??'-'}</span></div>
-    <div class='flex items-center gap-3'>
-      ${m.img? `<img src='${m.img}' alt='${m.name}' class='w-14 h-14 object-contain rounded-lg border bg-white'/>`: ''}
-      <div class='text-xs text-gray-500'>${(m.regions||[]).join(', ')}</div>
-    </div>
-  </article>`; };
-const ItemCard = (i)=> `
-  <article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='item.html?id=${i.id}'">
-    <div class='flex items-center gap-3'>
-      ${i.img? `<img src='${i.img}' alt='${i.name}' class='w-12 h-12 object-contain rounded-lg border bg-white'/>`: ''}
-      <div class='flex-1'>
-        <h3 class='font-semibold mb-1 truncate'>${i.name}</h3>
-        <div class='text-xs text-gray-500'>${i.type||''}</div>
-      </div>
-    </div>
-  </article>`; };
-const QuestCard = (q)=> { const exp = sumQuestExp(q); const ratio = computeExpRatio(q, expBucket); return `
-  <article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='quest.html?id=${q.id}'">
-    <div class='flex items-center justify-between mb-2'>
-      <h3 class='font-semibold truncate'>${q.code? q.code+' · ' : ''}${q.title}</h3>
-      ${q.minLevel? `<span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${q.minLevel}+</span>`: ''}
-    </div>
-    <div class='flex items-center gap-2 text-xs text-gray-600 mb-2'>
-      <span class='text-[11px] px-2 py-0.5 rounded-full border bg-white'>EXP ${exp.toLocaleString()} · × ${ratio}%</span>
-      시작 NPC: <span class="font-medium">${q.startNpc||'-'}</span>
-      ${q.completeNpc? ` · 완료 NPC: <span class="font-medium">${q.completeNpc}</span>`:''}
-    </div>
-    <div class='flex items-center gap-3 text-xs text-gray-500'>
-      ${q.startPlace?.img? `<img src='${q.startPlace.img}' alt='Start' class='w-16 h-10 object-cover rounded-lg border bg-white'/>`: ''}
-      <div class="flex-1">
-        <div>시작 장소: ${q.startPlace?.name || q.region || '-'}</div>
-        <div>지역: ${q.region||'-'}</div>
-      </div>
-      ${q.npcImg? `<img src='${q.npcImg}' alt='NPC' class='w-10 h-10 object-contain rounded-lg border bg-white'/>`: ''}
-    </div>
-  </article>`; };
-
-// -------------------- 렌더 --------------------
-function render(){
-  statusEl.textContent = `상태: monsters=${monsters.length} · quests=${quests.length} · items=${items.length}`;
-
-  // 탭별 컨트롤 표시
-  const showItems = activeTab==='items';
-  const showQuests = activeTab==='quests';
-  itemTypeWrap.classList.toggle('hidden', !showItems);
-  questItemSearchWrap.classList.toggle('hidden', !showQuests);
-  questTypeWrap.classList.toggle('hidden', !showQuests);
-  questExpWrap.classList.toggle('hidden', !showQuests);
-  playerLevelWrap.classList.toggle('hidden', !showQuests);
-  expBucketWrap.classList.toggle('hidden', !showQuests);
-
-  // 리스트 표시 전환
-  listMonsters.classList.toggle('hidden', activeTab!=='monsters');
-  listQuests.classList.toggle('hidden',   activeTab!=='quests');
-  listItems.classList.toggle('hidden',    activeTab!=='items');
-
-  // 빈 퀘스트 안내 배너
-  (function(){
-    const bannerId = 'empty-quest-banner';
-    document.getElementById(bannerId)?.remove();
-    if(activeTab==='quests' && (!Array.isArray(quests) || quests.length===0)){
-      const bar = document.createElement('div');
-      bar.id = bannerId;
-      bar.className = 'mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2';
-      bar.textContent = '퀘스트 데이터가 비어 있어요. Import JSON이나 Reset을 사용하세요.';
-      document.querySelector('.max-w-7xl').insertBefore(bar, statusEl);
+// --------- util ---------
+function applyActiveTabClasses(){
+  tabs.forEach(b=>{
+    if(b.dataset.tab === activeTab){
+      b.classList.add('bg-gray-900','text-white');
+      b.classList.remove('text-gray-700');
+    } else {
+      b.classList.remove('bg-gray-900','text-white');
+      b.classList.add('text-gray-700');
     }
-  })();
+  });
+}
+function sumQuestExp(q){ return (q.rewards||[]).reduce((a,r)=> a + (typeof r.exp==='number' ? r.exp : 0), 0); }
+function computeExpRatio(q, bucket){ const b = Number(bucket||0); if(!b) return 0; return Math.round((sumQuestExp(q)/b)*100); }
+function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
 
-  const q = globalQ.trim();
+// --------- 렌더 ---------
+function render(){
+  const q = (searchInput.value||'').trim();
+  const [lvMin, lvMax] = levelRange;
+  const regionFilter = regionSelect.value || 'all';
 
-  if(activeTab==='monsters'){
-    const data = monsters.filter(m=>{
-      const hit = !q || (m.name||'').includes(q) || (m.regions||[]).some(r=> (r||'').includes(q)) || (m.drops||[]).some(d=> (d.name||'').includes(q));
-      const inRegion = regionFilter==='all' || (m.regions||[]).some(r=> (r||'').includes(regionFilter));
-      const inLevel = (m.level||0) >= levelRange[0] && (m.level||0) <= levelRange[1];
+  const showMon = activeTab==='monsters';
+  const showQue = activeTab==='quests';
+  const showItem = activeTab==='items';
+
+  listMonsters.parentElement.classList.toggle('hidden', !showMon && !showQue && !showItem); // container always exists
+  listMonsters.classList.toggle('hidden', !showMon);
+  listQuests.classList.toggle('hidden', !showQue);
+  listItems.classList.toggle('hidden', !showItem);
+
+  itemTypeWrap.classList.toggle('hidden', !showItem);
+  questItemWrap.classList.toggle('hidden', !showQue);
+  questTypeWrap.classList.toggle('hidden', !showQue);
+  questExpWrap.classList.toggle('hidden', !showQue);
+  playerLevelWrap.classList.toggle('hidden', !showQue);
+  expBucketWrap.classList.toggle('hidden', !showQue);
+
+  // Monsters
+  if(showMon){
+    const data = SAMPLE.monsters.filter(m=>{
+      const hit = !q || m.name.includes(q) || (m.region||'').includes(q);
+      const inRegion = regionFilter==='all' || (m.region||'').includes(regionFilter);
+      const inLevel = (!m.level) || (m.level>=lvMin && m.level<=lvMax);
       return hit && inRegion && inLevel;
     });
-    const key = sortKey || 'm_lv_asc';
-    data.sort((a,b)=>{
-      if(key==='m_lv_asc') return (a.level||0)-(b.level||0);
-      if(key==='m_lv_desc') return (b.level||0)-(a.level||0);
-      if(key==='m_name_asc') return (a.name||'').localeCompare(b.name||'','ko');
-      if(key==='m_region_asc') return ((a.regions||[])[0]||'').localeCompare(((b.regions||[])[0]||''),'ko');
-      return 0;
-    });
-    listMonsters.innerHTML = data.length? data.map(MonsterCard).join('') : EmptyCard('조건에 맞는 몬스터가 없어요');
+    listMonsters.innerHTML = data.map(m=>`
+      <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
+        ${safeImg(m.img, m.name, 'w-full h-36 object-cover rounded-lg mb-2')}
+        <h3 class="font-semibold">${m.name}</h3>
+        <div class="text-xs text-gray-600">Lv.${m.level||'-'} · ${(m.region||'-')}</div>
+        <a href="monster.html?id=${encodeURIComponent(m.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
+      </article>
+    `).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 몬스터가 없습니다.</div>';
   }
 
-  if(activeTab==='quests'){
+  // Quests
+  if(showQue){
     const selected = Array.from(questConditionSelect.selectedOptions||[]).map(o=>o.value);
     const cond = selected.includes('all') || selected.length===0 ? [] : selected.filter(v=>v!=='all');
-
-    const data = quests.filter(qq=>{
+    const itemQ = (questItemSearch.value||'').trim();
+    const data = SAMPLE.quests.filter(qq=>{
       const hit = !q || (qq.code&&qq.code.includes(q)) || (qq.title||'').includes(q) || (qq.startNpc||'').includes(q) || (qq.region||'').includes(q) || (qq.startPlace?.name||'').includes(q);
       const inRegion = regionFilter==='all' || (qq.region||'').includes(regionFilter);
-      const selected = Array.from(questConditionSelect.selectedOptions||[]).map(o=>o.value);
-      const cond = selected.includes('all') || selected.length===0 ? [] : selected.filter(v=>v!=='all');
+      const inLevel = (!qq.minLevel) || (qq.minLevel>=lvMin && qq.minLevel<=lvMax);
       const typeOk = cond.length===0 || cond.some(t=> (qq.type===t) || (Array.isArray(qq.type)&&qq.type.includes(t)));
-      const itemOk = !questItemQ || ((qq.rewards||[]).some(r=> (r.name||'').includes(questItemQ)));
-      const ratio = computeExpRatio(qq, playerLevel);
-      const ratioOk = ratio >= expRatioMin;
-      return hit && inRegion && typeOk && itemOk && ratioOk;
+      const itemOk = !itemQ || ((qq.rewards||[]).some(r=> (r.name||'').includes(itemQ)));
+      const ratio = computeExpRatio(qq, expBucket);
+      return hit && inRegion && inLevel && typeOk && itemOk && ratio >= expRatioMin;
     });
-    const key = sortKey || 'q_lv_asc';
-    data.sort((a,b)=>{
-      const lvA=a.minLevel||0, lvB=b.minLevel||0;
-      if(key==='q_lv_asc') return lvA-lvB;
-      if(key==='q_lv_desc') return lvB-lvA;
-      if(key==='q_name_asc') return (a.title||'').localeCompare(b.title||'','ko');
-      if(key==='q_region_asc') return (a.region||'').localeCompare(b.region||'','ko');
-      return 0;
-    });
-    listQuests.innerHTML = data.length? data.map(QuestCard).join('') : EmptyCard('조건에 맞는 퀘스트가 없어요');
+
+    listQuests.innerHTML = data.map(qs=>{
+      const exp = sumQuestExp(qs);
+      const ratio = computeExpRatio(qs, expBucket);
+      return `<article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
+        <div class="flex items-start gap-3">
+          ${safeImg(qs.npcImg, 'NPC', 'w-20 h-20 object-contain rounded-lg border bg-white')}
+          <div class="min-w-0">
+            <h3 class="font-semibold truncate">${qs.code ? qs.code+' · ' : ''}${qs.title}</h3>
+            <div class='flex items-center gap-2 text-xs text-gray-600 mb-1'>
+              <span>${qs.region||'-'} · ${qs.type||'-'}${qs.minLevel? ' · Lv.'+qs.minLevel : ''}</span>
+              <span class='text-[11px] px-2 py-0.5 rounded-full border bg-white'>EXP ${exp.toLocaleString()} · × ${ratio}%</span>
+            </div>
+            <a href="quest.html?id=${encodeURIComponent(qs.id)}" class="inline-flex text-sm text-blue-600 hover:underline">상세보기</a>
+          </div>
+        </div>
+      </article>`;
+    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 퀘스트가 없습니다.</div>';
   }
 
-  if(activeTab==='items'){
-    const data = items.filter(i=>{
-      const hitGlobal = !q || (i.name||'').includes(q) || (i.id||'').includes(q) || (i.type||'').includes(q);
-      const hitLocal  = !itemLocalQ || (i.name||'').includes(itemLocalQ);
-      const inType = typeFilter==='all' || i.type===typeFilter;
-      return hitGlobal && hitLocal && inType;
+  // Items
+  if(showItem){
+    const type = typeSelect.value || 'all';
+    const data = SAMPLE.items.filter(it=>{
+      const hit = !q || it.name.includes(q);
+      const typeOk = type==='all' || (it.type===type);
+      return hit && typeOk;
     });
-    const key = sortKey || 'i_name_asc';
-    data.sort((a,b)=>{
-      if(key==='i_name_asc') return (a.name||'').localeCompare(b.name||'','ko');
-      if(key==='i_type_asc') return (a.type||'').localeCompare(b.type||'','ko');
-      return 0;
-    });
-    listItems.innerHTML = data.length? data.map(ItemCard).join('') : EmptyCard('조건에 맞는 아이템이 없어요');
+    listItems.innerHTML = data.map(it=>`
+      <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
+        ${safeImg(it.img, it.name, 'w-full h-36 object-contain rounded-lg mb-2 bg-white')}
+        <h3 class="font-semibold">${it.name}</h3>
+        <div class="text-xs text-gray-600">${it.type||'-'}</div>
+        <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
+      </article>
+    `).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
   }
 }
 
-// -------------------- 초기 빌드 --------------------
-(function init(){
-  buildRegions();
-  buildItemTypes();
-  buildSortOptions();
-  applyActiveTabClasses();
-  // 슬라이더 초기값 동기화
-  if(lvMinRange && lvMaxRange){
-    lvMinRange.value = String(levelRange[0]);
-    lvMaxRange.value = String(levelRange[1]);
-    updateLevelRangeUI(true);
-  }
-  // 레벨 표 기반 경험치 통 초기화
-  if(playerLevelInput && EXP_TABLE){
-    playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
-    if(typeof EXP_TABLE[playerLevel] !== 'undefined'){
-      expBucket = Number(EXP_TABLE[playerLevel]);
-      if(typeof expBucketInput !== 'undefined' && expBucketInput){ expBucketInput.value = String(expBucket); }
-    }
-  }
-  render();
-})();
+// --------- 초기화 ---------
+function buildRegions(){
+  const regs = new Set(['all']);
+  SAMPLE.monsters.forEach(m=> regs.add(m.region||''));
+  SAMPLE.quests.forEach(q=> regs.add(q.region||''));
+  regionSelect.innerHTML = Array.from(regs).map(r=> `<option value="${r}">${r==='all'?'전체':r}</option>`).join('');
+  regionSelect.value = 'all';
+}
+function buildItemTypes(){
+  const types = new Set(['all']); SAMPLE.items.forEach(i=> types.add(i.type||''));
+  typeSelect.innerHTML = Array.from(types).map(t=> `<option value="${t}">${t==='all'?'전체':t}</option>`).join('');
+  typeSelect.value = 'all';
+}
 
-// -------------------- 이벤트 --------------------
+// events
 tabs.forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    tabs.forEach(b=>{ b.classList.remove('bg-gray-900','text-white'); b.classList.add('text-gray-700'); });
-    btn.classList.add('bg-gray-900','text-white'); btn.classList.remove('text-gray-700');
     activeTab = btn.dataset.tab;
-    buildSortOptions();
+    applyActiveTabClasses();
+    const url = new URL(location);
+    url.searchParams.set('tab', activeTab);
+    history.replaceState({}, '', url);
     render();
   });
 });
-
-searchInput.addEventListener('input', ()=>{ globalQ = searchInput.value; render(); });
-regionSelect.addEventListener('change', ()=>{ regionFilter = regionSelect.value; render(); });
-[lvMin, lvMax].forEach(el=> el.addEventListener('input', ()=>{ levelRange=[Number(lvMin.value)||1, Number(lvMax.value)||300]; updateLevelRangeUI(); }));
-
-// 슬라이더 이벤트
-if(lvMinRange && lvMaxRange){
-  lvMinRange.addEventListener('input', ()=>{
-    if(Number(lvMinRange.value) > Number(lvMaxRange.value)) lvMaxRange.value = lvMinRange.value;
-    updateLevelRangeUI();
-  });
-  lvMaxRange.addEventListener('input', ()=>{
-    if(Number(lvMaxRange.value) < Number(lvMinRange.value)) lvMinRange.value = lvMaxRange.value;
-    updateLevelRangeUI();
-  });
-}
-typeSelect.addEventListener('change', ()=>{ typeFilter = typeSelect.value; render(); });
-itemLocalSearch.addEventListener('input', ()=>{ itemLocalQ = itemLocalSearch.value; render(); });
-questItemSearch.addEventListener('input', ()=>{ questItemQ = questItemSearch.value; render(); });
-
-questConditionSelect.addEventListener('change', ()=>{
-  const sel = Array.from(questConditionSelect.selectedOptions).map(o=>o.value);
-  const allOpt = Array.from(questConditionSelect.options).find(o=>o.value==='all');
-  if(sel.includes('all')){
-    Array.from(questConditionSelect.options).forEach(o=> o.selected = (o.value==='all'));
-  }else if(allOpt){
-    allOpt.selected = false;
-  }
+[searchInput, regionSelect].forEach(el=> el.addEventListener('input', render));
+[lvMinRange, lvMaxRange].forEach(el=> el.addEventListener('input', ()=>{
+  let min = Math.min(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+  let max = Math.max(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+  levelRange = [min, max];
+  lvMinBadge.textContent = String(min); lvMaxBadge.textContent = String(max);
+  render();
+}));
+typeSelect.addEventListener('change', render);
+questItemSearch.addEventListener('input', render);
+questConditionSelect.addEventListener('change', render);
+expRatioMinRange.addEventListener('input', ()=>{ expRatioMin = Number(expRatioMinRange.value)||0; expRatioBadge.textContent = expRatioMin+'%'; render(); });
+playerLevelInput.addEventListener('input', ()=>{
+  playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
+  if(EXP_TABLE[playerLevel]){ expBucket = Number(EXP_TABLE[playerLevel]); expBucketInput.value = String(expBucket); }
   render();
 });
+expBucketInput.addEventListener('input', ()=>{ expBucket = Math.max(1, Number(expBucketInput.value)||1); render(); });
 
-// 경험치 비율 / 플레이어 레벨
-if(expRatioMinRange){
-  expRatioMinRange.addEventListener('input', ()=>{
-    expRatioMin = Number(expRatioMinRange.value)||0;
-    if(expRatioBadge) expRatioBadge.textContent = expRatioMin + '%';
-    render();
-  });
-  // 초기 배지
-  expRatioBadge && (expRatioBadge.textContent = (Number(expRatioMinRange.value)||0)+'%');
-}
-if(playerLevelInput){
-  playerLevelInput.addEventListener('input', ()=>{
-    playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
-    // 추후: 레벨 표를 사용해 expBucket 자동 채우기 가능
-    render();
-  });
-}
-if(expBucketInput){
-  expBucketInput.addEventListener('input', ()=>{
-    expBucket = Math.max(1, Number(expBucketInput.value)||1);
-    render();
-  });
-}
-if(typeof expBucketInput !== 'undefined' && expBucketInput){ expBucket = Number(expBucketInput.value)||10000; }lInput.value)||1));
-    render();
-  });
-}
+// start
+buildRegions(); buildItemTypes();
+applyActiveTabClasses();
+// 초기 badge
+expRatioBadge.textContent = (Number(expRatioMinRange.value)||0)+'%';
+// player level -> exp bucket 초기화
+playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
+if(EXP_TABLE[playerLevel]){ expBucket = Number(EXP_TABLE[playerLevel]); expBucketInput.value = String(expBucket); }
+// level badges
+lvMinBadge.textContent = String(lvMinRange.value); lvMaxBadge.textContent = String(lvMaxRange.value);
 
-// Export / Import / Reset
-exportBtn.addEventListener('click', ()=>{
-  const payload = { monsters, quests, items };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `ronaworld-data-${Date.now()}.json`; a.click();
-  URL.revokeObjectURL(url);
-});
-importInput.addEventListener('change', (evt)=>{
-  const f = evt.target.files?.[0]; if(!f) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const data = JSON.parse(String(reader.result));
-      if(data.monsters){ monsters = data.monsters; writeJSON(LS.monsters, monsters); }
-      if(data.quests){   quests   = data.quests;   writeJSON(LS.quests, quests); }
-      if(data.items){    items    = data.items;    writeJSON(LS.items, items); }
-      buildRegions(); buildItemTypes(); render();
-    }catch(e){ alert('JSON 파싱 오류. 스키마를 확인하세요.'); }
-  };
-  reader.readAsText(f);
-});
-resetBtn.addEventListener('click', ()=>{
-  monsters = EMBEDDED.monsters; quests = EMBEDDED.quests; items = EMBEDDED.items;
-  writeJSON(LS.monsters, monsters); writeJSON(LS.quests, quests); writeJSON(LS.items, items);
-  buildRegions(); buildItemTypes(); render();
-});
-})(); // IIFE
+render();
 </script>
 </body>
 </html>
