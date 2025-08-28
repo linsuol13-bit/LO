@@ -5,93 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Monster Detail • 로나월드</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>body{font-family:'Noto Sans KR',system-ui,-apple-system,'Segoe UI',Roboto,'Apple SD Gothic Neo','Malgun Gothic',sans-serif}</style>
 </head>
 <body class="bg-gray-50 text-gray-900">
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <a href="index.html?tab=monsters" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(몬스터)으로</a>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
-  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드</p></footer>
 </div>
-
 <script>
-document.getElementById('yy').textContent = new Date().getFullYear();
-
-function safeImg(src, alt, cls){
-  if(!src) return '';
-  return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`;
-}
-
-// 목록(index.html)과 호환되는 최소 데이터 복제 + 드랍 정보 + EXP
+function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
 const SAMPLE = {
   items: [
-    { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료',
-      img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
-    { id:'4000013', name:'버블링의 큰 방울', type:'소재', category:'재료',
-      img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' },
-    { id:'2000006', name:'레몬', type:'소비', category:'소모품',
-      img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }
+    { id:'4000012', name:'초록버섯의 갓', img:'https://placehold.co/120x90?text=Cap' },
+    { id:'2000006', name:'레몬', img:'https://placehold.co/120x90?text=Lemon' }
   ],
   monsters: [
-    { id:'m-1', name:'초록버섯', level:10, exp:12,
-      regions:['빅토리아 아일랜드','커닝시티 인근'], 
-      img:'https://placehold.co/320x240?text=Green+Mush',
-      drops:[ '4000012' ] },
-    { id:'m-2', name:'버블링', level:12, exp:18,
-      regions:['빅토리아 아일랜드','수로'], 
-      img:'https://placehold.co/320x240?text=Bubble+Ring',
-      drops:[ '4000013' ] }
+    { id:'m-1', name:'초록버섯', level:10, exp:12, regions:['빅토리아 아일랜드'], img:'https://placehold.co/320x240?text=Green', drops:['4000012'] },
+    { id:'m-2', name:'버블링', level:12, exp:18, regions:['빅토리아 아일랜드'], img:'https://placehold.co/320x240?text=Bubble', drops:['2000006'] }
   ]
 };
-
 const params = new URLSearchParams(location.search);
-const id = params.get('id') || '';
+const id = params.get('id')||'';
 const mon = SAMPLE.monsters.find(x=> x.id===id);
-
 function findItem(iid){ return SAMPLE.items.find(i=> i.id===iid); }
-
 const detail = document.getElementById('detail');
-if(!mon){
-  detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>몬스터를 찾을 수 없어요</div>";
-} else {
+if(!mon){ detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>몬스터를 찾을 수 없어요</div>"; }
+else{
   const drops = (mon.drops||[]).map(findItem).filter(Boolean);
   detail.innerHTML = `
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-1">
-        ${safeImg(mon.img, mon.name, 'w-full aspect-video object-contain rounded-lg bg-white border')}
-      </div>
-      <div class="lg:col-span-2 min-w-0">
-        <h2 class="text-xl font-semibold">${mon.name}</h2>
-        <div class="text-xs text-gray-600 mt-1">Lv.${mon.level || '-'} · EXP ${ (mon.exp||0).toLocaleString() } · EXP ${mon.exp || 0}</div>
-        
-        <section class="mt-4">
-          <h3 class="text-sm font-semibold mb-2">출현 지역</h3>
-          ${ (mon.regions && mon.regions.length)
-              ? `<div class="flex flex-wrap gap-2">${mon.regions.map(r=>`<span class='text-xs px-2 py-1 rounded-full border bg-white'>${r}</span>`).join('')}</div>`
-              : "<div class='text-sm text-gray-500'>-</div>"
-            }
-        </section>
-
-        <section class="mt-6">
-          <h3 class="text-sm font-semibold mb-2">드랍 아이템</h3>
-          ${ drops.length
-              ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">` + drops.map(it=>`
-                  <article class="flex items-center gap-3 rounded-lg border p-2 bg-white">
-                    ${safeImg(it.img, it.name, 'w-12 h-12 object-contain rounded-lg bg-white')}
-                    <div class="min-w-0">
-                      <div class="text-sm font-medium truncate">${it.name}</div>
-                      <div class="text-xs text-gray-600">${it.category || it.type || '-'}</div>
-                      <a href="item.html?id=${encodeURIComponent(it.id)}" class="text-xs text-blue-600 hover:underline">아이템 상세</a>
-                    </div>
-                  </article>
-                `).join('') + `</div>`
-              : "<div class='text-sm text-gray-500'>정보 없음</div>"
-            }
-        </section>
-      </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div>${safeImg(mon.img, mon.name, 'w-full aspect-video object-contain rounded-lg bg-white border')}</div>
+    <div class="lg:col-span-2 min-w-0">
+      <h2 class="text-xl font-semibold">${mon.name}</h2>
+      <div class="text-xs text-gray-600 mt-1">Lv.${mon.level||'-'} · EXP ${(mon.exp||0).toLocaleString()}</div>
+      <section class="mt-4">
+        <h3 class="text-sm font-semibold mb-2">출현 지역</h3>
+        ${(mon.regions||[]).map(r=>`<span class='text-xs px-2 py-1 rounded-full border bg-white mr-2'>${r}</span>`).join('')||'<div class="text-sm text-gray-500">-</div>'}
+      </section>
+      <section class="mt-6">
+        <h3 class="text-sm font-semibold mb-2">드랍 아이템</h3>
+        ${ drops.length ? (`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">` + drops.map(it=>`
+          <article class="flex items-center gap-3 rounded-lg border p-2 bg-white">
+            ${safeImg(it.img, it.name, 'w-12 h-12 object-contain rounded-lg bg-white')}
+            <div class="min-w-0">
+              <div class="text-sm font-medium truncate">${it.name}</div>
+              <a href="item.html?id=${encodeURIComponent(it.id)}" class="text-xs text-blue-600 hover:underline">아이템 상세</a>
+            </div>
+          </article>`).join('') + `</div>`) : '<div class="text-sm text-gray-500">정보 없음</div>' }
+      </section>
     </div>
-  `;
+  </div>`;
 }
 </script>
 </body>

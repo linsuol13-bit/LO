@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로나월드 • Monsters • Items • Quests</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --ui-font: 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
-    body { font-family: var(--ui-font); }
-    /* range handle height fix */
-    input[type="range"]{ height: 2px; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    input[type="range"]{ height:2px; }
+    .btn { @apply px-3 py-2 text-sm rounded-lg; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -18,20 +16,15 @@
   <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div>
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">로나월드</h1>
-      <p class="text-sm text-gray-500">몬스터 위치 · 아이템 · 퀘스트 목록</p>
+      <p class="text-sm text-gray-500">몬스터 , 퀘스트 , 아이템</p>
     </div>
     <div class="flex items-center gap-2">
-      <button id="exportBtn" class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">Export JSON</button>
-      <label class="inline-flex items-center">
-        <input id="importInput" type="file" accept="application/json" class="hidden" />
-        <span class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50 cursor-pointer">Import JSON</span>
-      </label>
-      <button id="resetBtn" class="inline-flex items-center gap-2 rounded-lg bg-gray-900 text-white px-3 py-2 text-sm hover:bg-gray-800">샘플 초기화</button>
+      <button id="resetBtn" class="rounded-lg bg-gray-900 text-white px-3 py-2 text-sm hover:bg-gray-800">샘플 초기화</button>
     </div>
   </header>
 
   <!-- Controls -->
-  <section class="mb-6 border bg-white rounded-xl p-4 relative" style="z-index:0;">
+  <section class="mb-6 border bg-white rounded-xl p-4">
     <div class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
       <div class="md:col-span-2">
         <label class="text-xs text-gray-500">검색</label>
@@ -41,23 +34,13 @@
         <label class="text-xs text-gray-500">지역</label>
         <select id="regionSelect" class="w-full rounded-lg border px-3 py-2"></select>
       </div>
-
-      <!-- Level range (dual slider) -->
       <div class="md:col-span-2">
         <label class="text-xs text-gray-500">레벨 범위</label>
-        <div class="mt-2 space-y-2">
-          <div class="flex items-center gap-3">
-            <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMinBadge">1</span>
-            <input type="range" id="lvMinRange" min="1" max="200" step="1" value="1" list="lvTicks" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-            <input type="range" id="lvMaxRange" min="1" max="200" step="1" value="200" list="lvTicks" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer -ml-2">
-            <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="lvMaxBadge">200</span>
-          </div>
-          <datalist id="lvTicks">
-            <option value="1"><option value="25"><option value="50"><option value="75"><option value="100"><option value="150"><option value="200">
-          </datalist>
-          <div class="flex justify-between text-[11px] text-gray-500">
-            <span>1</span><span>25</span><span>50</span><span>75</span><span>100</span><span>150</span><span>200</span>
-          </div>
+        <div class="mt-2 flex items-center gap-2">
+          <span id="lvMinBadge" class="text-xs px-2 py-1 rounded bg-gray-100 border">1</span>
+          <input type="range" id="lvMinRange" min="1" max="200" step="1" value="1" class="w-full">
+          <input type="range" id="lvMaxRange" min="1" max="200" step="1" value="200" class="w-full -ml-2">
+          <span id="lvMaxBadge" class="text-xs px-2 py-1 rounded bg-gray-100 border">200</span>
         </div>
       </div>
 
@@ -68,31 +51,11 @@
       </div>
 
       <!-- Quests tab only -->
-      <div id="questItemWrap" class="hidden md:col-span-2">
-        <label class="text-xs text-gray-500">퀘스트 보상 아이템 검색</label>
-        <input id="questItemSearch" placeholder="획득 아이템 이름 검색" class="w-full rounded-lg border px-3 py-2" />
-      </div>
-      <div id="questTypeWrap" class="hidden md:col-span-2">
-        <label class="text-xs text-gray-500">퀘스트 조건</label>
-        <select id="questConditionSelect" class="w-full rounded-lg border px-3 py-2" multiple>
-          <option value="all">전체</option>
-          <option value="대화">대화</option>
-          <option value="아이템수집">아이템수집</option>
-          <option value="몬스터사냥">몬스터사냥</option>
-        </select>
-        <p class="text-[11px] text-gray-500 mt-1">여러 항목 선택 가능 (Ctrl/⌘ 클릭)</p>
-      </div>
       <div id="questExpWrap" class="hidden md:col-span-2">
-        <label class="text-xs text-gray-500">경험치 획득 비율(이상)</label>
-        <div class="mt-2 space-y-2">
-          <div class="flex items-center gap-3">
-            <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="expRatioBadge">0%</span>
-            <input type="range" id="expRatioMinRange" min="0" max="100" step="5" value="0" list="expTicks" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-            <span class="text-[11px] text-gray-500">이상</span>
-          </div>
-          <datalist id="expTicks">
-            <option value="0"><option value="25"><option value="50"><option value="75"><option value="100">
-          </datalist>
+        <label class="text-xs text-gray-500">경험치 비율(이상)</label>
+        <div class="mt-2 flex items-center gap-2">
+          <span id="expRatioBadge" class="text-xs px-2 py-1 rounded bg-gray-100 border">0%</span>
+          <input type="range" id="expRatioMinRange" min="0" max="100" step="5" value="0" class="w-full">
         </div>
       </div>
       <div id="playerLevelWrap" class="hidden md:col-span-2">
@@ -100,23 +63,23 @@
         <input id="playerLevelInput" type="number" min="1" max="200" value="100" class="w-full rounded-lg border px-3 py-2" />
       </div>
       <div id="expBucketWrap" class="hidden md:col-span-2">
-        <label class="text-xs text-gray-500">경험치 통 (다음 레벨까지 필요 EXP)</label>
-        <input id="expBucketInput" type="number" min="1" value="10000" class="w-full rounded-lg border px-3 py-2" />
+        <label class="text-xs text-gray-500">경험치 통</label>
+        <input id="expBucketInput" type="text" value="10,223,168" class="w-full rounded-lg border px-3 py-2" />
       </div>
     </div>
   </section>
 
   <!-- Tabs -->
-  <nav class="mb-4 inline-flex rounded-xl bg-white border p-1 sticky top-0 z-10">
-    <button data-tab="monsters" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">몬스터</button>
-    <button data-tab="quests" class="tab-btn px-3 py-2 text-sm rounded-lg bg-gray-900 text-white">퀘스트</button>
+  <nav class="mb-4 inline-flex rounded-xl bg-white border p-1">
+    <button data-tab="monsters" class="tab-btn px-3 py-2 text-sm rounded-lg bg-gray-900 text-white">몬스터</button>
+    <button data-tab="quests" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">퀘스트</button>
     <button data-tab="items" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">아이템</button>
   </nav>
 
   <!-- Lists -->
   <section id="listMonsters" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-  <section id="listQuests" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-  <section id="listItems" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+  <section id="listQuests" class="hidden grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+  <section id="listItems" class="hidden grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
 
   <footer class="mt-10 text-center text-xs text-gray-500">
     <hr class="my-4" />
@@ -125,140 +88,116 @@
 </div>
 
 <script>
-document.getElementById('yy').textContent = new Date().getFullYear();
+'use strict';
+// ========== Utilities ==========
+const $ = (id)=> document.getElementById(id);
+const $$ = (sel)=> Array.from(document.querySelectorAll(sel));
+function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
+function formatNumber(n){ n = Number(String(n).replace(/[^0-9.-]/g,''))||0; return n.toLocaleString(); }
+function uncomma(s){ return String(s||'').replace(/[^0-9]/g,''); }
+function sumQuestExp(q){ return (q.rewards||[]).reduce((a,r)=> a + (typeof r.exp==='number' ? r.exp : 0), 0); }
+function computeExpRatio(q, bucket){ const b = Number(bucket||0); if(!b) return 0; return Math.round((sumQuestExp(q)/b)*100); }
 
-// --------- 데이터 (샘플) ---------
+// ========== Static Data (safe minimal) ==========
 const SAMPLE = {
   monsters: [
-    { id:'m-1', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://placehold.co/160x120?text=Green+Mush' },
-    { id:'m-2', name:'버블링', level:12, region:'빅토리아 아일랜드', img:'https://placehold.co/160x120?text=Bubble+Ring' }
+    { id:'m-1', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://placehold.co/200x150?text=Green+Mush' },
+    { id:'m-2', name:'버블링', level:12, region:'빅토리아 아일랜드', img:'https://placehold.co/200x150?text=Bubble+Ring' }
   ],
   items: [
-    { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻을 수 있는 갓. 제작과 퀘스트 재료로 사용.', sources:['초록버섯 드랍','빅토리아 아일랜드 사냥터'], img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
-    { id:'4000013', name:'버블링의 큰 방울', type:'소재', category:'재료', desc:'버블링에서 떨어지는 큰 방울. 퀘스트에 자주 쓰임.', sources:['버블링 드랍','빅토리아 아일랜드 수로'], img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' },
-    { id:'2000006', name:'레몬', type:'소비', category:'소모품', desc:'비타민이 풍부한 레몬. 체력을 소량 회복.', sources:['상점 구매','이벤트 보상'], img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }
+    { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻는 갓.', img:'https://placehold.co/200x150?text=Cap' },
+    { id:'2000006', name:'레몬', type:'소비', category:'소모품', desc:'체력을 회복.', img:'https://placehold.co/200x150?text=Lemon' }
   ],
   quests: [
-    { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰', region:'빅토리아 아일랜드', type:'아이템수집', minLevel:15,
-      startNpc:'넬라', completeNpc:'넬라',
-      startPlace:{name:'커닝시티', img:'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0'},
-      completePlace:{name:'커닝시티', img:'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0'},
-      npcImg:'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
-      reqItems:[
-        { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
-        { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' }
-      ],
-      rewards:[ { itemId:'2000006', qty:50, name:'레몬', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }, { exp:5600 } ],
-      dialogues:[
-        { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
-        { speaker:'플레이어', text:'네, 진행하겠습니다.' },
-        { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
-      ]
+    { id:'q-1', code:'넬라 1-1', title:'마파의 의뢰', region:'빅토리아 아일랜드', type:'아이템수집', minLevel:15,
+      npcImg:'https://placehold.co/80x80?text=NPC',
+      rewards:[ { itemId:'2000006', qty:50, name:'레몬' }, { exp:5600 } ]
     }
   ]
 };
 
-// 레벨별 경험치 통
-const EXP_TABLE = {1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324};
+// EXP table 1~200
+const EXP_TABLE = {1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324 };
 
-// --------- 상태 ---------
-const tabs = Array.from(document.querySelectorAll('.tab-btn'));
-const listMonsters = document.getElementById('listMonsters');
-const listQuests = document.getElementById('listQuests');
-const listItems = document.getElementById('listItems');
+// ========== Elements & State ==========
+const yy = $('yy'); if (yy) yy.textContent = new Date().getFullYear();
 
-const searchInput = document.getElementById('searchInput');
-const regionSelect = document.getElementById('regionSelect');
-const lvMinRange = document.getElementById('lvMinRange');
-const lvMaxRange = document.getElementById('lvMaxRange');
-const lvMinBadge = document.getElementById('lvMinBadge');
-const lvMaxBadge = document.getElementById('lvMaxBadge');
+const tabs = $$('.tab-btn');
+const listMonsters = $('listMonsters');
+const listQuests = $('listQuests');
+const listItems = $('listItems');
 
-const itemTypeWrap = document.getElementById('itemTypeWrap');
-const typeSelect = document.getElementById('typeSelect');
+const searchInput = $('searchInput');
+const regionSelect = $('regionSelect');
+const lvMinRange = $('lvMinRange');
+const lvMaxRange = $('lvMaxRange');
+const lvMinBadge = $('lvMinBadge');
+const lvMaxBadge = $('lvMaxBadge');
 
-const questItemWrap = document.getElementById('questItemWrap');
-const questItemSearch = document.getElementById('questItemSearch');
-const questTypeWrap = document.getElementById('questTypeWrap');
-const questConditionSelect = document.getElementById('questConditionSelect');
-const questExpWrap = document.getElementById('questExpWrap');
-const expRatioMinRange = document.getElementById('expRatioMinRange');
-const expRatioBadge = document.getElementById('expRatioBadge');
-const playerLevelWrap = document.getElementById('playerLevelWrap');
-const playerLevelInput = document.getElementById('playerLevelInput');
-const expBucketWrap = document.getElementById('expBucketWrap');
-const expBucketInput = document.getElementById('expBucketInput');
+const itemTypeWrap = $('itemTypeWrap');
+const typeSelect = $('typeSelect');
 
-// URL의 ?tab= 쿼리 반영
-const _paramTab = new URLSearchParams(location.search).get('tab');
-const _validTabs = new Set(['monsters','quests','items']);
-let activeTab = _validTabs.has(_paramTab) ? _paramTab : 'quests';
+const questExpWrap = $('questExpWrap');
+const expRatioMinRange = $('expRatioMinRange');
+const expRatioBadge = $('expRatioBadge');
+const playerLevelWrap = $('playerLevelWrap');
+const playerLevelInput = $('playerLevelInput');
+const expBucketWrap = $('expBucketWrap');
+const expBucketInput = $('expBucketInput');
 
+let activeTab = 'monsters';
 let levelRange = [1,200];
-let playerLevel = 100;
-let expBucket = 10000;
+let expBucket = EXP_TABLE[100]; // default 100레벨
 let expRatioMin = 0;
 
-// --------- util ---------
+// ========== Build helpers ==========
+function buildRegions(){
+  const regs = new Set(['all']);
+  (SAMPLE.monsters||[]).forEach(m=> regs.add(m.region||''));
+  (SAMPLE.quests||[]).forEach(q=> regs.add(q.region||''));
+  if (regionSelect){
+    regionSelect.innerHTML = Array.from(regs).map(r=> `<option value="${r}">${r==='all'?'전체':r}</option>`).join('');
+    regionSelect.value = 'all';
+  }
+}
+function buildItemTypes(){
+  const types = new Set(['all']); (SAMPLE.items||[]).forEach(i=> types.add(i.type||''));
+  if (typeSelect){
+    typeSelect.innerHTML = Array.from(types).map(t=> `<option value="${t}">${t==='all'?'전체':t}</option>`).join('');
+    typeSelect.value = 'all';
+  }
+}
+
+// ========== Render ==========
 function applyActiveTabClasses(){
   tabs.forEach(b=>{
-    if(b.dataset.tab === activeTab){
-      b.classList.add('bg-gray-900','text-white');
-      b.classList.remove('text-gray-700');
-    } else {
-      b.classList.remove('bg-gray-900','text-white');
-      b.classList.add('text-gray-700');
-    }
+    const on = b.dataset.tab === activeTab;
+    b.className = "tab-btn px-3 py-2 text-sm rounded-lg " + (on ? "bg-gray-900 text-white" : "text-gray-700");
   });
 }
-function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
-function sumQuestExp(q){ return (q.rewards||[]).reduce((a,r)=> a + (typeof r.exp==='number' ? r.exp : 0), 0); }
-function computeExpRatio(q, bucket){ const b = Number(bucket||0); if(!b) return 0; return Math.round((sumQuestExp(q)/b)*100); }
-
-// 아이템 <-> 퀘스트 링크 유틸
-function buildItemQuestLinks(items, quests){
-  const requiredBy = {}; const rewardedBy = {};
-  items.forEach(it=>{ requiredBy[it.id]=[]; rewardedBy[it.id]=[]; });
-  quests.forEach(q=>{
-    (q.reqItems||[]).forEach(r=>{ if(requiredBy[r.itemId]) requiredBy[r.itemId].push(q); });
-    (q.rewards||[]).forEach(rv=>{ if(rv.itemId && rewardedBy[rv.itemId]) rewardedBy[rv.itemId].push(q); });
-  });
-  return { requiredBy, rewardedBy };
-}
-function sourcesLine(it){
-  const arr = Array.isArray(it.sources) ? it.sources : [];
-  if(arr.length===0) return '';
-  if(arr.length===1) return arr[0];
-  if(arr.length===2) return arr[0]+' · '+arr[1];
-  return arr.slice(0,2).join(' · ') + ` 외 ${arr.length-2}곳`;
-}
-
-// --------- 렌더 ---------
 function render(){
-  const q = (searchInput.value||'').trim();
+  const q = (searchInput?.value||'').trim();
   const [lvMin, lvMax] = levelRange;
-  const regionFilter = regionSelect.value || 'all';
+  const region = regionSelect?.value || 'all';
 
   const showMon = activeTab==='monsters';
   const showQue = activeTab==='quests';
   const showItem = activeTab==='items';
 
-  listMonsters.classList.toggle('hidden', !showMon);
-  listQuests.classList.toggle('hidden', !showQue);
-  listItems.classList.toggle('hidden', !showItem);
+  listMonsters?.classList.toggle('hidden', !showMon);
+  listQuests?.classList.toggle('hidden', !showQue);
+  listItems?.classList.toggle('hidden', !showItem);
 
-  itemTypeWrap.classList.toggle('hidden', !showItem);
-  questItemWrap.classList.toggle('hidden', !showQue);
-  questTypeWrap.classList.toggle('hidden', !showQue);
-  questExpWrap.classList.toggle('hidden', !showQue);
-  playerLevelWrap.classList.toggle('hidden', !showQue);
-  expBucketWrap.classList.toggle('hidden', !showQue);
+  itemTypeWrap?.classList.toggle('hidden', !showItem);
+  questExpWrap?.classList.toggle('hidden', !showQue);
+  playerLevelWrap?.classList.toggle('hidden', !showQue);
+  expBucketWrap?.classList.toggle('hidden', !showQue);
 
   // Monsters
-  if(showMon){
-    const data = SAMPLE.monsters.filter(m=>{
+  if(showMon && listMonsters){
+    const data = (SAMPLE.monsters||[]).filter(m=>{
       const hit = !q || m.name.includes(q) || (m.region||'').includes(q);
-      const inRegion = regionFilter==='all' || (m.region||'').includes(regionFilter);
+      const inRegion = region==='all' || (m.region||'').includes(region);
       const inLevel = (!m.level) || (m.level>=lvMin && m.level<=lvMax);
       return hit && inRegion && inLevel;
     });
@@ -266,27 +205,20 @@ function render(){
       <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
         ${safeImg(m.img, m.name, 'w-full h-36 object-cover rounded-lg mb-2')}
         <h3 class="font-semibold">${m.name}</h3>
-        <div class="text-xs text-gray-600">Lv.${m.level||'-'} · ${(m.region||'-')}</div>
+        <div class="text-xs text-gray-600">Lv.${m.level||'-'} · ${m.region||'-'}</div>
         <a href="monster.html?id=${encodeURIComponent(m.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
       </article>
     `).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 몬스터가 없습니다.</div>';
   }
 
   // Quests
-  if(showQue){
-    const selected = Array.from(questConditionSelect.selectedOptions||[]).map(o=>o.value);
-    const cond = selected.includes('all') || selected.length===0 ? [] : selected.filter(v=>v!=='all');
-    const itemQ = (questItemSearch.value||'').trim();
-    const data = SAMPLE.quests.filter(qq=>{
-      const hit = !q || (qq.code&&qq.code.includes(q)) || (qq.title||'').includes(q) || (qq.startNpc||'').includes(q) || (qq.region||'').includes(q) || (qq.startPlace?.name||'').includes(q);
-      const inRegion = regionFilter==='all' || (qq.region||'').includes(regionFilter);
+  if(showQue && listQuests){
+    const data = (SAMPLE.quests||[]).filter(qq=>{
+      const hit = !q || (qq.code&&qq.code.includes(q)) || (qq.title||'').includes(q) || (qq.region||'').includes(q);
+      const inRegion = region==='all' || (qq.region||'').includes(region);
       const inLevel = (!qq.minLevel) || (qq.minLevel>=lvMin && qq.minLevel<=lvMax);
-      const typeOk = cond.length===0 || cond.some(t=> (qq.type===t) || (Array.isArray(qq.type)&&qq.type.includes(t)));
-      const itemOk = !itemQ || ((qq.rewards||[]).some(r=> (r.name||'').includes(itemQ)));
-      const ratio = computeExpRatio(qq, expBucket);
-      return hit && inRegion && inLevel && typeOk && itemOk && ratio >= expRatioMin;
+      return hit && inRegion && inLevel;
     });
-
     listQuests.innerHTML = data.map(qs=>{
       const exp = sumQuestExp(qs);
       const ratio = computeExpRatio(qs, expBucket);
@@ -307,19 +239,14 @@ function render(){
   }
 
   // Items
-  if(showItem){
-    const type = typeSelect.value || 'all';
-    const links = buildItemQuestLinks(SAMPLE.items, SAMPLE.quests);
-    const data = SAMPLE.items.filter(it=>{
+  if(showItem && listItems){
+    const type = (typeSelect && typeSelect.value) || 'all';
+    const data = (SAMPLE.items||[]).filter(it=>{
       const hit = !q || it.name.includes(q);
       const typeOk = type==='all' || (it.type===type);
       return hit && typeOk;
     });
-    listItems.innerHTML = data.map(it=>{
-      const reqQs = links.requiredBy[it.id] || [];
-      const rewQs = links.rewardedBy[it.id] || [];
-      const srcTxt = sourcesLine(it);
-      return `
+    listItems.innerHTML = data.map(it=>`
       <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
         ${safeImg(it.img, it.name, 'w-full h-36 object-contain rounded-lg mb-2 bg-white')}
         <h3 class="font-semibold">${it.name}</h3>
@@ -327,74 +254,56 @@ function render(){
           <span class="px-2 py-0.5 rounded-full border bg-white">${it.category || it.type || '-'}</span>
           <span>${it.type||'-'}</span>
         </div>
-        ${ it.desc ? `<p class="text-sm text-gray-700 mt-1 line-clamp-2">${it.desc}</p>` : '' }
-        ${ srcTxt ? `<div class="text-xs text-gray-600 mt-1">획득처: ${srcTxt}</div>` : '' }
-        <div class="text-xs text-gray-600 mt-2 flex flex-wrap gap-3">
-          <a href="item.html?id=${encodeURIComponent(it.id)}#required" class="text-blue-600 hover:underline">필요 퀘스트 ${reqQs.length}개</a>
-          <a href="item.html?id=${encodeURIComponent(it.id)}#rewarded" class="text-blue-600 hover:underline">보상 퀘스트 ${rewQs.length}개</a>
-        </div>
+        ${ it.desc ? `<p class="text-sm text-gray-700 mt-1">${it.desc}</p>` : '' }
         <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
-      </article>`;
-    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
+      </article>
+    `).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
   }
 }
 
-// --------- 초기화 ---------
-function buildRegions(){
-  const regs = new Set(['all']);
-  SAMPLE.monsters.forEach(m=> regs.add(m.region||''));
-  SAMPLE.quests.forEach(q=> regs.add(q.region||''));
-  regionSelect.innerHTML = Array.from(regs).map(r=> `<option value="${r}">${r==='all'?'전체':r}</option>`).join('');
-  regionSelect.value = 'all';
-}
-function buildItemTypes(){
-  const types = new Set(['all']); SAMPLE.items.forEach(i=> types.add(i.type||''));
-  typeSelect.innerHTML = Array.from(types).map(t=> `<option value="${t}">${t==='all'?'전체':t}</option>`).join('');
-  typeSelect.value = 'all';
-}
-
-// events
-tabs.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    activeTab = btn.dataset.tab;
-    applyActiveTabClasses();
-    const url = new URL(location);
-    url.searchParams.set('tab', activeTab);
-    history.replaceState({}, '', url);
-    render();
-  });
-});
-[searchInput, regionSelect].forEach(el=> el.addEventListener('input', render));
-[lvMinRange, lvMaxRange].forEach(el=> el.addEventListener('input', ()=>{
-  let min = Math.min(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
-  let max = Math.max(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
-  levelRange = [min, max];
-  lvMinBadge.textContent = String(min); lvMaxBadge.textContent = String(max);
+// ========== Event Bindings ==========
+tabs.forEach(btn=> btn.addEventListener('click', ()=>{
+  activeTab = btn.dataset.tab;
+  applyActiveTabClasses();
   render();
 }));
-typeSelect.addEventListener('change', render);
-questItemSearch.addEventListener('input', render);
-questConditionSelect.addEventListener('change', render);
-expRatioMinRange.addEventListener('input', ()=>{ expRatioMin = Number(expRatioMinRange.value)||0; expRatioBadge.textContent = expRatioMin+'%'; render(); });
-playerLevelInput.addEventListener('input', ()=>{
-  playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
-  if(EXP_TABLE[playerLevel]){ expBucket = Number(EXP_TABLE[playerLevel]); expBucketInput.value = String(expBucket); }
+[searchInput, regionSelect].forEach(el=> el?.addEventListener('input', render));
+[lvMinRange, lvMaxRange].forEach(el=> el?.addEventListener('input', ()=>{
+  const min = Math.min(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+  const max = Math.max(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+  levelRange = [min, max];
+  if (lvMinBadge) lvMinBadge.textContent = String(min);
+  if (lvMaxBadge) lvMaxBadge.textContent = String(max);
+  render();
+}));
+typeSelect?.addEventListener('change', render);
+expRatioMinRange?.addEventListener('input', ()=>{
+  expRatioMin = Number(expRatioMinRange.value)||0;
+  if (expRatioBadge) expRatioBadge.textContent = expRatioMin + '%';
   render();
 });
-expBucketInput.addEventListener('input', ()=>{ expBucket = Math.max(1, Number(expBucketInput.value)||1); render(); });
+playerLevelInput?.addEventListener('input', ()=>{
+  const lv = Math.max(1, Math.min(200, Number(playerLevelInput.value)||100));
+  expBucket = EXP_TABLE[lv] || expBucket;
+  if (expBucketInput) expBucketInput.value = formatNumber(expBucket);
+  render();
+});
+expBucketInput?.addEventListener('input', ()=>{
+  const raw = uncomma(expBucketInput.value);
+  expBucket = Math.max(1, Number(raw)||1);
+  expBucketInput.value = formatNumber(expBucket);
+  render();
+});
 
-// start
-buildRegions(); buildItemTypes();
-applyActiveTabClasses();
-// 초기 badge
-expRatioBadge.textContent = (Number(expRatioMinRange.value)||0)+'%';
-// player level -> exp bucket 초기화
-playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
-if(EXP_TABLE[playerLevel]){ expBucket = Number(EXP_TABLE[playerLevel]); expBucketInput.value = String(expBucket); }
-// level badges
-lvMinBadge.textContent = String(lvMinRange.value); lvMaxBadge.textContent = String(lvMaxRange.value);
-
-render();
+// ========== Init ==========
+(function init(){
+  const yy = document.getElementById('yy'); if (yy) yy.textContent = new Date().getFullYear();
+  buildRegions();
+  buildItemTypes();
+  if (expBucketInput) expBucketInput.value = formatNumber(expBucket);
+  applyActiveTabClasses();
+  render();
+})();
 </script>
 </body>
 </html>
