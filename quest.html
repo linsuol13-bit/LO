@@ -8,7 +8,7 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html?tab=quests" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록으로</a>
+  <a href="index.html?tab=quests" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(퀘스트)으로</a>
   <div id="status" class="mb-3 text-xs text-gray-500"></div>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
   <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드</p></footer>
@@ -17,7 +17,7 @@
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-// --- 내장 샘플 (넬라 1-1 완료 장소=커닝시티, 완료 NPC=넬라) ---
+// --- 샘플 퀘스트 데이터 ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
@@ -44,23 +44,17 @@ const EMBEDDED = {
       { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
     ]
   }],
-  items: [
-    {id:'4000012', name:'초록버섯의 갓', type:'소재', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO'},
-    {id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95'},
-    {id:'2000006', name:'레몬', type:'소비', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw'}
-  ]
+  items: []
 };
 
 // --- 상태/데이터 ---
 const statusEl = document.getElementById('status');
 const params = new URLSearchParams(location.search);
 let quests = [];
-let items = [];
 try {
   quests = JSON.parse(localStorage.getItem('mapledex.quests')) || EMBEDDED.quests;
-  items  = JSON.parse(localStorage.getItem('mapledex.items'))  || EMBEDDED.items;
 } catch(e) {
-  quests = EMBEDDED.quests; items = EMBEDDED.items;
+  quests = EMBEDDED.quests;
 }
 
 // --- 헬퍼 ---
@@ -70,116 +64,92 @@ function safeImg(src, cls, alt='img'){
   return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO\nIMG'}))">`;
 }
 function reqItemView(r){
-  const it = items.find(x=> x.id===r.itemId);
-  const name = r.name || (it? it.name : r.itemId);
-  const imgUrl = r.img || (it? it.img : null);
-  const img = imgUrl ? safeImg(imgUrl, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', name) : '';
-  return `<a href="item.html?id=${r.itemId}" class='border rounded-lg p-2 bg-white hover:bg-gray-50 flex items-center gap-2'>
-    ${img}<div class='text-sm'>${name} ${r.qty? 'x'+r.qty:''}</div></a>`;
+  const img = r.img ? safeImg(r.img, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', r.name) : '';
+  return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
 }
 function rewardView(r){
   if(typeof r.exp==='number'){
     return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'><div class='text-sm'>EXP ${r.exp.toLocaleString()}</div></div>`;
   }
-  const it = r.itemId? items.find(x=> x.id===r.itemId) : null;
-  const name = r.name || (it? it.name : r.itemId);
-  const imgUrl = r.img || (it? it.img : null);
-  const img = imgUrl ? safeImg(imgUrl, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', name) : '';
-  return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${name}${r.qty? ' x'+r.qty:''}</div></div>`;
+  const img = r.img ? safeImg(r.img, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', r.name) : '';
+  return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
 }
 function chatBubble(d, npcImg){
   const isPlayer = (d.speaker||'').includes('플레이어');
   const row = isPlayer ? 'flex flex-row-reverse items-start gap-2' : 'flex items-start gap-2';
   const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border';
-  const nameCls = 'text-[11px] text-gray-500 px-1';
   const avatar = (!isPlayer && npcImg) ? safeImg(npcImg, 'w-8 h-8 rounded-lg border object-contain bg-white', 'NPC') : '<span class="w-8 h-8"></span>';
-  return `<div class="${row}">${avatar}<div class="max-w-[80%]"><div class="${nameCls}">${d.speaker||''}</div><div class="rounded-2xl px-3 py-2 ${bubble}">${d.text||''}</div></div></div>`;
+  return `<div class="${row}">${avatar}<div class="max-w-[80%]"><div class="text-[11px] text-gray-500">${d.speaker}</div><div class="rounded-2xl px-3 py-2 ${bubble}">${d.text}</div></div></div>`;
 }
 
 // --- 렌더 ---
 let id = params.get('id');
 statusEl.textContent = `상태: quests=${quests.length} · id="${id||''}"`;
-
-// id 없으면 첫 퀘스트로 고정
-if(!id && quests.length){
-  id = quests[0].id;
-  history.replaceState({}, '', location.pathname + '?id=' + encodeURIComponent(id));
-}
-
+if(!id && quests.length){ id = quests[0].id; history.replaceState({},'',location.pathname+'?id='+id); }
 const q = quests.find(x=> x.id===id);
 const detail = document.getElementById('detail');
 
 if(!q){
   detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>퀘스트를 찾을 수 없어요</div>";
-} else {
-  const allDialogs = Array.isArray(q.dialogues)? q.dialogues : [];
-  const completionDialogs = allDialogs.filter(d=> (d.text||'').includes('레몬'));
-  const normalDialogs = allDialogs.filter(d=> !(d.text||'').includes('레몬'));
+}else{
+  const normalDialogs = q.dialogues.filter(d=> !(d.text||'').includes('레몬'));
+  const completionDialogs = q.dialogues.filter(d=> (d.text||'').includes('레몬'));
 
   detail.innerHTML = `
     <div class='space-y-6'>
-      <!-- 헤더 -->
-      <div class='flex items-center gap-4'>
-        ${safeImg(q.npcImg || '', 'max-h-40 object-contain rounded-xl border bg-white p-2', 'NPC')}
-        <div>
-          <h2 class='text-xl font-semibold'>${q.code? q.code + ' · ' : ''}${q.title}</h2>
-          <div class='text-sm text-gray-500'>${q.region||'-'}${q.minLevel? ' · Lv.'+q.minLevel+'+':''}${q.type? ' · '+q.type:''}</div>
-          <div class='text-xs text-gray-600 mt-1'>
-            시작 NPC: <span class='font-medium'>${q.startNpc||'-'}</span>
-            ${q.completeNpc? ` · 완료 NPC: <span class='font-medium'>${q.completeNpc}</span>`:''}
-          </div>
-        </div>
-      </div>
+      <h2 class='text-xl font-semibold mb-2'>${q.code} · ${q.title}</h2>
 
-      <!-- 시작 장소 -->
+      <!-- 시작 장소 + 시작 NPC -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>시작 장소</h3>
         <div class='flex items-center gap-3'>
-          ${q.startPlace?.img ? safeImg(q.startPlace.img, 'w-40 h-24 object-cover rounded-lg border bg-white', 'Start Place') : '<div class="w-40 h-24 rounded-lg border bg-gray-100 flex items-center justify-center text-xs text-gray-500">NO IMG</div>'}
-          <div class='text-sm'>
-            <div class='font-medium'>${q.startPlace?.name || q.region || '-'}</div>
+          ${q.startPlace?.img ? safeImg(q.startPlace.img,'w-40 h-24 object-cover rounded-lg border bg-white','Start Place'):''}
+          <div class='text-sm flex-1'>
+            <div class='font-medium'>${q.startPlace?.name}</div>
             <div class='text-gray-500'>퀘스트 시작 위치</div>
           </div>
+          <div class="text-sm text-gray-700">시작 NPC: <span class="font-medium">${q.startNpc}</span></div>
         </div>
       </section>
 
-      <!-- 퀘스트 조건 -->
+      <!-- 조건 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>퀘스트 조건</h3>
-        <div class='flex flex-wrap gap-3'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
+        <div class='flex flex-wrap gap-3'>${q.reqItems.map(reqItemView).join('')}</div>
       </section>
 
       <!-- 대사 -->
-      <section id="dialogueSection">
+      <section>
         <h3 class='text-sm font-semibold mb-2'>대사</h3>
-        <div id="chatBox" class="border rounded-xl bg-gray-50 p-3 max-h-96 overflow-y-auto space-y-3">
-          ${ normalDialogs.length ? normalDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
+        <div class='border rounded-xl bg-gray-50 p-3 space-y-3 max-h-96 overflow-y-auto'>
+          ${normalDialogs.map(d=>chatBubble(d,q.npcImg)).join('')}
         </div>
       </section>
 
-      <!-- 완료 장소 -->
+      <!-- 완료 장소 + 완료 NPC -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 장소</h3>
         <div class='flex items-center gap-3'>
-          ${q.completePlace?.img ? safeImg(q.completePlace.img, 'w-40 h-24 object-cover rounded-lg border bg-white', 'Complete Place') : '<div class="w-40 h-24 rounded-lg border bg-gray-100 flex items-center justify-center text-xs text-gray-500">NO IMG</div>'}
-          <div class='text-sm'>
-            <div class='font-medium'>${q.completePlace?.name || q.region || '-'}</div>
+          ${q.completePlace?.img ? safeImg(q.completePlace.img,'w-40 h-24 object-cover rounded-lg border bg-white','Complete Place'):''}
+          <div class='text-sm flex-1'>
+            <div class='font-medium'>${q.completePlace?.name}</div>
             <div class='text-gray-500'>퀘스트 완료 위치</div>
           </div>
+          <div class="text-sm text-gray-700">완료 NPC: <span class="font-medium">${q.completeNpc}</span></div>
         </div>
       </section>
 
       <!-- 완료 보상 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 보상</h3>
-        <div class='flex flex-wrap gap-3'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
+        <div class='flex flex-wrap gap-3'>${q.rewards.map(rewardView).join('')}</div>
       </section>
 
       <!-- 완료 대사 -->
-      <section id="completionDialogue">
+      <section>
         <h3 class='text-sm font-semibold mb-2'>완료 대사</h3>
-        <div class="border rounded-xl bg-gray-50 p-3 space-y-3">
-          ${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
+        <div class='border rounded-xl bg-gray-50 p-3 space-y-3'>
+          ${completionDialogs.map(d=>chatBubble(d,q.npcImg)).join('')}
         </div>
       </section>
     </div>`;
