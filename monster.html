@@ -7,55 +7,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-900">
-<div class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html" class="text-blue-600 text-sm mb-3 inline-block">← 목록으로</a>
-  <div id="status" class="text-xs text-gray-500 mb-3"></div>
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+  <a href="index.html?tab=monsters" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(몬스터)으로</a>
+  <div id="status" class="mb-3 text-xs text-gray-500"></div>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
 </div>
-
 <script>
-const EMBEDDED = {
-  monsters: [{
-    id: "m-slime",
-    name: "슬라임",
-    level: 5,
-    regions: ["헤네시스 남쪽 숲"],
-    img: "https://maplestory.io/api/KMS/389/mob/100100/stand/0",
-    drops: [
-      { id:"2000006", name:"레몬", img:"https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw" }
-    ]
-  }]
-};
-
-let monsters = JSON.parse(localStorage.getItem("mapledex.monsters")) || EMBEDDED.monsters;
 const params = new URLSearchParams(location.search);
-const id = params.get("id") || monsters[0].id;
-const m = monsters.find(x=> x.id===id);
-const detail = document.getElementById("detail");
-
-if(!m){
-  detail.innerHTML = "<div class='p-6 text-center text-gray-500 text-sm'>몬스터를 찾을 수 없어요</div>";
-}else{
-  detail.innerHTML = `
-    <div class="flex items-center gap-4 mb-4">
-      ${m.img? `<img src="${m.img}" alt="${m.name}" class="w-24 h-24 object-contain border rounded-lg bg-white"/>`: ""}
-      <div>
-        <h2 class="text-xl font-semibold">${m.name}</h2>
-        <div class="text-sm text-gray-500">Lv.${m.level} · ${(m.regions||[]).join(", ")}</div>
-      </div>
-    </div>
-    <section>
-      <h3 class="text-sm font-semibold mb-2">드랍 아이템</h3>
-      <div class="flex flex-wrap gap-3">
-        ${(m.drops||[]).map(d=>`
-          <div class="border rounded-lg p-2 bg-white flex items-center gap-2">
-            ${d.img? `<img src="${d.img}" alt="${d.name}" class="w-10 h-10 object-contain border rounded-lg"/>`: ""}
-            <div class="text-sm">${d.name}</div>
-          </div>`).join("") || "<div class='text-sm text-gray-500'>-</div>"}
-      </div>
-    </section>
-  `;
-}
+const id = params.get('id') || '';
+document.getElementById('status').textContent = 'monster id=' + id;
+document.getElementById('detail').innerHTML = '<div class="text-sm text-gray-600">여기에 몬스터 상세 구현(이미지/드랍/지역 등) 예정 · id=' + id + '</div>';
 </script>
 </body>
 </html>

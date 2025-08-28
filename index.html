@@ -168,6 +168,17 @@ document.getElementById('yy').textContent = new Date().getFullYear();
 const statusEl = document.getElementById('status');
 
 const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+function applyActiveTabClasses(){
+  tabs.forEach(b=>{
+    if(b.dataset.tab === activeTab){
+      b.classList.add('bg-gray-900','text-white');
+      b.classList.remove('text-gray-700');
+    }else{
+      b.classList.remove('bg-gray-900','text-white');
+      b.classList.add('text-gray-700');
+    }
+  });
+}
 const listMonsters = document.getElementById('listMonsters');
 const listQuests   = document.getElementById('listQuests');
 const listItems    = document.getElementById('listItems');
@@ -198,7 +209,10 @@ const importInput = document.getElementById('importInput');
 const resetBtn = document.getElementById('resetBtn');
 
 // -------------------- UI 상태 --------------------
-let activeTab = 'quests'; // 기본 탭
+// 기본 탭 (URL의 ?tab=monsters|quests|items 우선)
+const _paramTab = new URLSearchParams(location.search).get('tab');
+const _validTabs = new Set(['monsters','quests','items']);
+let activeTab = _validTabs.has(_paramTab) ? _paramTab : 'quests'; // 기본 탭
 let globalQ = '';
 let regionFilter = 'all';
 let levelRange = [Number(lvMin.value)||1, Number(lvMax.value)||300];
@@ -377,6 +391,7 @@ function render(){
   buildRegions();
   buildItemTypes();
   buildSortOptions();
+  applyActiveTabClasses();
   render();
 })();
 

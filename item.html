@@ -7,40 +7,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-900">
-<div class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html" class="text-blue-600 text-sm mb-3 inline-block">← 목록으로</a>
-  <div id="status" class="text-xs text-gray-500 mb-3"></div>
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+  <a href="index.html?tab=items" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(아이템)으로</a>
+  <div id="status" class="mb-3 text-xs text-gray-500"></div>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
 </div>
-
 <script>
-const EMBEDDED = {
-  items: [
-    {id:"2000006", name:"레몬", type:"소비", img:"https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw"},
-    {id:"4000012", name:"초록버섯의 갓", type:"소재", img:"https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO"},
-    {id:"4000013", name:"버블링의 큰 방울", type:"소재", img:"https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95"}
-  ]
-};
-
-let items = JSON.parse(localStorage.getItem("mapledex.items")) || EMBEDDED.items;
 const params = new URLSearchParams(location.search);
-const id = params.get("id") || items[0].id;
-const it = items.find(x=> x.id===id);
-const detail = document.getElementById("detail");
-
-if(!it){
-  detail.innerHTML = "<div class='p-6 text-center text-gray-500 text-sm'>아이템을 찾을 수 없어요</div>";
-}else{
-  detail.innerHTML = `
-    <div class="flex items-center gap-4 mb-4">
-      ${it.img? `<img src="${it.img}" alt="${it.name}" class="w-20 h-20 object-contain border rounded-lg bg-white"/>`: ""}
-      <div>
-        <h2 class="text-xl font-semibold">${it.name}</h2>
-        <div class="text-sm text-gray-500">${it.type||""}</div>
-      </div>
-    </div>
-  `;
-}
+const id = params.get('id') || '';
+document.getElementById('status').textContent = 'item id=' + id;
+document.getElementById('detail').innerHTML = '<div class="text-sm text-gray-600">여기에 아이템 상세 구현(이미지/타입/획득처 등) 예정 · id=' + id + '</div>';
 </script>
 </body>
 </html>
