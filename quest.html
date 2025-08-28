@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
-    /* 최소 폴백: Tailwind가 없어도 카드/텍스트는 보이게 */
     .rounded-xl{border-radius:0.75rem} .rounded-lg{border-radius:0.5rem}
     .border{border:1px solid #e5e7eb} .bg-white{background:#fff}
     .flex{display:flex} .items-center{align-items:center} .items-start{align-items:flex-start}
@@ -24,7 +23,6 @@
 'use strict';
 
 /* ================= Utils ================ */
-/** 이미지 박스(항상 64×64 또는 48×48 박스가 나온다). 이미지가 없으면 회색 아이콘 */
 function imgBox(src, alt, size){ // size: 16(64px) | 12(48px)
   const px = (size === 12) ? 48 : 64;
   const placeholder = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -40,17 +38,14 @@ function imgBox(src, alt, size){ // size: 16(64px) | 12(48px)
           </div>`;
 }
 
-const GDRIVE = (id)=> `https://drive.google.com/uc?export=view&id=${id}`;
-
 /* ================= Images ================ */
 const IMG = {
-  // 제공해 주신 링크 반영
-  nella: "https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB",
-  greenCap: "https://drive.google.com/uc?export=view&id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a", // 초록버섯
-  lemon: GDRIVE('1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw'),
-  bubbleDrop: GDRIVE('1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95'),
-  victoria: 'https://placehold.co/120x120?text=Victoria',
-  kerning: 'https://placehold.co/120x120?text=Kerning'
+  nella: "https://drive.google.com/thumbnail?id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB&sz=w512",
+  greenCap: "https://drive.google.com/thumbnail?id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a&sz=w512",
+  lemon: "https://drive.google.com/thumbnail?id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw&sz=w512",
+  bubbleDrop: "https://drive.google.com/thumbnail?id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95&sz=w512",
+  victoria: "https://placehold.co/120x120?text=Victoria",
+  kerning: "https://placehold.co/120x120?text=Kerning"
 };
 
 /* ================= Data ================== */
@@ -61,13 +56,11 @@ const quests = [{
   type: '아이템 수집',
   region: '빅토리아 아일랜드',
   minLevel: 15,
-  // 시작 장소를 커닝시티로 변경
   start: { npc:{ name:'넬라', img:IMG.nella }, place:{ name:'커닝시티', img:IMG.kerning } },
   finish:{ npc:{ name:'넬라', img:IMG.nella }, place:{ name:'커닝시티', img:IMG.kerning } },
-  // 아이템들은 박스 + 링크(있으면) 표기
   reqItems:[
     { name:'초록버섯의 갓', qty:50, img:IMG.greenCap, itemId:'4000012' },
-    { name:'버블링의 큰 방울', qty:50, img:IMG.bubbleDrop } // itemId가 생기면 자동 링크
+    { name:'버블링의 큰 방울', qty:50, img:IMG.bubbleDrop }
   ],
   rewards:[
     { name:'레몬', qty:50, img:IMG.lemon, itemId:'2000006' },
