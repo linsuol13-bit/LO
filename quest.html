@@ -17,7 +17,7 @@
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-// --- 내장 샘플 (Drive 링크 + 시작/완료 장소 & 시작/완료 NPC 포함) ---
+// --- 내장 샘플 (넬라 1-1 완료 장소=커닝시티, 완료 NPC=넬라) ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
@@ -27,7 +27,7 @@ const EMBEDDED = {
     completeNpc: '넬라',
     npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
     startPlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
-    completePlace: { name: '커닝시티 방어구점', img: 'https://placehold.co/240x135?text=%EB%B0%A9%EC%96%B4%EA%B5%AC%EC%A0%90' },
+    completePlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
     region: '커닝시티',
     type: '아이템수집',
     reqItems: [
@@ -41,7 +41,7 @@ const EMBEDDED = {
     dialogues: [
       { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
       { speaker:'플레이어', text:'네, 진행하겠습니다.' },
-      { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' } // 완료 대사 예시
+      { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
     ]
   }],
   items: [
@@ -113,13 +113,12 @@ if(!q){
   detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>퀘스트를 찾을 수 없어요</div>";
 } else {
   const allDialogs = Array.isArray(q.dialogues)? q.dialogues : [];
-  // 예시 규칙: '레몬'이 포함된 대사를 완료 대사로 분리
   const completionDialogs = allDialogs.filter(d=> (d.text||'').includes('레몬'));
   const normalDialogs = allDialogs.filter(d=> !(d.text||'').includes('레몬'));
 
   detail.innerHTML = `
     <div class='space-y-6'>
-      <!-- 헤더: NPC, 타이틀, 타입/지역, 시작/완료 NPC -->
+      <!-- 헤더 -->
       <div class='flex items-center gap-4'>
         ${safeImg(q.npcImg || '', 'max-h-40 object-contain rounded-xl border bg-white p-2', 'NPC')}
         <div>
@@ -158,7 +157,7 @@ if(!q){
         </div>
       </section>
 
-      <!-- 완료 장소 (신규 섹션: 완료 보상 위) -->
+      <!-- 완료 장소 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 장소</h3>
         <div class='flex items-center gap-3'>
