@@ -116,6 +116,28 @@
         </div>
 
         <!-- Sort -->
+        
+        <!-- Quests 탭 전용 (추가: 경험치 획득 비율 & 플레이어 레벨) -->
+        <div id="questExpWrap" class="md:col-span-2">
+          <label class="text-xs text-gray-500">경험치 획득 비율(이상)</label>
+          <div class="mt-2 space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="text-xs px-2 py-1 rounded bg-gray-100 border" id="expRatioBadge">0%</span>
+              <input type="range" id="expRatioMinRange" min="0" max="100" step="5" value="0" list="expTicks"
+                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+              <span class="text-[11px] text-gray-500">이상</span>
+            </div>
+            <datalist id="expTicks">
+              <option value="0"><option value="25"><option value="50"><option value="75"><option value="100">
+            </datalist>
+          </div>
+        </div>
+        <div id="playerLevelWrap" class="md:col-span-2">
+          <label class="text-xs text-gray-500">플레이어 레벨</label>
+          <input id="playerLevelInput" type="number" min="1" max="200" value="100" class="w-full rounded-lg border px-3 py-2" />
+          <p class="text-[11px] text-gray-500 mt-1">퀘스트 최소 레벨과의 차이로 가중치를 계산해요.</p>
+        </div>
+
         <div id="sortWrap" class="md:col-span-2">
           <label class="text-xs text-gray-500">정렬</label>
           <select id="sortSelect" class="w-full rounded-lg border px-3 py-2"></select>
@@ -164,6 +186,7 @@ const EMBEDDED = {
     { id: "q-nella-1-1",
       code: "넬라 1-1",
       title: "마파의 의뢰",
+      minLevel: 15,
       startNpc: "넬라",
       completeNpc: "넬라",
       npcImg: "https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB",
@@ -243,6 +266,14 @@ const itemTypeWrap = document.getElementById('itemTypeWrap');
 const itemLocalSearch = document.getElementById('itemLocalSearch');
 
 // 퀘스트 탭 컨트롤
+const questExpWrap = document.getElementById('questExpWrap');
+const playerLevelWrap = document.getElementById('playerLevelWrap');
+const expRatioMinRange = document.getElementById('expRatioMinRange');
+const expBucketInput = document.getElementById('expBucketInput');
+const expBucketWrap = document.getElementById('expBucketWrap');
+const expRatioBadge = document.getElementById('expRatioBadge');
+const playerLevelInput = document.getElementById('playerLevelInput');
+
 const questItemSearch = document.getElementById('questItemSearch');
 const questItemSearchWrap = document.getElementById('questItemSearchWrap');
 const questTypeWrap = document.getElementById('questTypeWrap');
@@ -284,6 +315,45 @@ function updateLevelRangeUI(fromInit=false){
 let itemLocalQ = '';
 let questItemQ = '';
 let sortKey = null;
+let playerLevel = 100; // 기본값 (표 기반 자동 채움에 사용 가능)
+let expRatioMin = 0; // %
+let expBucket = 10000; // 다음 레벨 필요 경험치
+
+// --- 레벨별 경험치 통 (다음 레벨까지 필요 EXP) 테이블 ---
+const EXP_TABLE = {
+  1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,
+  11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,
+  21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,
+  31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,
+  41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,
+  51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,
+  61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,
+  71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,
+  81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,
+  91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,
+  101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,
+  111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,
+  121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,
+  131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,
+  141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,
+  151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,
+  161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,
+  171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,
+  181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,
+  191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324
+};
+
+
+function sumQuestExp(q){
+  return (q.rewards||[]).reduce((acc, r)=> acc + (typeof r.exp==='number' ? r.exp : 0), 0);
+}
+function computeExpRatio(q, bucket){
+  const b = Number(bucket||0);
+  if(!b) return 0;
+  const exp = sumQuestExp(q);
+  return Math.round((exp / b) * 100);
+}
+
 
 // -------------------- 헬퍼 --------------------
 function buildRegions(){
@@ -330,7 +400,7 @@ const MonsterCard = (m)=> `
       ${m.img? `<img src='${m.img}' alt='${m.name}' class='w-14 h-14 object-contain rounded-lg border bg-white'/>`: ''}
       <div class='text-xs text-gray-500'>${(m.regions||[]).join(', ')}</div>
     </div>
-  </article>`;
+  </article>`; };
 const ItemCard = (i)=> `
   <article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='item.html?id=${i.id}'">
     <div class='flex items-center gap-3'>
@@ -340,14 +410,15 @@ const ItemCard = (i)=> `
         <div class='text-xs text-gray-500'>${i.type||''}</div>
       </div>
     </div>
-  </article>`;
-const QuestCard = (q)=> `
+  </article>`; };
+const QuestCard = (q)=> { const exp = sumQuestExp(q); const ratio = computeExpRatio(q, expBucket); return `
   <article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='quest.html?id=${q.id}'">
     <div class='flex items-center justify-between mb-2'>
       <h3 class='font-semibold truncate'>${q.code? q.code+' · ' : ''}${q.title}</h3>
       ${q.minLevel? `<span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${q.minLevel}+</span>`: ''}
     </div>
-    <div class='text-xs text-gray-600 mb-2'>
+    <div class='flex items-center gap-2 text-xs text-gray-600 mb-2'>
+      <span class='text-[11px] px-2 py-0.5 rounded-full border bg-white'>EXP ${exp.toLocaleString()} · × ${ratio}%</span>
       시작 NPC: <span class="font-medium">${q.startNpc||'-'}</span>
       ${q.completeNpc? ` · 완료 NPC: <span class="font-medium">${q.completeNpc}</span>`:''}
     </div>
@@ -359,7 +430,7 @@ const QuestCard = (q)=> `
       </div>
       ${q.npcImg? `<img src='${q.npcImg}' alt='NPC' class='w-10 h-10 object-contain rounded-lg border bg-white'/>`: ''}
     </div>
-  </article>`;
+  </article>`; };
 
 // -------------------- 렌더 --------------------
 function render(){
@@ -371,6 +442,9 @@ function render(){
   itemTypeWrap.classList.toggle('hidden', !showItems);
   questItemSearchWrap.classList.toggle('hidden', !showQuests);
   questTypeWrap.classList.toggle('hidden', !showQuests);
+  questExpWrap.classList.toggle('hidden', !showQuests);
+  playerLevelWrap.classList.toggle('hidden', !showQuests);
+  expBucketWrap.classList.toggle('hidden', !showQuests);
 
   // 리스트 표시 전환
   listMonsters.classList.toggle('hidden', activeTab!=='monsters');
@@ -417,9 +491,13 @@ function render(){
     const data = quests.filter(qq=>{
       const hit = !q || (qq.code&&qq.code.includes(q)) || (qq.title||'').includes(q) || (qq.startNpc||'').includes(q) || (qq.region||'').includes(q) || (qq.startPlace?.name||'').includes(q);
       const inRegion = regionFilter==='all' || (qq.region||'').includes(regionFilter);
+      const selected = Array.from(questConditionSelect.selectedOptions||[]).map(o=>o.value);
+      const cond = selected.includes('all') || selected.length===0 ? [] : selected.filter(v=>v!=='all');
       const typeOk = cond.length===0 || cond.some(t=> (qq.type===t) || (Array.isArray(qq.type)&&qq.type.includes(t)));
       const itemOk = !questItemQ || ((qq.rewards||[]).some(r=> (r.name||'').includes(questItemQ)));
-      return hit && inRegion && typeOk && itemOk;
+      const ratio = computeExpRatio(qq, playerLevel);
+      const ratioOk = ratio >= expRatioMin;
+      return hit && inRegion && typeOk && itemOk && ratioOk;
     });
     const key = sortKey || 'q_lv_asc';
     data.sort((a,b)=>{
@@ -461,6 +539,14 @@ function render(){
     lvMinRange.value = String(levelRange[0]);
     lvMaxRange.value = String(levelRange[1]);
     updateLevelRangeUI(true);
+  }
+  // 레벨 표 기반 경험치 통 초기화
+  if(playerLevelInput && EXP_TABLE){
+    playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
+    if(typeof EXP_TABLE[playerLevel] !== 'undefined'){
+      expBucket = Number(EXP_TABLE[playerLevel]);
+      if(typeof expBucketInput !== 'undefined' && expBucketInput){ expBucketInput.value = String(expBucket); }
+    }
   }
   render();
 })();
@@ -505,6 +591,34 @@ questConditionSelect.addEventListener('change', ()=>{
   }
   render();
 });
+
+// 경험치 비율 / 플레이어 레벨
+if(expRatioMinRange){
+  expRatioMinRange.addEventListener('input', ()=>{
+    expRatioMin = Number(expRatioMinRange.value)||0;
+    if(expRatioBadge) expRatioBadge.textContent = expRatioMin + '%';
+    render();
+  });
+  // 초기 배지
+  expRatioBadge && (expRatioBadge.textContent = (Number(expRatioMinRange.value)||0)+'%');
+}
+if(playerLevelInput){
+  playerLevelInput.addEventListener('input', ()=>{
+    playerLevel = Math.max(1, Math.min(200, Number(playerLevelInput.value)||1));
+    // 추후: 레벨 표를 사용해 expBucket 자동 채우기 가능
+    render();
+  });
+}
+if(expBucketInput){
+  expBucketInput.addEventListener('input', ()=>{
+    expBucket = Math.max(1, Number(expBucketInput.value)||1);
+    render();
+  });
+}
+if(typeof expBucketInput !== 'undefined' && expBucketInput){ expBucket = Number(expBucketInput.value)||10000; }lInput.value)||1));
+    render();
+  });
+}
 
 // Export / Import / Reset
 exportBtn.addEventListener('click', ()=>{
