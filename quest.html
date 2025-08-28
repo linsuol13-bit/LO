@@ -23,7 +23,7 @@
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-// --- 샘플 퀘스트 데이터 ---
+// --- 샘플 퀘스트 데이터 (지역 표기: 빅토리아 아일랜드로 변경) ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
@@ -36,7 +36,7 @@ const EMBEDDED = {
     npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
     startPlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
     completePlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
-    region: '커닝시티',
+    region: '빅토리아 아일랜드',
     type: '아이템수집',
     reqItems: [
       { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
@@ -93,7 +93,7 @@ function rewardView(r){
 function chatBubble(d, npcImg){
   const isPlayer = (d.speaker||'').includes('플레이어');
   const row = isPlayer ? 'flex flex-row-reverse items-start gap-2' : 'flex items-start gap-2';
-  const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'; // 박스 제거, 연한 배경만
+  const bubble = isPlayer ? 'bg-blue-600 text-white' : 'bg-white text-gray-900 border';
   const avatar = (!isPlayer && npcImg) ? safeImg(npcImg, 'w-8 h-8 rounded-lg object-contain', 'NPC') : '<span class="w-8 h-8"></span>';
   return `<div class="${row}">${avatar}<div class="max-w-[80%]"><div class="text-[11px] text-gray-500">${d.speaker}</div><div class="rounded-2xl px-3 py-2 ${bubble}">${d.text}</div></div></div>`;
 }
@@ -134,10 +134,10 @@ if(!q){
         <div class='flex flex-wrap gap-4'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
-      <!-- 대사 -->
+      <!-- 대사 (네모칸) -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>대사</h3>
-        <div class='p-1 space-y-3 max-h-96 overflow-y-auto'>
+        <div class='border rounded-xl bg-gray-50 p-3 space-y-3 max-h-96 overflow-y-auto'>
           ${ normalDialogs.length ? normalDialogs.map(d=>chatBubble(d,q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
@@ -157,10 +157,10 @@ if(!q){
         <div class='flex flex-wrap gap-4'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
-      <!-- 완료 대사 -->
+      <!-- 완료 대사 (네모칸) -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 대사</h3>
-        <div class='p-1 space-y-3'>
+        <div class='border rounded-xl bg-gray-50 p-3 space-y-3'>
           ${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
