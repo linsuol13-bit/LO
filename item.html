@@ -7,71 +7,40 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-900">
-<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록으로</a>
-  <div id="status" class="mb-3 text-xs text-gray-500"></div>
+<div class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+  <a href="index.html" class="text-blue-600 text-sm mb-3 inline-block">← 목록으로</a>
+  <div id="status" class="text-xs text-gray-500 mb-3"></div>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
-  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드 demo.</p></footer>
 </div>
+
 <script>
-document.getElementById('yy').textContent = new Date().getFullYear();
-const LS = { monsters: "mapledex.monsters", quests: "mapledex.quests", items: "mapledex.items" };
-function readJSON(key, fallback){ try{ const raw=localStorage.getItem(key); return raw? JSON.parse(raw): fallback }catch(e){ return fallback } }
-let monsters = readJSON(LS.monsters, []);
-let quests   = readJSON(LS.quests, []);
-let items    = readJSON(LS.items, []);
 const EMBEDDED = {
-  items: [{id:'2000006', name:'레몬', type:'소비', img:'Lemon.png'}],
-  quests: [{id:'q-nella-1-1', title:'마파의 의뢰', npcImg:'Nella.png'}],
-  monsters: []
+  items: [
+    {id:"2000006", name:"레몬", type:"소비", img:"https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw"},
+    {id:"4000012", name:"초록버섯의 갓", type:"소재", img:"https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO"},
+    {id:"4000013", name:"버블링의 큰 방울", type:"소재", img:"https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95"}
+  ]
 };
-if(!monsters.length && !quests.length && !items.length){ items = EMBEDDED.items; quests = EMBEDDED.quests; localStorage.setItem(LS.items, JSON.stringify(items)); localStorage.setItem(LS.quests, JSON.stringify(quests)); }
 
+let items = JSON.parse(localStorage.getItem("mapledex.items")) || EMBEDDED.items;
 const params = new URLSearchParams(location.search);
-let id = params.get('id');
-document.getElementById('status').textContent = `상태: items=${items.length} · id="${id||''}"`;
-if(!id && items.length){ id = items[0].id; history.replaceState({}, '', location.pathname + '?id=' + encodeURIComponent(id)); }
-const i = items.find(x=> x.id===id);
+const id = params.get("id") || items[0].id;
+const it = items.find(x=> x.id===id);
+const detail = document.getElementById("detail");
 
-function dropsFromMonsters(itemId){
-  return monsters.filter(m=> (m.drops||[]).some(d=> d.id===itemId));
-}
-function questsRewarding(itemId){
-  return quests.filter(q=> (q.rewards||[]).some(r=> r.itemId===itemId || r.name===i?.name));
-}
-function questsRequiring(itemId){
-  return quests.filter(q=> (q.reqItems||[]).some(r=> r.itemId===itemId));
-}
-
-document.getElementById('detail').innerHTML = i? `
-  <div class="space-y-6">
-    <div class="flex items-center gap-4">
-      ${i.img? `<img src='${i.img}' alt='${i.name}' class="max-h-40 object-contain rounded-xl border bg-white p-2"/>`: ''}
+if(!it){
+  detail.innerHTML = "<div class='p-6 text-center text-gray-500 text-sm'>아이템을 찾을 수 없어요</div>";
+}else{
+  detail.innerHTML = `
+    <div class="flex items-center gap-4 mb-4">
+      ${it.img? `<img src="${it.img}" alt="${it.name}" class="w-20 h-20 object-contain border rounded-lg bg-white"/>`: ""}
       <div>
-        <h2 class="text-xl font-semibold">${i.name}</h2>
-        <div class="text-sm text-gray-500">${i.type||''} · ID: ${i.id}</div>
+        <h2 class="text-xl font-semibold">${it.name}</h2>
+        <div class="text-sm text-gray-500">${it.type||""}</div>
       </div>
     </div>
-    <section>
-      <h3 class="text-sm font-semibold mb-2">이 아이템을 드랍하는 몬스터</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        ${dropsFromMonsters(i.id).map(m=> `<a class='border rounded-lg p-3 bg-white hover:bg-gray-50 flex items-center gap-3' href='monster.html?id=${m.id}'>${m.img? `<img src='${m.img}' class='w-12 h-12 rounded-lg border'/>`: ''}<div><div class='font-medium'>${m.name}</div><div class='text-xs text-gray-500'>Lv.${m.level||'-'}</div></div></a>`).join('') || '<div class="text-sm text-gray-500">없음</div>'}
-      </div>
-    </section>
-    <section>
-      <h3 class="text-sm font-semibold mb-2">퀘스트 보상으로 얻을 수 있음</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        ${questsRewarding(i.id).map(q=> `<a class='border rounded-lg p-3 bg-white hover:bg-gray-50 flex items-center gap-3' href='quest.html?id=${q.id}'>${q.npcImg? `<img src='${q.npcImg}' class='w-12 h-12 rounded-lg border'/>`: ''}<div><div class='font-medium'>${q.title}</div><div class='text-xs text-gray-500'>${q.region||''}</div></div></a>`).join('') || '<div class="text-sm text-gray-500">없음</div>'}
-      </div>
-    </section>
-    <section>
-      <h3 class="text-sm font-semibold mb-2">퀘스트 조건 아이템으로 요구됨</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        ${questsRequiring(i.id).map(q=> `<a class='border rounded-lg p-3 bg-white hover:bg-gray-50 flex items-center gap-3' href='quest.html?id=${q.id}'>${q.npcImg? `<img src='${q.npcImg}' class='w-12 h-12 rounded-lg border'/>`: ''}<div><div class='font-medium'>${q.title}</div><div class='text-xs text-gray-500'>${q.region||''}</div></div></a>`).join('') || '<div class="text-sm text-gray-500">없음</div>'}
-      </div>
-    </section>
-  </div>
-` : `<div class='p-6 text-center text-sm text-gray-500'>아이템을 찾을 수 없어요</div>`;
+  `;
+}
 </script>
 </body>
 </html>

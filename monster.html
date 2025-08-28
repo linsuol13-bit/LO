@@ -7,59 +7,55 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-900">
-<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록으로</a>
-  <div id="status" class="mb-3 text-xs text-gray-500"></div>
+<div class="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+  <a href="index.html" class="text-blue-600 text-sm mb-3 inline-block">← 목록으로</a>
+  <div id="status" class="text-xs text-gray-500 mb-3"></div>
   <article id="detail" class="border rounded-xl bg-white p-4"></article>
-  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> 로나월드 demo.</p></footer>
 </div>
+
 <script>
-document.getElementById('yy').textContent = new Date().getFullYear();
-const LS = { monsters: "mapledex.monsters", quests: "mapledex.quests", items: "mapledex.items" };
-function readJSON(key, fallback){ try{ const raw=localStorage.getItem(key); return raw? JSON.parse(raw): fallback }catch(e){ return fallback } }
-let monsters = readJSON(LS.monsters, []);
-let items    = readJSON(LS.items, []);
 const EMBEDDED = {
-  monsters: [{ id:'m-slime', name:'슬라임', level:5, img:'', regions:['헤네시스'], mapHints:'', drops:[{id:'2000006', name:'레몬'}] }],
-  items: [{id:'2000006', name:'레몬', type:'소비', img:'Lemon.png'}]
+  monsters: [{
+    id: "m-slime",
+    name: "슬라임",
+    level: 5,
+    regions: ["헤네시스 남쪽 숲"],
+    img: "https://maplestory.io/api/KMS/389/mob/100100/stand/0",
+    drops: [
+      { id:"2000006", name:"레몬", img:"https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw" }
+    ]
+  }]
 };
-if(!monsters.length && !items.length){ monsters = EMBEDDED.monsters; items = EMBEDDED.items; localStorage.setItem(LS.monsters, JSON.stringify(monsters)); localStorage.setItem(LS.items, JSON.stringify(items)); }
 
+let monsters = JSON.parse(localStorage.getItem("mapledex.monsters")) || EMBEDDED.monsters;
 const params = new URLSearchParams(location.search);
-let id = params.get('id');
-document.getElementById('status').textContent = `상태: monsters=${monsters.length} · id="${id||''}"`;
-if(!id && monsters.length){ id = monsters[0].id; history.replaceState({}, '', location.pathname + '?id=' + encodeURIComponent(id)); }
+const id = params.get("id") || monsters[0].id;
 const m = monsters.find(x=> x.id===id);
+const detail = document.getElementById("detail");
 
-function chipDrop(d){
-  const it = items.find(x=> x.id===d.id);
-  const img = it&&it.img? `<img src='${it.img}' alt='${d.name}' class='w-10 h-10 rounded-lg border'/>` : '';
-  return `<a href="item.html?id=${d.id}" class="text-left border rounded-lg p-2 bg-white hover:bg-gray-50 flex items-center gap-2">
-    ${img}
-    <div class="text-sm"><div class="font-medium">${d.name}</div><div class="text-xs text-gray-500">${d.rarity||''}</div></div>
-  </a>`;
-}
-
-document.getElementById('detail').innerHTML = m? `
-  <div class="space-y-4">
-    <div class="flex items-center gap-4">
-      ${m.img? `<img src='${m.img}' alt='${m.name}' class="max-h-40 object-contain rounded-xl border bg-white p-2"/>`: ''}
+if(!m){
+  detail.innerHTML = "<div class='p-6 text-center text-gray-500 text-sm'>몬스터를 찾을 수 없어요</div>";
+}else{
+  detail.innerHTML = `
+    <div class="flex items-center gap-4 mb-4">
+      ${m.img? `<img src="${m.img}" alt="${m.name}" class="w-24 h-24 object-contain border rounded-lg bg-white"/>`: ""}
       <div>
         <h2 class="text-xl font-semibold">${m.name}</h2>
-        <div class="text-sm text-gray-500">Lv.${m.level||'-'}</div>
+        <div class="text-sm text-gray-500">Lv.${m.level} · ${(m.regions||[]).join(", ")}</div>
       </div>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-      <div><div class="text-xs font-medium mb-1">지역</div>${(m.regions||[]).map(r=>`<div>${r}</div>`).join('')||'-'}</div>
-      <div><div class="text-xs font-medium mb-1">속성</div>${(m.attributes||[]).length? m.attributes.map(a=>`<span class="inline-block text-[11px] px-2 py-0.5 rounded-full border mr-1 mb-1">${a}</span>`).join(''):'-'}</div>
-    </div>
-    ${m.mapHints? `<div class="text-sm text-gray-600"><span class="font-medium text-gray-800">위치 팁: </span>${m.mapHints}</div>`:''}
-    <div>
-      <div class="text-xs font-medium mb-2">드랍 아이템</div>
-      <div class="flex flex-wrap gap-3">${(m.drops||[]).map(chipDrop).join('')||'<div class="text-sm text-gray-500">-</div>'}</div>
-    </div>
-  </div>
-` : `<div class='p-6 text-center text-sm text-gray-500'>몬스터를 찾을 수 없어요</div>`;
+    <section>
+      <h3 class="text-sm font-semibold mb-2">드랍 아이템</h3>
+      <div class="flex flex-wrap gap-3">
+        ${(m.drops||[]).map(d=>`
+          <div class="border rounded-lg p-2 bg-white flex items-center gap-2">
+            ${d.img? `<img src="${d.img}" alt="${d.name}" class="w-10 h-10 object-contain border rounded-lg"/>`: ""}
+            <div class="text-sm">${d.name}</div>
+          </div>`).join("") || "<div class='text-sm text-gray-500'>-</div>"}
+      </div>
+    </section>
+  `;
+}
 </script>
 </body>
 </html>

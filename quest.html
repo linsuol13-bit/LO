@@ -15,36 +15,36 @@
 </div>
 
 <script>
-document.getElementById('yy').textContent = new Date().getFullYear();
+document.getElementById('yy') && (document.getElementById('yy').textContent = new Date().getFullYear());
 
-// --- 내장 샘플 (항상 표시 보장) ---
+// --- 내장 샘플 (Drive 링크) ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
     code: '넬라 1-1',
     title: '마파의 의뢰',
     startNpc: '넬라',
-    npcImg: 'Nella.png',
+    npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
     region: '커닝시티',
     type: '아이템수집',
     reqItems: [
-      { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'GreenCap.png' },
-      { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'Bubble.png' }
+      { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
+      { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' }
     ],
     rewards: [
-      { itemId:'2000006', qty:50, name:'레몬', img:'Lemon.png' },
+      { itemId:'2000006', qty:50, name:'레몬', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' },
       { exp:5600 }
     ],
     dialogues: [
       { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
       { speaker:'플레이어', text:'네, 진행하겠습니다.' },
-      { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' } // 완료 대사(레몬 포함)
+      { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
     ]
   }],
   items: [
-    {id:'4000012', name:'초록버섯의 갓', type:'소재', img:'GreenCap.png'},
-    {id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'Bubble.png'},
-    {id:'2000006', name:'레몬', type:'소비', img:'Lemon.png'}
+    {id:'4000012', name:'초록버섯의 갓', type:'소재', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO'},
+    {id:'4000013', name:'버블링의 큰 방울', type:'소재', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95'},
+    {id:'2000006', name:'레몬', type:'소비', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw'}
   ]
 };
 
@@ -54,7 +54,6 @@ const params = new URLSearchParams(location.search);
 let quests = [];
 let items = [];
 try {
-  // 로컬스토리지에 있으면 사용, 없으면 내장
   quests = JSON.parse(localStorage.getItem('mapledex.quests')) || EMBEDDED.quests;
   items  = JSON.parse(localStorage.getItem('mapledex.items'))  || EMBEDDED.items;
 } catch(e) {
@@ -63,7 +62,9 @@ try {
 
 // --- 헬퍼 ---
 function safeImg(src, cls, alt='img'){
-  return `<img src="${src}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO\\nIMG'}))">`;
+  const esc = String(src||'');
+  if(!esc) return '<span class="w-10 h-10"></span>';
+  return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO\nIMG'}))">`;
 }
 function reqItemView(r){
   const it = items.find(x=> x.id===r.itemId);
@@ -93,7 +94,6 @@ function chatBubble(d, npcImg){
 }
 
 // --- 렌더 ---
-document.getElementById('yy').textContent = new Date().getFullYear();
 let id = params.get('id');
 statusEl.textContent = `상태: quests=${quests.length} · id="${id||''}"`;
 
@@ -110,7 +110,8 @@ if(!q){
   detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>퀘스트를 찾을 수 없어요</div>";
 } else {
   const allDialogs = Array.isArray(q.dialogues)? q.dialogues : [];
-  const completionDialogs = allDialogs.filter(d=> (d.text||'').includes('레몬')); // 완료 대사
+  // 단순 규칙: '레몬'이 포함된 대사를 완료 대사로 분리
+  const completionDialogs = allDialogs.filter(d=> (d.text||'').includes('레몬'));
   const normalDialogs = allDialogs.filter(d=> !(d.text||'').includes('레몬'));
 
   detail.innerHTML = `
