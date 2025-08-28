@@ -1,207 +1,159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quest Detail • 로나월드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+  <a href="index.html?tab=quests" class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline">← 퀘스트 목록으로</a>
+  <article id="detail"></article>
+</div>
+
 <script>
 'use strict';
 
-/* ===================== 샘플 데이터 ===================== */
-window.monsters = [
-  { id:'m-green-slime', name:'초록버섯', level:13, regions:['빅토리아'], img:'', drops:[{itemId:'4000012', name:'초록버섯의 갓'}] },
-  { id:'m-bubbling',    name:'버블링',   level:15, regions:['커닝시티'], img:'', drops:[{name:'버블링의 큰 방울'}] }
-];
-
-window.quests = [
-  { id:'q-nella-1-1', code:'넬라 1-1', title:'마파의 의뢰', type:'아이템 수집',
-    region:'빅토리아 아일랜드', minLevel:15,
-    summary:'초록버섯의 갓 50개, 버블링의 큰 방울 50개',
-    rewards:[ {exp:5600} ]   // ★ EXP 비율 계산에 필요
-  },
-  { id:'q-herb-2', code:'신입 2-1', title:'허브 채집', type:'아이템 수집',
-    region:'엘리넬', minLevel:30,
-    summary:'일반 허브 30개 모으기',
-    rewards:[ {exp:12000} ]
-  },
-  { id:'q-boss-1', code:'루더스 3-3', title:'루미너스 토벌', type:'보스',
-    region:'루더스 레이크', minLevel:120,
-    summary:'루미너스 처치',
-    rewards:[ {exp:250000} ]
+/* ============== Utils ============== */
+function imgBox(src, alt, size){ 
+  const px = (size === 12) ? 48 : 64;
+  if (src) {
+    return `<img src="${src}" alt="${alt||''}" loading="lazy" class="rounded-lg" style="display:block">`;
   }
-];
+  return `<div class="rounded-lg border bg-white flex items-center justify-center overflow-hidden"
+              style="width:${px}px;height:${px}px">
+            <span class="text-xs text-gray-400">No Img</span>
+          </div>`;
+}
 
-window.items = [
-  { id:'4000012', name:'초록버섯의 갓', category:'재료', from:['초록버섯'], neededBy:['넬라 1-1'], gives:[] },
-  { id:'2000006', name:'레몬', category:'소모품', from:['퀘스트 보상'], neededBy:[], gives:['넬라 1-1'] }
-];
-
-/* ===================== EXP 테이블 (1~200) ===================== */
-/* 너가 준 표를 그대로 사용. 쉼표 제거된 숫자. */
-const EXP_BUCKET = {
-  1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,
-  11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,
-  21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,
-  31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,
-  41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,
-  51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,
-  61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,
-  71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,
-  81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,
-  91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,
-  101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,
-  111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,
-  121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,
-  131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,
-  141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,
-  151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,
-  161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,
-  171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,
-  181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,
-  191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324
+/* ============== Images ============== */
+const IMG = {
+  nella: "https://drive.google.com/thumbnail?id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB&sz=w512",
+  greenCap: "https://drive.google.com/thumbnail?id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a&sz=w512",
+  lemon: "https://drive.google.com/thumbnail?id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw&sz=w512",
+  bubbleDrop: "https://drive.google.com/thumbnail?id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95&sz=w512",
+  kerning: "https://placehold.co/120x120?text=Kerning"
 };
 
-/* ===================== 공통 유틸 ===================== */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-const fmtNum = (n)=> n?.toLocaleString?.() ?? String(n);
+/* ============== Data ============== */
+const quests = [{
+  id: 'q-nella-1-1',
+  code: '넬라 1-1',
+  title: '마파의 의뢰',
+  type: '아이템 수집',
+  region: '빅토리아 아일랜드',
+  minLevel: 15,
+  start: { npc:{ name:'넬라', img:IMG.nella }, place:{ name:'커닝시티', img:IMG.kerning } },
+  finish:{ npc:{ name:'넬라', img:IMG.nella }, place:{ name:'커닝시티', img:IMG.kerning } },
+  reqItems:[
+    { name:'초록버섯의 갓', qty:50, img:IMG.greenCap },
+    { name:'버블링의 큰 방울', qty:50, img:IMG.bubbleDrop }
+  ],
+  rewards:[
+    { name:'레몬', qty:50, img:IMG.lemon },
+    { exp:5600 }
+  ],
+  dialogues:[
+    { who:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
+    { who:'넬라', text:'1000메소만 준다면 이 마을사람들의 여러 가지 정보를 모아서 너와 연결시켜 줄게.' },
+    { who:'넬라', text:'좋아! 1000 메소도 받았겠다. 약속은 지켜야 겠지? 우선 당장 급한 의뢰가 들어와 있으니 서둘러 주길 바래.' },
+    { who:'넬라', text:'<span class="font-bold text-blue-600">초록버섯의 갓 50개</span>와 <span class="font-bold text-blue-600">버블링의 큰 방울 50개</span>가 필요하다는데 너라면 이런것 모으는 것 쯤은 아무것도 아니겠지?' }
+  ],
+  completionDialogue:{ who:'넬라', text:'엇... 생각보다 빨리 돌아왔는걸? 역시 내가 사람보는 눈은 있다니까!' },
+  description: `커닝시티의 넬라에게 1,000 메소를 주고 이 마을 주민들이 도움을 필요로 할 때마다 소개시켜줄 것을 약속했다. 우선은 방어구 상점 주인은 마파가 새로운 방어구를 만들기 위한 재료로 초록버섯의 갓 50개와 버블링의 큰 방울 50개를 모아와 달라고 했다는데...
 
-/* ===================== EXP 비율 계산 ===================== */
-function getPlayerLevel(){
-  const el = $('#playerLevel');
-  if (!el) return null;
-  const v = parseInt(el.value, 10);
-  return Number.isFinite(v) ? v : null;
+초록버섯은 공사장이나 풀숲에서, 버블링은 지하철에서 흔히볼 수 있으니 그다지 어려울 것 같진 않은걸?`
+}];
+
+/* ============== Helpers ============== */
+function duoRow(labelLeft, imgLeft, nameLeft, labelRight, imgRight, nameRight){
+  return `<div class="flex items-center gap-4">
+    <div class="flex items-center gap-3">
+      ${imgBox(imgLeft, nameLeft, 16)}
+      <div class="text-sm"><div class="text-gray-500">${labelLeft}</div><div class="font-medium">${nameLeft||'-'}</div></div>
+    </div>
+    <div class="text-gray-300">|</div>
+    <div class="flex items-center gap-3">
+      ${imgBox(imgRight, nameRight, 16)}
+      <div class="text-sm"><div class="text-gray-500">${labelRight}</div><div class="font-medium">${nameRight||'-'}</div></div>
+    </div>
+  </div>`;
 }
-function pickQuestExp(q){
-  const exp = q?.rewards?.find?.(r=> typeof r?.exp === 'number')?.exp;
-  return typeof exp === 'number' ? exp : null;
+function reqItemView(r){
+  const left = imgBox(r.img, r.name, 16);
+  return `<div class="flex items-center gap-3">${left}<div class="text-sm font-medium">${r.name} ×${r.qty}</div></div>`;
 }
-function calcExpRatio(myLv, quest){
-  if (myLv == null) return null;
-  const bucket = EXP_BUCKET[myLv];
-  const exp = pickQuestExp(quest);
-  if (!bucket || !exp) return null;
-  return Math.max(0, Math.min(100, (exp / bucket) * 100)); // 0~100%로 클램프
+function rewardView(r){
+  if (typeof r.exp === 'number'){
+    return `<div class="flex items-center gap-3">
+      ${imgBox('', 'EXP', 16)}
+      <div class="text-sm font-medium">경험치 ${r.exp.toLocaleString()} exp</div>
+    </div>`;
+  }
+  const left = imgBox(r.img, r.name, 16);
+  return `<div class="flex items-center gap-3">${left}<div class="text-sm font-medium">${r.name} ×${r.qty}</div></div>`;
+}
+function dialogueView(d){
+  return `<div class="flex items-start gap-4">
+    ${imgBox(IMG.nella, d.who, 16)}
+    <div class="text-sm leading-snug mt-0.5"><b>${d.who||''}:</b> ${d.text||''}</div>
+  </div>`;
 }
 
-/* ===================== 렌더러 ===================== */
-function renderMonsters() {
-  const q = $('#searchInput')?.value?.trim()?.toLowerCase() || '';
-  const list = window.monsters.filter(m => {
-    const t = (m.name + ' ' + (m.regions||[]).join(' ')).toLowerCase();
-    return !q || t.includes(q);
-  });
-  $('#listMonsters').innerHTML = list.map(m => `
-    <a href="monster.html?id=${m.id}" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">
-      <div class="text-xs text-gray-500">Lv.${m.level} · ${(m.regions||[]).join(', ')||'-'}</div>
-      <div class="mt-1 font-semibold">${m.name}</div>
-    </a>
-  `).join('') || emptyCard('몬스터');
-}
+/* ============== Render ============== */
+(function(){
+  const $detail = document.getElementById('detail');
+  const id = new URLSearchParams(location.search).get('id') || 'q-nella-1-1';
+  let q = quests.find(x=> x.id===id);
+  if (!q) {
+    $detail.innerHTML = '<div class="p-6 text-center text-sm text-gray-500 bg-white rounded-xl border">퀘스트를 찾을 수 없습니다.</div>';
+    return;
+  }
+  $detail.innerHTML = `
+    <header class="mb-4">
+      <h1 class="text-2xl font-bold">${q.code} · ${q.title}</h1>
+      <p class="text-sm text-gray-600">${q.region} · ${q.type} · Lv.${q.minLevel}</p>
+    </header>
 
-function renderQuests() {
-  const q = $('#searchInput')?.value?.trim()?.toLowerCase() || '';
-  const myLv = getPlayerLevel(); // null이면 전체
-  const filtered = window.quests.filter(x => {
-    const txt = (x.code + ' ' + x.title + ' ' + (x.region||'') + ' ' + (x.type||'') + ' ' + (x.summary||'')).toLowerCase();
-    const textOk = !q || txt.includes(q);
-    if (!textOk) return false;
-    if (myLv == null) return true;        // 레벨 미입력 → 전체
-    const min = x.minLevel ?? 1;
-    return min <= myLv;                   // 내 레벨 이상에서 시작 가능한 퀘스트
-  });
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="rounded-xl border bg-white p-4">
+        <h2 class="text-sm font-semibold mb-3">시작</h2>
+        ${duoRow('시작 NPC', q.start?.npc?.img, q.start?.npc?.name, '시작 장소', q.start?.place?.img, q.start?.place?.name)}
+      </div>
+      <div class="rounded-xl border bg-white p-4">
+        <h2 class="text-sm font-semibold mb-3">완료</h2>
+        ${duoRow('완료 NPC', q.finish?.npc?.img, q.finish?.npc?.name, '완료 장소', q.finish?.place?.img, q.finish?.place?.name)}
+      </div>
+    </section>
 
-  $('#listQuests').innerHTML = filtered.map(x => {
-    const ratio = calcExpRatio(myLv, x); // null이면 표시 안 함
-    const ratioBar = (ratio==null) ? '' : `
-      <div class="mt-2">
-        <div class="flex items-center justify-between text-[11px] text-gray-500 mb-1">
-          <span>EXP 비율</span>
-          <span>${ratio.toFixed(1)}%</span>
+    <section class="mb-6">
+      <h2 class="text-sm font-semibold mb-2">퀘스트 조건</h2>
+      <div class="rounded-xl border bg-white p-4 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">조건 없음</div>'}
         </div>
-        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div class="h-2 bg-blue-500" style="width:${ratio}%;"></div>
+        <div class="text-sm leading-relaxed whitespace-pre-line text-gray-700">
+          ${q.description || ''}
         </div>
       </div>
-    `;
-    const expText = (() => {
-      const exp = pickQuestExp(x);
-      return exp ? `<div class="mt-1 text-[11px] text-gray-500">획득 EXP: ${fmtNum(exp)}</div>` : '';
-    })();
+    </section>
 
-    return `
-    <a href="quest.html?id=${x.id}" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">
-      <div class="text-xs text-gray-500">${x.region||'-'} · ${x.type||'-'} · Lv.${x.minLevel ?? 1}</div>
-      <div class="mt-1 font-semibold">${x.code ? x.code + ' · ' : ''}${x.title}</div>
-      ${x.summary ? `<div class="mt-1 text-xs text-gray-600">${x.summary}</div>`:''}
-      ${expText}
-      ${ratioBar}
-    </a>`;
-  }).join('') || emptyCard('퀘스트');
-}
+    <section class="mb-4">
+      <h2 class="text-sm font-semibold mb-2">완료 보상</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        ${(q.rewards||[]).map(rewardView).join('')}
+      </div>
+    </section>
 
-function renderItems() {
-  const q = $('#searchInput')?.value?.trim()?.toLowerCase() || '';
-  const list = window.items.filter(it => {
-    const txt = (it.name + ' ' + (it.category||'') + ' ' + (it.from||[]).join(' ') + ' ' + (it.neededBy||[]).join(' ') + ' ' + (it.gives||[]).join(' ')).toLowerCase();
-    return !q || txt.includes(q);
-  });
-  $('#listItems').innerHTML = list.map(it => `
-    <a href="item.html?id=${it.id}" class="block rounded-xl border bg-white p-4 hover:bg-gray-50">
-      <div class="text-xs text-gray-500">${it.category||'-'}</div>
-      <div class="mt-1 font-semibold">${it.name}</div>
-      <div class="mt-1 text-xs text-gray-600">획득처: ${(it.from||[]).join(', ')||'-'}</div>
-      ${it.neededBy?.length ? `<div class="mt-1 text-[11px] text-gray-500">필요 퀘스트: ${it.neededBy.join(', ')}</div>`:''}
-      ${it.gives?.length ? `<div class="mt-1 text-[11px] text-gray-500">보상 퀘스트: ${it.gives.join(', ')}</div>`:''}
-    </a>
-  `).join('') || emptyCard('아이템');
-}
-
-function emptyCard(label){
-  return `<div class="text-sm text-gray-500 p-4 rounded-xl border bg-white">${label}가 없습니다.</div>`;
-}
-
-/* ===================== 탭/이벤트 ===================== */
-function setActiveTab(tab){
-  $$('.tab-btn').forEach(b=>{
-    if (b.dataset.tab===tab) {
-      b.classList.add('bg-gray-900','text-white');
-      b.classList.remove('text-gray-700');
-    } else {
-      b.classList.remove('bg-gray-900','text-white');
-      b.classList.add('text-gray-700');
-    }
-  });
-  $('#listMonsters').classList.toggle('hidden', tab!=='monsters');
-  $('#listQuests').classList.toggle('hidden', tab!=='quests');
-  $('#listItems').classList.toggle('hidden', tab!=='items');
-
-  // 퀘스트 탭일 때만 레벨 입력칸 보이기
-  $('#questLevelWrap').classList.toggle('hidden', tab!=='quests');
-
-  if (tab==='monsters') renderMonsters();
-  if (tab==='quests')   renderQuests();
-  if (tab==='items')    renderItems();
-
-  const url = new URL(location.href);
-  url.searchParams.set('tab', tab);
-  history.replaceState({}, '', url.toString());
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('yy')?.append?.(new Date().getFullYear());
-
-  // 탭 버튼
-  $$('.tab-btn').forEach(b=>{
-    b.addEventListener('click', ()=> setActiveTab(b.dataset.tab));
-  });
-
-  // 검색/레벨 입력 반응
-  $('#searchInput').addEventListener('input', ()=>{
-    const tab = new URL(location.href).searchParams.get('tab') || 'quests';
-    if (tab==='monsters') renderMonsters();
-    if (tab==='quests')   renderQuests();
-    if (tab==='items')    renderItems();
-  });
-  $('#playerLevel')?.addEventListener('input', renderQuests);
-
-  // 초기 탭
-  const initialTab = new URL(location.href).searchParams.get('tab') || 'quests';
-  setActiveTab(initialTab);
-});
+    <section class="mb-10">
+      <h2 class="text-sm font-semibold mb-2">완료 대사</h2>
+      <div class="rounded-xl border bg-white p-4">
+        ${dialogueView(q.completionDialogue||{})}
+      </div>
+    </section>
+  `;
+})();
 </script>
+</body>
+</html>
