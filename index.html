@@ -1,107 +1,5 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>로나월드 • Monsters • Items • Quests</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>html{scroll-behavior:smooth}</style>
-</head>
-<body class="bg-gray-50 text-gray-900">
-  <div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-    <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">로나월드</h1>
-        
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="exportBtn" class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50">Export JSON</button>
-        <label class="inline-flex items-center">
-          <input id="importInput" type="file" accept="application/json" class="hidden" />
-          <span class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white hover:bg-gray-50 cursor-pointer">Import JSON</span>
-        </label>
-        <button id="resetBtn" class="inline-flex items-center gap-2 rounded-lg bg-gray-900 text-white px-3 py-2 text-sm hover:bg-gray-800">샘플 초기화</button>
-      </div>
-    </header>
-
-    <!-- Controls -->
-    <section class="mb-6 border bg-white rounded-xl p-4">
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
-        <div class="md:col-span-2">
-          <label class="text-xs text-gray-500">검색</label>
-          <div class="relative">
-            <input id="searchInput" placeholder="이름/지역/아이템 검색" class="w-full rounded-lg border px-3 py-2 pl-8" />
-            <svg class="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2a8 8 0 105.293 14.293l4.207 4.207 1.414-1.414-4.207-4.207A8 8 0 0010 2zm0 2a6 6 0 110 12A6 6 0 0110 4z"/></svg>
-          </div>
-        </div>
-        <div class="md:col-span-2">
-          <label class="text-xs text-gray-500">지역</label>
-          <select id="regionSelect" class="w-full rounded-lg border px-3 py-2"></select>
-        </div>
-        <div class="md:col-span-2 flex gap-2">
-          <div class="w-1/2">
-            <label class="text-xs text-gray-500">레벨 최소</label>
-            <input type="number" id="lvMin" value="1" min="1" max="300" class="w-full rounded-lg border px-3 py-2" />
-          </div>
-          <div class="w-1/2">
-            <label class="text-xs text-gray-500">레벨 최대</label>
-            <input type="number" id="lvMax" value="200" min="1" max="300" class="w-full rounded-lg border px-3 py-2" />
-          </div>
-        </div>
-
-        <!-- Items 탭 전용 -->
-        <div id="itemTypeWrap" class="hidden md:col-span-2">
-          <label class="text-xs text-gray-500">아이템 타입</label>
-          <div class="grid grid-cols-2 gap-2">
-            <select id="typeSelect" class="w-full rounded-lg border px-3 py-2"></select>
-            <input id="itemLocalSearch" placeholder="아이템 이름 검색" class="w-full rounded-lg border px-3 py-2" />
-          </div>
-        </div>
-
-        <!-- Quests 탭 전용 -->
-        <div id="questItemSearchWrap" class="hidden md:col-span-2">
-          <label class="text-xs text-gray-500">퀘스트 보상 아이템 검색</label>
-          <input id="questItemSearch" placeholder="획득 아이템 이름 검색" class="w-full rounded-lg border px-3 py-2" />
-        </div>
-        <div id="questTypeWrap" class="hidden md:col-span-2">
-          <label class="text-xs text-gray-500">퀘스트 조건</label>
-          <select id="questConditionSelect" multiple class="w-full rounded-lg border px-3 py-2 min-h-[3.2rem]">
-            <option value="all">전체</option>
-<option value="대화">대화</option>
-            <option value="아이템수집">아이템수집</option>
-            <option value="몬스터 사냥">몬스터 사냥</option>
-          </select>
-        </div>
-
-        <!-- Sort -->
-        <div id="sortWrap" class="md:col-span-2">
-          <label class="text-xs text-gray-500">정렬</label>
-          <select id="sortSelect" class="w-full rounded-lg border px-3 py-2"></select>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tabs -->
-    <nav class="mb-4 inline-flex rounded-xl bg-white border p-1">
-      <button data-tab="monsters" class="tab-btn px-3 py-2 text-sm rounded-lg bg-gray-900 text-white">몬스터</button>
-      <button data-tab="quests" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">퀘스트</button>
-      <button data-tab="items" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">아이템</button>
-    </nav>
-
-    <!-- Lists -->
-    <div id="status" class="mb-3 text-xs text-gray-500"></div>
-    <section id="listMonsters" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-    <section id="listQuests" class="hidden grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-    <section id="listItems" class="hidden grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
-
-    <footer class="mt-10 text-center text-xs text-gray-500">
-      <hr class="my-4" />
-      <p>© <span id="yy"></span> 로나월드 demo. Replace sample data via Import/Export.</p>
-    </footer>
-  </div>
-
 <script>
-// --------------------------- Sample Data (내장) ---------------------------
+// =================== 내장 샘플 데이터(처음 로드용) ===================
 const EMBEDDED = {
   items: [
     { id: "2000006", name: "레몬", type: "소비", img: "Lemon.png" },
@@ -122,55 +20,67 @@ const EMBEDDED = {
   ]
 };
 
-// --------------------------- LocalStorage IO ---------------------------
+// =================== LocalStorage IO ===================
 const LS = { monsters: "mapledex.monsters", quests: "mapledex.quests", items: "mapledex.items" };
 function readJSON(key, fallback){ try{ const raw=localStorage.getItem(key); return raw? JSON.parse(raw): fallback }catch(e){ return fallback } }
 function writeJSON(key, value){ try{ localStorage.setItem(key, JSON.stringify(value)) }catch(e){} }
 
+// =================== 상태/데이터 ===================
 let monsters = readJSON(LS.monsters, []);
 let quests   = readJSON(LS.quests, []);
 let items    = readJSON(LS.items, []);
 
-// Auto-fill with embedded sample on first load
+// 첫 실행이면 샘플 주입
 if(!monsters.length && !quests.length && !items.length){
   monsters = EMBEDDED.monsters; quests = EMBEDDED.quests; items = EMBEDDED.items;
   writeJSON(LS.monsters, monsters); writeJSON(LS.quests, quests); writeJSON(LS.items, items);
 }
 
-document.getElementById('yy').textContent = new Date().getFullYear();
+// =================== 엘리먼트 ===================
+document.getElementById('yy') && (document.getElementById('yy').textContent = new Date().getFullYear());
 const statusEl = document.getElementById('status');
+
 const tabs = document.querySelectorAll('.tab-btn');
 const listMonsters = document.getElementById('listMonsters');
 const listQuests   = document.getElementById('listQuests');
 const listItems    = document.getElementById('listItems');
+
 const searchInput  = document.getElementById('searchInput');
 const regionSelect = document.getElementById('regionSelect');
 const lvMin        = document.getElementById('lvMin');
 const lvMax        = document.getElementById('lvMax');
 
-// Items tab
+// 아이템 탭 컨트롤
 const typeSelect   = document.getElementById('typeSelect');
 const itemTypeWrap = document.getElementById('itemTypeWrap');
 const itemLocalSearch = document.getElementById('itemLocalSearch');
 
-// Quests tab
+// 퀘스트 탭 컨트롤
 const questItemSearch = document.getElementById('questItemSearch');
 const questItemSearchWrap = document.getElementById('questItemSearchWrap');
 const questTypeWrap = document.getElementById('questTypeWrap');
 const questConditionSelect = document.getElementById('questConditionSelect');
 
-// Sort
+// 정렬
 const sortWrap = document.getElementById('sortWrap');
 const sortSelect = document.getElementById('sortSelect');
 
-let activeTab = 'monsters';
+// Export/Import/Reset
+const exportBtn = document.getElementById('exportBtn');
+const importInput = document.getElementById('importInput');
+const resetBtn = document.getElementById('resetBtn');
+
+// =================== UI 상태 값 ===================
+let activeTab = 'quests'; // ← 모바일 기본 탭을 '퀘스트'로
 let q = '';
 let region = 'all';
-let levelRange = [Number(lvMin.value), Number(lvMax.value)];
+let levelRange = [Number(lvMin?.value||1), Number(lvMax?.value||300)];
 let typeFilter = 'all';
 let itemLocalQ = '';
 let questItemQ = '';
+let sortKey = null;
 
+// =================== 헬퍼 ===================
 function buildRegions(){
   const set = new Set();
   monsters.forEach(m=> m.regions?.forEach(r=> set.add(r)));
@@ -207,19 +117,15 @@ function buildSortOptions(){
   }
   sortSelect.innerHTML = opts.map(o=> `<option value="${o.v}">${o.t}</option>`).join('');
 }
-buildRegions(); buildItemTypes(); buildSortOptions();
-
 function getSelectedQuestTypes(){
-  const vals = Array.from(questConditionSelect.selectedOptions || []).map(o=> o.value);
-  if(vals.includes('all') || vals.length===0) return [];
+  const vals = Array.from(questConditionSelect?.selectedOptions || []).map(o=> o.value);
+  if(vals.includes('all') || vals.length===0) return []; // 전체 = 필터 해제
   return vals.filter(v=> v!=='all');
 }
-
 function EmptyCard(msg){ return `<div class="border rounded-xl bg-white p-6 text-sm text-gray-500 text-center col-span-full">${msg}</div>` }
-
 function MonsterCard(m){
   return `<article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='monster.html?id=${m.id}'">
-    <div class='flex justify-between mb-2'><h3 class='font-semibold truncate'>${m.name}</h3><span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${m.level}</span></div>
+    <div class='flex justify-between mb-2'><h3 class='font-semibold truncate'>${m.name}</h3><span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${m.level||'-'}</span></div>
     <div class='flex items-center gap-3'>
       ${m.img? `<img src='${m.img}' alt='${m.name}' class='w-14 h-14 object-cover rounded-lg border'/>`: ''}
       <div class='text-xs text-gray-500'>${(m.regions||[]).join(', ')}</div>
@@ -232,43 +138,61 @@ function ItemCard(i){
       ${i.img? `<img src='${i.img}' alt='${i.name}' class='w-12 h-12 object-cover rounded-lg border'/>`: ''}
       <div class='flex-1'>
         <h3 class='font-semibold mb-1 truncate'>${i.name}</h3>
-        <div class='text-xs text-gray-500'>${i.type}</div>
+        <div class='text-xs text-gray-500'>${i.type||''}</div>
       </div>
     </div>
   </article>`
 }
-function QuestCard(q){
-  return `<article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='quest.html?id=${q.id}'">
+function QuestCard(qq){
+  return `<article class='border rounded-xl bg-white p-4 hover:shadow-md transition-shadow cursor-pointer' onclick="location.href='quest.html?id=${qq.id}'">
     <div class='flex items-center justify-between mb-2'>
-      <h3 class='font-semibold truncate'>${q.code? q.code+' · ' : ''}${q.title}</h3>
-      ${q.minLevel? `<span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${q.minLevel}+</span>`: ''}
+      <h3 class='font-semibold truncate'>${qq.code? qq.code+' · ' : ''}${qq.title}</h3>
+      ${qq.minLevel? `<span class='text-xs px-2 py-0.5 bg-gray-900 text-white rounded-full'>Lv.${qq.minLevel}+</span>`: ''}
     </div>
     <div class='flex items-center gap-3 text-xs text-gray-500'>
-      ${q.npcImg? `<img src='${q.npcImg}' alt='NPC' class='w-10 h-10 object-contain rounded-lg border bg-white'/>`: ''}
-      <div>지역: ${q.region||'-'}</div>
+      ${qq.npcImg? `<img src='${qq.npcImg}' alt='NPC' class='w-10 h-10 object-contain rounded-lg border bg-white'/>`: ''}
+      <div>지역: ${qq.region||'-'}</div>
     </div>
   </article>`
 }
 
+// =================== 렌더 ===================
 function render(){
-  statusEl.textContent = `상태: monsters=${monsters.length} · quests=${quests.length} · items=${items.length}`;
+  statusEl && (statusEl.textContent = `상태: monsters=${monsters.length} · quests=${quests.length} · items=${items.length}`);
 
+  // 탭별 컨트롤 표시
   const showItemsControls  = activeTab==='items';
   const showQuestsControls = activeTab==='quests';
-  itemTypeWrap.classList.toggle('hidden', !showItemsControls);
-  questItemSearchWrap.classList.toggle('hidden', !showQuestsControls);
-  questTypeWrap.classList.toggle('hidden', !showQuestsControls);
+  itemTypeWrap?.classList.toggle('hidden', !showItemsControls);
+  questItemSearchWrap?.classList.toggle('hidden', !showQuestsControls);
+  questTypeWrap?.classList.toggle('hidden', !showQuestsControls);
 
-  listMonsters.classList.toggle('hidden', activeTab!=='monsters');
-  listQuests.classList.toggle('hidden',   activeTab!=='quests');
-  listItems.classList.toggle('hidden',    activeTab!=='items');
+  // 리스트 가시성
+  listMonsters?.classList.toggle('hidden', activeTab!=='monsters');
+  listQuests?.classList.toggle('hidden',   activeTab!=='quests');
+  listItems?.classList.toggle('hidden',    activeTab!=='items');
 
-  const ql = q.trim();
+  // 빈 퀘스트 안내 배너
+  (function(){
+    const bannerId = 'empty-quest-banner';
+    const old = document.getElementById(bannerId);
+    if(old) old.remove();
+    if(activeTab==='quests' && (!Array.isArray(quests) || quests.length===0)){
+      const bar = document.createElement('div');
+      bar.id = bannerId;
+      bar.className = 'mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-2';
+      bar.textContent = '퀘스트 데이터가 비어 있어요. 상단 Import JSON으로 불러오거나 Reset을 눌러 샘플을 로드하세요.';
+      document.querySelector('.max-w-7xl').insertBefore(bar, document.getElementById('status'));
+    }
+  })();
+
+  // 검색/필터 값
+  const ql = (searchInput?.value || '').trim();
 
   if(activeTab==='monsters'){
     const data = monsters.filter(m=>{
-      const hit = !ql || m.name.includes(ql) || (m.regions||[]).some(r=>r.includes(ql)) || (m.drops||[]).some(d=> d.name.includes(ql));
-      const inRegion = region==='all' || (m.regions||[]).some(r=> r.includes(region));
+      const hit = !ql || (m.name||'').includes(ql) || (m.regions||[]).some(r=> (r||'').includes(ql)) || (m.drops||[]).some(d=> (d.name||'').includes(ql));
+      const inRegion = region==='all' || (m.regions||[]).some(r=> (r||'').includes(region));
       const inLevel = (m.level||0) >= levelRange[0] && (m.level||0) <= levelRange[1];
       return hit && inRegion && inLevel;
     });
@@ -284,13 +208,13 @@ function render(){
   }
 
   if(activeTab==='quests'){
+    const selected = getSelectedQuestTypes();
     const data = quests.filter(qq=>{
-      const hit = !ql || (qq.code && qq.code.includes(ql)) || qq.title.includes(ql) || (qq.startNpc||'').includes(ql) || (qq.region && qq.region.includes(ql));
-      const inRegion = region==='all' || (qq.region && qq.region.includes(region));
-      const selected = getSelectedQuestTypes();
+      const hit = !ql || (qq.code && qq.code.includes(ql)) || (qq.title||'').includes(ql) || (qq.startNpc||'').includes(ql) || (qq.region||'').includes(ql);
+      const inRegion = region==='all' || (qq.region||'').includes(region);
       const typeOk = selected.length===0 || selected.some(t=> (qq.type===t) || (Array.isArray(qq.type) && qq.type.includes(t)));
       const itemName = (name)=> name && name.includes(questItemQ);
-      const itemOk = !questItemQ || ( (qq.rewards||[]).some(r=> itemName(r.name) || (r.itemId && (items.find(it=>it.id===r.itemId)?.name||'').includes(questItemQ))) );
+      const itemOk = !questItemQ || ((qq.rewards||[]).some(r=> itemName(r.name) || (r.itemId && (items.find(it=>it.id===r.itemId)?.name||'').includes(questItemQ))));
       return hit && inRegion && typeOk && itemOk;
     });
     const key = sortKey || 'q_lv_asc';
@@ -322,41 +246,51 @@ function render(){
   }
 }
 
-let sortKey = null;
-sortSelect.addEventListener('change', ()=>{ sortKey = sortSelect.value; render(); });
+// =================== 초기 빌드 ===================
+buildRegions();
+buildItemTypes();
+buildSortOptions();
+
+// '전체' 기본 선택 보장
+(function ensureQuestAllDefault(){
+  const hasSel = questConditionSelect && questConditionSelect.selectedOptions && questConditionSelect.selectedOptions.length>0;
+  const allOpt = Array.from(questConditionSelect?.options || []).find(o=> o.value==='all');
+  if(!hasSel && allOpt){ allOpt.selected = true; }
+})();
+
+// =================== 이벤트 ===================
+sortSelect?.addEventListener('change', ()=>{ sortKey = sortSelect.value; render(); });
+
 tabs.forEach(btn => btn.addEventListener('click', ()=>{
   tabs.forEach(b=> { b.classList.remove('bg-gray-900','text-white'); b.classList.add('text-gray-700'); });
   btn.classList.add('bg-gray-900','text-white'); btn.classList.remove('text-gray-700');
   activeTab = btn.dataset.tab; buildSortOptions(); render();
 }));
-searchInput.addEventListener('input', ()=> { q = searchInput.value; render(); });
-regionSelect.addEventListener('change', ()=> { region = regionSelect.value; render(); });
-[lvMin, lvMax].forEach(el => el.addEventListener('input', ()=> {
+
+searchInput?.addEventListener('input', ()=> { q = searchInput.value; render(); });
+regionSelect?.addEventListener('change', ()=> { region = regionSelect.value; render(); });
+[lvMin, lvMax].forEach(el => el?.addEventListener('input', ()=> {
   levelRange = [Number(lvMin.value)||1, Number(lvMax.value)||300];
   render();
 }));
-typeSelect.addEventListener('change', ()=> { typeFilter = typeSelect.value; render(); });
-itemLocalSearch.addEventListener('input', ()=> { itemLocalQ = itemLocalSearch.value; render(); });
-questItemSearch.addEventListener('input', ()=> { questItemQ = questItemSearch.value; render(); });
-questConditionSelect.addEventListener('change', ()=> {
+typeSelect?.addEventListener('change', ()=> { typeFilter = typeSelect.value; render(); });
+itemLocalSearch?.addEventListener('input', ()=> { itemLocalQ = itemLocalSearch.value; render(); });
+questItemSearch?.addEventListener('input', ()=> { questItemQ = questItemSearch.value; render(); });
+
+// 퀘스트 멀티셀렉트: '전체' 토글 로직
+questConditionSelect?.addEventListener('change', ()=>{
   const sel = Array.from(questConditionSelect.selectedOptions || []).map(o=> o.value);
   const allOpt = Array.from(questConditionSelect.options || []).find(o=> o.value==='all');
   if(sel.includes('all')){
-    // If '전체' selected, deselect others
     Array.from(questConditionSelect.options).forEach(o=> o.selected = (o.value==='all'));
   } else if(allOpt) {
-    // If any specific types selected, ensure '전체' is unselected
     allOpt.selected = false;
   }
   render();
 });
 
-// export/import/reset
-const exportBtn = document.getElementById('exportBtn');
-const importInput = document.getElementById('importInput');
-const resetBtn = document.getElementById('resetBtn');
-
-exportBtn.addEventListener('click', ()=>{
+// Export/Import/Reset
+exportBtn?.addEventListener('click', ()=>{
   const payload = { monsters, quests, items };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -364,7 +298,7 @@ exportBtn.addEventListener('click', ()=>{
   a.href = url; a.download = `mapledex-data-${Date.now()}.json`; a.click();
   URL.revokeObjectURL(url);
 });
-importInput.addEventListener('change', (evt)=>{
+importInput?.addEventListener('change', (evt)=>{
   const f = evt.target.files?.[0]; if(!f) return;
   const reader = new FileReader();
   reader.onload = ()=>{
@@ -378,22 +312,12 @@ importInput.addEventListener('change', (evt)=>{
   };
   reader.readAsText(f);
 });
-resetBtn.addEventListener('click', ()=>{
+resetBtn?.addEventListener('click', ()=>{
   monsters = EMBEDDED.monsters; quests = EMBEDDED.quests; items = EMBEDDED.items;
   writeJSON(LS.monsters, monsters); writeJSON(LS.quests, quests); writeJSON(LS.items, items);
   buildRegions(); buildItemTypes(); render();
 });
 
-// Ensure '전체' is selected by default if none
-function ensureQuestAllDefault(){
-  const hasSel = (questConditionSelect && questConditionSelect.selectedOptions && questConditionSelect.selectedOptions.length>0);
-  const allOpt = Array.from(questConditionSelect?.options || []).find(o=> o.value==='all');
-  if(!hasSel && allOpt){ allOpt.selected = true; }
-}
-ensureQuestAllDefault();
-
-// First paint
+// =================== 첫 렌더 ===================
 render();
 </script>
-</body>
-</html>
