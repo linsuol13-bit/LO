@@ -17,15 +17,17 @@
 <script>
 document.getElementById('yy').textContent = new Date().getFullYear();
 
-// --- 샘플 퀘스트 데이터 ---
+// --- 샘플 퀘스트 데이터 (완료 장소=커닝시티, 완료 NPC=넬라) ---
 const EMBEDDED = {
   quests: [{
     id: 'q-nella-1-1',
     code: '넬라 1-1',
     title: '마파의 의뢰',
     startNpc: '넬라',
+    startNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB', // 선택 필드
     completeNpc: '넬라',
-    npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB',
+    completeNpcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB', // 없으면 startNpcImg 사용
+    npcImg: 'https://drive.google.com/uc?export=view&id=1oMpXQbJaijD-npUVu2JR7d-cF5_TgsjB', // 구버전 호환
     startPlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
     completePlace: { name: '커닝시티', img: 'https://placehold.co/240x135?text=%EC%BB%A4%EB%8B%9D%EC%8B%9C%ED%8B%B0' },
     region: '커닝시티',
@@ -43,8 +45,7 @@ const EMBEDDED = {
       { speaker:'플레이어', text:'네, 진행하겠습니다.' },
       { speaker:'넬라', text:'레몬을 잔뜩 맡기셨어요. 보상 받아가~' }
     ]
-  }],
-  items: []
+  }]
 };
 
 // --- 상태/데이터 ---
@@ -60,18 +61,27 @@ try {
 // --- 헬퍼 ---
 function safeImg(src, cls, alt='img'){
   const esc = String(src||'');
-  if(!esc) return '<div class="w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500">NO<br/>IMG</div>';
-  return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO\nIMG'}))">`;
+  if(!esc) return '<div class="w-16 h-16 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500">NO IMG</div>';
+  return `<img src="${esc}" alt="${alt}" class="${cls}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'w-16 h-16 rounded-lg border bg-gray-100 flex items-center justify-center text-[10px] text-gray-500',innerText:'NO IMG'}))">`;
+}
+function miniCard(title, imgSrc, nameText){
+  return `<div class="border rounded-xl p-3 bg-white flex items-center gap-3">
+    ${ safeImg(imgSrc, 'w-16 h-16 object-contain rounded-lg border bg-white', title) }
+    <div class="text-sm">
+      <div class="text-gray-500">${title}</div>
+      <div class="font-medium">${nameText||'-'}</div>
+    </div>
+  </div>`;
 }
 function reqItemView(r){
-  const img = r.img ? safeImg(r.img, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', r.name) : '';
+  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg border bg-white p-1', r.name) : '';
   return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
 }
 function rewardView(r){
   if(typeof r.exp==='number'){
     return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'><div class='text-sm'>EXP ${r.exp.toLocaleString()}</div></div>`;
   }
-  const img = r.img ? safeImg(r.img, 'w-10 h-10 rounded-lg border bg-white object-contain p-1', r.name) : '';
+  const img = r.img ? safeImg(r.img, 'w-10 h-10 object-contain rounded-lg border bg-white p-1', r.name) : '';
   return `<div class='border rounded-lg p-2 bg-white flex items-center gap-2'>${img}<div class='text-sm'>${r.name} x${r.qty}</div></div>`;
 }
 function chatBubble(d, npcImg){
@@ -92,64 +102,60 @@ const detail = document.getElementById('detail');
 if(!q){
   detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>퀘스트를 찾을 수 없어요</div>";
 }else{
-  const normalDialogs = q.dialogues.filter(d=> !(d.text||'').includes('레몬'));
-  const completionDialogs = q.dialogues.filter(d=> (d.text||'').includes('레몬'));
+  const npcStartImg = q.startNpcImg || q.npcImg || '';
+  const npcCompleteImg = q.completeNpcImg || q.npcImg || q.startNpcImg || '';
+
+  const normalDialogs = (q.dialogues||[]).filter(d=> !(d.text||'').includes('레몬'));
+  const completionDialogs = (q.dialogues||[]).filter(d=> (d.text||'').includes('레몬'));
 
   detail.innerHTML = `
     <div class='space-y-6'>
-      <h2 class='text-xl font-semibold mb-2'>${q.code} · ${q.title}</h2>
+      <h2 class='text-xl font-semibold mb-2'>${q.code? q.code + ' · ' : ''}${q.title}</h2>
+      <div class='text-sm text-gray-500'>${q.region||'-'}${q.minLevel? ' · Lv.'+q.minLevel+'+':''}${q.type? ' · '+q.type:''}</div>
 
-      <!-- 시작 장소 + 시작 NPC -->
+      <!-- 시작: NPC(사진+이름) + 장소(사진+이름) -->
       <section>
-        <h3 class='text-sm font-semibold mb-2'>시작 장소</h3>
-        <div class='flex items-center gap-3'>
-          ${q.startPlace?.img ? safeImg(q.startPlace.img,'w-40 h-24 object-cover rounded-lg border bg-white','Start Place'):''}
-          <div class='text-sm flex-1'>
-            <div class='font-medium'>${q.startPlace?.name}</div>
-            <div class='text-gray-500'>퀘스트 시작 위치</div>
-          </div>
-          <div class="text-sm text-gray-700">시작 NPC: <span class="font-medium">${q.startNpc}</span></div>
+        <h3 class='text-sm font-semibold mb-2'>시작</h3>
+        <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+          ${ miniCard('시작 NPC', npcStartImg, q.startNpc) }
+          ${ miniCard('시작 장소', q.startPlace?.img, q.startPlace?.name || q.region) }
         </div>
       </section>
 
-      <!-- 조건 -->
+      <!-- 퀘스트 조건 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>퀘스트 조건</h3>
-        <div class='flex flex-wrap gap-3'>${q.reqItems.map(reqItemView).join('')}</div>
+        <div class='flex flex-wrap gap-3'>${(q.reqItems||[]).map(reqItemView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
       <!-- 대사 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>대사</h3>
         <div class='border rounded-xl bg-gray-50 p-3 space-y-3 max-h-96 overflow-y-auto'>
-          ${normalDialogs.map(d=>chatBubble(d,q.npcImg)).join('')}
+          ${ normalDialogs.length ? normalDialogs.map(d=>chatBubble(d,q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
 
-      <!-- 완료 장소 + 완료 NPC -->
+      <!-- 완료: NPC(사진+이름) + 장소(사진+이름) -->
       <section>
-        <h3 class='text-sm font-semibold mb-2'>완료 장소</h3>
-        <div class='flex items-center gap-3'>
-          ${q.completePlace?.img ? safeImg(q.completePlace.img,'w-40 h-24 object-cover rounded-lg border bg-white','Complete Place'):''}
-          <div class='text-sm flex-1'>
-            <div class='font-medium'>${q.completePlace?.name}</div>
-            <div class='text-gray-500'>퀘스트 완료 위치</div>
-          </div>
-          <div class="text-sm text-gray-700">완료 NPC: <span class="font-medium">${q.completeNpc}</span></div>
+        <h3 class='text-sm font-semibold mb-2'>완료</h3>
+        <div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+          ${ miniCard('완료 NPC', npcCompleteImg, q.completeNpc) }
+          ${ miniCard('완료 장소', q.completePlace?.img, q.completePlace?.name || q.region) }
         </div>
       </section>
 
       <!-- 완료 보상 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 보상</h3>
-        <div class='flex flex-wrap gap-3'>${q.rewards.map(rewardView).join('')}</div>
+        <div class='flex flex-wrap gap-3'>${(q.rewards||[]).map(rewardView).join('') || '<div class="text-sm text-gray-500">-</div>'}</div>
       </section>
 
       <!-- 완료 대사 -->
       <section>
         <h3 class='text-sm font-semibold mb-2'>완료 대사</h3>
-        <div class='border rounded-xl bg-gray-50 p-3 space-y-3'>
-          ${completionDialogs.map(d=>chatBubble(d,q.npcImg)).join('')}
+        <div class="border rounded-xl bg-gray-50 p-3 space-y-3">
+          ${ completionDialogs.length ? completionDialogs.map(d=> chatBubble(d, q.npcImg)).join('') : '<div class="text-sm text-gray-500">-</div>' }
         </div>
       </section>
     </div>`;
