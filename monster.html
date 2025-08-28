@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monster Detail • MapleDex</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+  <a href="index.html" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록으로</a>
+  <div id="status" class="mb-3 text-xs text-gray-500"></div>
+  <article id="detail" class="border rounded-xl bg-white p-4"></article>
+  <footer class="mt-10 text-center text-xs text-gray-500"><hr class="my-4"/><p>© <span id="yy"></span> MapleDex demo.</p></footer>
+</div>
+<script>
+document.getElementById('yy').textContent = new Date().getFullYear();
+const LS = { monsters: "mapledex.monsters", quests: "mapledex.quests", items: "mapledex.items" };
+function readJSON(key, fallback){ try{ const raw=localStorage.getItem(key); return raw? JSON.parse(raw): fallback }catch(e){ return fallback } }
+let monsters = readJSON(LS.monsters, []);
+let items    = readJSON(LS.items, []);
+const EMBEDDED = {
+  monsters: [{ id:'m-slime', name:'슬라임', level:5, img:'', regions:['헤네시스'], mapHints:'', drops:[{id:'2000006', name:'레몬'}] }],
+  items: [{id:'2000006', name:'레몬', type:'소비', img:'Lemon.png'}]
+};
+if(!monsters.length && !items.length){ monsters = EMBEDDED.monsters; items = EMBEDDED.items; localStorage.setItem(LS.monsters, JSON.stringify(monsters)); localStorage.setItem(LS.items, JSON.stringify(items)); }
+
+const params = new URLSearchParams(location.search);
+let id = params.get('id');
+document.getElementById('status').textContent = `상태: monsters=${monsters.length} · id="${id||''}"`;
+if(!id && monsters.length){ id = monsters[0].id; history.replaceState({}, '', location.pathname + '?id=' + encodeURIComponent(id)); }
+const m = monsters.find(x=> x.id===id);
+
+function chipDrop(d){
+  const it = items.find(x=> x.id===d.id);
+  const img = it&&it.img? `<img src='${it.img}' alt='${d.name}' class='w-10 h-10 rounded-lg border'/>` : '';
+  return `<a href="item.html?id=${d.id}" class="text-left border rounded-lg p-2 bg-white hover:bg-gray-50 flex items-center gap-2">
+    ${img}
+    <div class="text-sm"><div class="font-medium">${d.name}</div><div class="text-xs text-gray-500">${d.rarity||''}</div></div>
+  </a>`;
+}
+
+document.getElementById('detail').innerHTML = m? `
+  <div class="space-y-4">
+    <div class="flex items-center gap-4">
+      ${m.img? `<img src='${m.img}' alt='${m.name}' class="max-h-40 object-contain rounded-xl border bg-white p-2"/>`: ''}
+      <div>
+        <h2 class="text-xl font-semibold">${m.name}</h2>
+        <div class="text-sm text-gray-500">Lv.${m.level||'-'}</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+      <div><div class="text-xs font-medium mb-1">지역</div>${(m.regions||[]).map(r=>`<div>${r}</div>`).join('')||'-'}</div>
+      <div><div class="text-xs font-medium mb-1">속성</div>${(m.attributes||[]).length? m.attributes.map(a=>`<span class="inline-block text-[11px] px-2 py-0.5 rounded-full border mr-1 mb-1">${a}</span>`).join(''):'-'}</div>
+    </div>
+    ${m.mapHints? `<div class="text-sm text-gray-600"><span class="font-medium text-gray-800">위치 팁: </span>${m.mapHints}</div>`:''}
+    <div>
+      <div class="text-xs font-medium mb-2">드랍 아이템</div>
+      <div class="flex flex-wrap gap-3">${(m.drops||[]).map(chipDrop).join('')||'<div class="text-sm text-gray-500">-</div>'}</div>
+    </div>
+  </div>
+` : `<div class='p-6 text-center text-sm text-gray-500'>몬스터를 찾을 수 없어요</div>`;
+</script>
+</body>
+</html>
