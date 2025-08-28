@@ -9,8 +9,8 @@
   <style>
     :root { --ui-font: 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
     body { font-family: var(--ui-font); }
-    /* range track height fix for webkit */
-    input[type="range"] { height: 2px; }
+    /* range handle height fix */
+    input[type="range"]{ height: 2px; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -148,7 +148,7 @@ const SAMPLE = {
         { itemId:'4000012', qty:50, name:'초록버섯의 갓', img:'https://drive.google.com/uc?export=view&id=1Rm0qGD6IRWwysP0WVvQYUzMulNbHDRMO' },
         { itemId:'4000013', qty:50, name:'버블링의 큰 방울', img:'https://drive.google.com/uc?export=view&id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95' }
       ],
-      rewards:[ { exp:5600 } ],
+      rewards:[ { itemId:'2000006', qty:50, name:'레몬', img:'https://drive.google.com/uc?export=view&id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw' }, { exp:5600 } ],
       dialogues:[
         { speaker:'넬라', text:'어머? 못보던 사람인걸? 내가 모르는걸 보니 이 마을 사람은 아닌 모양이지?' },
         { speaker:'플레이어', text:'네, 진행하겠습니다.' },
@@ -200,10 +200,24 @@ let expBucket = 10000;
 let expRatioMin = 0;
 
 // --------- util ---------
-// --- 아이템 <-> 퀘스트 관계 맵 ---
+function applyActiveTabClasses(){
+  tabs.forEach(b=>{
+    if(b.dataset.tab === activeTab){
+      b.classList.add('bg-gray-900','text-white');
+      b.classList.remove('text-gray-700');
+    } else {
+      b.classList.remove('bg-gray-900','text-white');
+      b.classList.add('text-gray-700');
+    }
+  });
+}
+function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
+function sumQuestExp(q){ return (q.rewards||[]).reduce((a,r)=> a + (typeof r.exp==='number' ? r.exp : 0), 0); }
+function computeExpRatio(q, bucket){ const b = Number(bucket||0); if(!b) return 0; return Math.round((sumQuestExp(q)/b)*100); }
+
+// 아이템 <-> 퀘스트 링크 유틸
 function buildItemQuestLinks(items, quests){
-  const requiredBy = {}; // itemId -> [quest]
-  const rewardedBy = {}; // itemId -> [quest]
+  const requiredBy = {}; const rewardedBy = {};
   items.forEach(it=>{ requiredBy[it.id]=[]; rewardedBy[it.id]=[]; });
   quests.forEach(q=>{
     (q.reqItems||[]).forEach(r=>{ if(requiredBy[r.itemId]) requiredBy[r.itemId].push(q); });
@@ -219,26 +233,6 @@ function sourcesLine(it){
   return arr.slice(0,2).join(' · ') + ` 외 ${arr.length-2}곳`;
 }
 
-
-function questsNeedingItem(itemId){
-  return (SAMPLE.quests||[]).filter(q=> (q.reqItems||[]).some(r=> r.itemId===itemId));
-}
-
-function applyActiveTabClasses(){
-  tabs.forEach(b=>{
-    if(b.dataset.tab === activeTab){
-      b.classList.add('bg-gray-900','text-white');
-      b.classList.remove('text-gray-700');
-    } else {
-      b.classList.remove('bg-gray-900','text-white');
-      b.classList.add('text-gray-700');
-    }
-  });
-}
-function sumQuestExp(q){ return (q.rewards||[]).reduce((a,r)=> a + (typeof r.exp==='number' ? r.exp : 0), 0); }
-function computeExpRatio(q, bucket){ const b = Number(bucket||0); if(!b) return 0; return Math.round((sumQuestExp(q)/b)*100); }
-function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
-
 // --------- 렌더 ---------
 function render(){
   const q = (searchInput.value||'').trim();
@@ -249,7 +243,6 @@ function render(){
   const showQue = activeTab==='quests';
   const showItem = activeTab==='items';
 
-  listMonsters.parentElement.classList.toggle('hidden', !showMon && !showQue && !showItem); // container always exists
   listMonsters.classList.toggle('hidden', !showMon);
   listQuests.classList.toggle('hidden', !showQue);
   listItems.classList.toggle('hidden', !showItem);
@@ -329,10 +322,24 @@ function render(){
       return `
       <article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">
         ${safeImg(it.img, it.name, 'w-full h-36 object-contain rounded-lg mb-2 bg-white')}
+        <h3 class="font-semibold">${it.name}</h3>
+        <div class="flex items-center gap-2 text-xs text-gray-600 mt-0.5">
+          <span class="px-2 py-0.5 rounded-full border bg-white">${it.category || it.type || '-'}</span>
+          <span>${it.type||'-'}</span>
+        </div>
+        ${ it.desc ? `<p class="text-sm text-gray-700 mt-1 line-clamp-2">${it.desc}</p>` : '' }
+        ${ srcTxt ? `<div class="text-xs text-gray-600 mt-1">획득처: ${srcTxt}</div>` : '' }
+        <div class="text-xs text-gray-600 mt-2 flex flex-wrap gap-3">
+          <a href="item.html?id=${encodeURIComponent(it.id)}#required" class="text-blue-600 hover:underline">필요 퀘스트 ${reqQs.length}개</a>
+          <a href="item.html?id=${encodeURIComponent(it.id)}#rewarded" class="text-blue-600 hover:underline">보상 퀘스트 ${rewQs.length}개</a>
+        </div>
+        <a href="item.html?id=${encodeURIComponent(it.id)}" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>
+      </article>`;
+    }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 아이템이 없습니다.</div>';
+  }
+}
 
-
-  // --------- 초기화
- ---------
+// --------- 초기화 ---------
 function buildRegions(){
   const regs = new Set(['all']);
   SAMPLE.monsters.forEach(m=> regs.add(m.region||''));
