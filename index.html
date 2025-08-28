@@ -6,6 +6,24 @@
   <title>로나월드 • Monsters • Items • Quests</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>html{scroll-behavior:smooth}</style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* 1) 먼저 사용자의 PC에 설치된 구매 폰트를 찾습니다 (배포 없이 사용 가능) */
+    @font-face {
+      font-family: 'MyGameFont';
+      src: local('MyGameFont'); /* 여기의 이름을 실제 폰트 이름으로 바꾸세요 */
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    /* 2) 방문자에게는 무료 웹폰트(Noto Sans KR)로 안전하게 폴백 */
+    :root {
+      --ui-font: 'MyGameFont', 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', Roboto, 
+                 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+    body { font-family: var(--ui-font); }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
   <div class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
