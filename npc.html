@@ -12,6 +12,9 @@
     .thumb { width:96px; height:96px; object-fit:contain; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; padding:8px; }
     .pill { font-size:12px; padding:.25rem .5rem; border:1px solid #e5e7eb; border-radius:999px; background:#fff; }
     a { color:#2563eb; }
+  .map-box { display:inline-block; padding:0; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; overflow:hidden; }
+.map-head { padding:0.75rem 1rem; font-size:14px; font-weight:600; border-bottom:1px solid #f1f5f9; }
+.map-img { display:block; width:100%; height:auto; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -30,11 +33,12 @@
       id: 'npc-nella',
       name: '넬라',
       place: '커닝시티',
+      map: { id: 'map-kerning', name: '커닝시티', img: 'https://drive.google.com/thumbnail?id=1zPud0rosmJ7gIp6pDyPxAYq--p5vL3xN&sz=1700x668' },
       img: 'https://maplestory.io/api/KMS/338/npc/1052103/icon',
       quests: [
         { id:'2029', title:'마파의 의뢰', minLevel:15, link:'quest.html?id=2029' }
       ],
-      map: { name:'커닝시티', img:'' } // 비워둠
+
     }
   ];
 
@@ -57,20 +61,19 @@
   `).join('') || '<div class="text-sm text-gray-500">진행 가능한 퀘스트가 없습니다.</div>';
 
   const mapBlock = npc.map
-    ? `
-      <div class="card">
-        <div class="text-sm font-semibold mb-2">${npc.map.name||'맵'}</div>
-        ${npc.map.img ? img(npc.map.img, npc.map.name) : '<div class="text-xs muted">이미지가 없습니다.</div>'}
-      </div>
+  ? `
+      <a class="map-box inline-block" href="${npc.map.id ? `map.html?id=${npc.map.id}` : '#'}">
+        <div class="map-head">${npc.map.name||'맵'}</div>
+        ${npc.map.img ? `<img class="map-img" src="${npc.map.img}" alt="${npc.map.name}" onerror="this.style.display='none'">` : '<div class="text-xs muted p-3">이미지가 없습니다.</div>'}
+      </a>
     `
-    : '';
+  : '';
 
   $detail.innerHTML = `
     <header class="mb-4 flex items-center gap-4">
       ${img(npc.img, npc.name, 'thumb')}
       <div class="min-w-0">
-        <h1 class="text-2xl font-bold">${npc.name}</h1>
-        <div class="text-sm muted">${npc.place||'-'}</div>
+        <h1 class="text-2xl font-bold">${npc.name}</h1><div class="text-sm muted">${npc.map && npc.map.id ? `<a href="map.html?id=${npc.map.id}" class="text-blue-600 hover:underline">${npc.place||"-"}</a>` : (npc.place||"-")}</div>
       </div>
     </header>
 
