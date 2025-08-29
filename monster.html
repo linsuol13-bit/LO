@@ -15,17 +15,18 @@
 function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
 const SAMPLE = {
   items: [
-    { id:'4000012', name:'초록버섯의 갓', img:'https://placehold.co/120x90?text=Cap' },
-    { id:'2000006', name:'레몬', img:'https://placehold.co/120x90?text=Lemon' }
+    { id:'4000012', name:'초록버섯의 갓', img:'https://drive.google.com/thumbnail?id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a&sz=w512' },
+    { id:'2000006', name:'레몬', img:'https://placehold.co/120x90?text=Lemon' },
+    { id:'4000037', name:'버블링의 큰 방울', img:'https://drive.google.com/thumbnail?id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95&sz=w512' }
   ],
   monsters: [
-    { id:'m-1', name:'초록버섯', level:10, exp:12, regions:['빅토리아 아일랜드'], img:'https://placehold.co/320x240?text=Green', drops:['4000012'] },
-    { id:'m-2', name:'버블링', level:12, exp:18, regions:['빅토리아 아일랜드'], img:'https://placehold.co/320x240?text=Bubble', drops:['2000006'] }
+    { id:'1110100', name:'초록버섯', level:10, exp:12, regions:['빅토리아 아일랜드'], img:'https://drive.google.com/thumbnail?id=1zyqRL1fHCHGqnDQED1VecF9g1vERURMe&sz=w256', drops:['4000012'] },
+    { id:'1210103', name:'버블링', level:12, exp:18, regions:['빅토리아 아일랜드'], img:'https://drive.google.com/thumbnail?id=152JwPSvhWxCSAIUVYU-wN69RECJ2C4rN&sz=w256', drops:['4000037'] }
   ]
 };
 const params = new URLSearchParams(location.search);
 const id = params.get('id')||'';
-const mon = SAMPLE.monsters.find(x=> x.id===id);
+const mon = (SAMPLE.monsters||[]).find(x=> String(x.id)===String(id));
 function findItem(iid){ return SAMPLE.items.find(i=> i.id===iid); }
 const detail = document.getElementById('detail');
 if(!mon){ detail.innerHTML = "<div class='p-6 text-center text-sm text-gray-500'>몬스터를 찾을 수 없어요</div>"; }

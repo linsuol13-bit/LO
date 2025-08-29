@@ -10,6 +10,9 @@
     input[type="range"]{ height:2px; }
     /* 카드 밑으로 컨트롤 링크 클릭이 새는 걸 방지 */
     .controls { position: relative; z-index: 20; }
+    /* 탭이 항상 클릭되도록 보장 */
+    nav.tabs { position: relative; z-index: 40; }
+    .tab-btn { cursor: pointer; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -61,7 +64,15 @@
       </div>
       <div id="playerLevelWrap" class="hidden md:col-span-2">
         <label class="text-xs text-gray-500">플레이어 레벨</label>
-        <input id="playerLevelInput" type="number" min="1" max="200" value="100" class="w-full rounded-lg border px-3 py-2" />
+        <input id="playerLevelInput" type="number" min="1" max="200" class="w-full rounded-lg border px-3 py-2" />
+        <p id="playerHint" class="text-[11px] text-gray-500 mt-1">필터: 입력 레벨(≤) 이하만 표시 • 현재: 없음</p>
+      </div>
+      <div id="levelCompWrap" class="hidden md:col-span-2" style="display:none">
+        <label class="text-xs text-gray-500">레벨 비교</label>
+        <select id="levelCompSelect" class="w-full rounded-lg border px-3 py-2">
+          <option value="ge">플레이어 레벨 이상(≥)</option>
+          <option value="le">플레이어 레벨 이하(≤)</option>
+        </select>
       </div>
       <div id="expBucketWrap" class="hidden md:col-span-2">
         <label class="text-xs text-gray-500">경험치 통</label>
@@ -72,7 +83,7 @@
   </section>
 
   <!-- Tabs -->
-  <nav class="mb-4 inline-flex rounded-xl bg-white border p-1">
+  <nav class="tabs mb-4 inline-flex rounded-xl bg-white border p-1">
     <button data-tab="monsters" class="tab-btn px-3 py-2 text-sm rounded-lg bg-gray-900 text-white">몬스터</button>
     <button data-tab="quests" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">퀘스트</button>
     <button data-tab="items" class="tab-btn px-3 py-2 text-sm rounded-lg text-gray-700">아이템</button>
@@ -90,7 +101,6 @@
 </div>
 
 <script>
-// --- Safe guards: avoid crashing if any element missing ---
 (function(){
   'use strict';
 
@@ -98,33 +108,37 @@
   const $$ = (sel)=> Array.from(document.querySelectorAll(sel));
 
   const yy = $('yy'); if (yy) yy.textContent = new Date().getFullYear();
-  function safeImg(src, alt, cls){ if(!src) return ''; return '<img src="'+src+'" alt="'+(alt||'')+'" class="'+(cls||'')+'" onerror="this.style.display=\'none\'">'; }
+  function safeImg(src, alt, cls){
+    if(!src) src = DEFAULT_IMG;
+    return '<img src="'+src+'" alt="'+(alt||'')+'" class="'+(cls||'')+'" onerror="if(!this.dataset.fallback){this.dataset.fallback=1;this.src=DEFAULT_IMG;}">';
+  }
   function formatNumber(n){ n = Number(String(n).replace(/[^0-9.-]/g,''))||0; return n.toLocaleString(); }
   function uncomma(s){ return String(s||'').replace(/[^0-9]/g,''); }
   function sumQuestExp(q){ return (q.rewards||[]).reduce((a,r)=> a + (typeof r.exp==='number' ? r.exp : 0), 0); }
   function computeExpRatio(q, bucket){ const b = Number(bucket||0); if(!b) return 0; return Math.round((sumQuestExp(q)/b)*100); }
 
-  // --- Data (minimal but valid) ---
+  // FULL EXP TABLE (1..200) as in your original
   const EXP_TABLE = {1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324 };
 
+  const DEFAULT_IMG = 'https://placehold.co/200x150?text=No+Image';
   const DATA = {
     monsters: [
-      { id:'m-1', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://placehold.co/200x150?text=Green+Mush' },
-      { id:'m-2', name:'버블링', level:12, region:'빅토리아 아일랜드', img:'https://placehold.co/200x150?text=Bubble+Ring' }
+      { id:'1110100', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://drive.google.com/thumbnail?id=1zyqRL1fHCHGqnDQED1VecF9g1vERURMe&sz=w256' },
+      { id:'1210103', name:'버블링', level:12, region:'빅토리아 아일랜드', img:'https://drive.google.com/thumbnail?id=152JwPSvhWxCSAIUVYU-wN69RECJ2C4rN&sz=w256' }
     ],
     items: [
-      { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻는 갓.', img:'https://placehold.co/200x150?text=Cap' },
-      { id:'2000006', name:'레몬', type:'소비', category:'소모품', desc:'체력을 회복.', img:'https://placehold.co/200x150?text=Lemon' }
+      { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻는 갓.', img:'https://drive.google.com/thumbnail?id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a&sz=w256' },
+      { id:'2010004', name:'레몬', type:'소비', category:'소모품', desc:'체력을 회복.', img:'https://drive.google.com/thumbnail?id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw&sz=w256' }
     ],
     quests: [
-      { id:'q-1', code:'넬라 1-1', title:'마파의 의뢰', region:'빅토리아 아일랜드', type:'아이템수집', minLevel:15,
-        npcImg:'https://placehold.co/80x80?text=NPC',
+      { id:'2029', code:'넬라 1-1', title:'마파의 의뢰', region:'빅토리아 아일랜드', type:'아이템수집', minLevel:15,
+        npcImg:'https://drive.google.com/thumbnail?id=1P7XjDO-rGZtTBXHv3CZFUzdf-KtCEqtb&sz=w256',
         rewards:[ { itemId:'2000006', qty:50, name:'레몬' }, { exp:5600 } ]
       }
     ]
   };
 
-  // --- Elements ---
+  // Elements
   const listMonsters = $('listMonsters');
   const listQuests = $('listQuests');
   const listItems = $('listItems');
@@ -141,18 +155,22 @@
   const expRatioBadge = $('expRatioBadge');
   const playerLevelWrap = $('playerLevelWrap');
   const playerLevelInput = $('playerLevelInput');
+  const levelCompWrap = $('levelCompWrap');
+  const levelCompSelect = $('levelCompSelect');
   const expBucketWrap = $('expBucketWrap');
   const expBucketInput = $('expBucketInput');
   const bucketLabelValue = $('bucketLabelValue');
+  const playerHint = $('playerHint');
   const tabs = $$('.tab-btn');
 
-  // --- State ---
+  // State
   let activeTab = 'monsters';
   let levelRange = [1,200];
   let expBucket = EXP_TABLE[100];
   let expRatioMin = 0;
+  let playerLevel = null; // NEW: 입력 레벨 이상만 보기
 
-  // --- Builders ---
+  // Builders
   function buildRegions(){
     if(!regionSelect) return;
     const regs = new Set(['all']);
@@ -167,7 +185,6 @@
     typeSelect.innerHTML = Array.from(types).map(t=> '<option value="'+t+'">'+(t==='all'?'전체':t)+'</option>').join('');
     typeSelect.value = 'all';
   }
-
   function applyActiveTabClasses(){
     tabs.forEach(b=>{
       const on = (b.getAttribute('data-tab') === activeTab);
@@ -175,7 +192,7 @@
     });
   }
 
-  // --- Renderers ---
+  // Render
   function render(){
     const q = (searchInput && searchInput.value ? searchInput.value.trim() : '');
     const lvMin = levelRange[0], lvMax = levelRange[1];
@@ -187,6 +204,7 @@
     if(itemTypeWrap) itemTypeWrap.classList.toggle('hidden', activeTab!=='items');
     if(questExpWrap) questExpWrap.classList.toggle('hidden', activeTab!=='quests');
     if(playerLevelWrap) playerLevelWrap.classList.toggle('hidden', activeTab!=='quests');
+    if(levelCompWrap) levelCompWrap.classList.toggle('hidden', activeTab!=='quests');
     if(expBucketWrap) expBucketWrap.classList.toggle('hidden', activeTab!=='quests');
 
     // Monsters
@@ -199,7 +217,7 @@
       });
       listMonsters.innerHTML = data.map(m=>(
         '<article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">'+
-          safeImg(m.img, m.name, 'w-full h-36 object-cover rounded-lg mb-2')+
+          safeImg(m.img || DEFAULT_IMG, m.name, '')+
           '<h3 class="font-semibold">'+m.name+'</h3>'+
           '<div class="text-xs text-gray-600">Lv.'+(m.level||'-')+' · '+(m.region||'-')+'</div>'+
           '<a href="monster.html?id='+encodeURIComponent(m.id)+'" class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>'+
@@ -207,14 +225,15 @@
       )).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 몬스터가 없습니다.</div>';
     }
 
-    // Quests
+    // Quests (progress bar moved to BOTTOM + filter by playerLevel)
     if(activeTab==='quests' && listQuests){
       const data = (DATA.quests||[]).filter(qs=>{
         const hit = !q || (qs.code&&qs.code.includes(q)) || (qs.title||'').includes(q) || (qs.region||'').includes(q);
         const inRegion = region==='all' || (qs.region||'').includes(region);
         const inLevel = (!qs.minLevel) || (qs.minLevel>=lvMin && qs.minLevel<=lvMax);
+        const meetsPlayer = (playerLevel==null) || ((qs.minLevel||0) <= playerLevel);
         const ratio = computeExpRatio(qs, expBucket);
-        return hit && inRegion && inLevel && (ratio >= expRatioMin);
+        return hit && inRegion && inLevel && meetsPlayer && (ratio >= expRatioMin);
       });
       listQuests.innerHTML = data.map(qs=>{
         const exp = sumQuestExp(qs);
@@ -222,22 +241,25 @@
         return (
           '<article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">'+
             '<div class="flex items-start gap-3">'+
-              safeImg(qs.npcImg, 'NPC', 'w-20 h-20 object-contain rounded-lg border bg-white')+
+              safeImg(qs.npcImg || DEFAULT_IMG, 'NPC', '')+
               '<div class="min-w-0">'+
                 '<h3 class="font-semibold truncate">'+(qs.code ? qs.code+' · ' : '')+qs.title+'</h3>'+
-                '<div class="flex items-center gap-2 text-xs text-gray-600 mb-1">'+
-                  '<span>'+(qs.region||'-')+' · '+(qs.type||'-')+(qs.minLevel? ' · Lv.'+qs.minLevel : '')+'</span>'+
-                  '<span class="text-[11px] px-2 py-0.5 rounded-full border bg-white">EXP '+exp.toLocaleString()+' · × '+ratio+'%</span>'+
-                '</div>'+
-                '<a href="quest.html?id=q-nella-1-1" class="inline-flex text-sm text-blue-600 hover:underline">상세보기</a>'+
+                '<div class="text-xs text-gray-600">'+(qs.region||'-')+' · '+(qs.type||'-')+(qs.minLevel? ' · Lv.'+qs.minLevel : '')+'</div>'+
+                '<a href="quest.html?id=2029 class="inline-flex mt-2 text-sm text-blue-600 hover:underline">상세보기</a>'+
               '</div>'+
+            '</div>'+
+            '<div class="mt-3">'+
+              '<div class="w-full h-2 bg-gray-100 rounded overflow-hidden">'+
+                '<div class="h-full bg-green-500" style="width:'+Math.min(100, Math.max(0, ratio))+'%"></div>'+
+              '</div>'+
+              '<div class="text-[11px] text-gray-600 mt-1 text-right">EXP '+exp.toLocaleString()+' · × '+ratio+'%</div>'+
             '</div>'+
           '</article>'
         );
       }).join('') || '<div class="text-sm text-gray-500 p-4">조건에 맞는 퀘스트가 없습니다.</div>';
     }
 
-    // Items
+    // Items (unchanged visuals, but you asked to drop the box look—can toggle here if desired)
     if(activeTab==='items' && listItems){
       const type = typeSelect ? typeSelect.value : 'all';
       const data = (DATA.items||[]).filter(it=>{
@@ -247,7 +269,7 @@
       });
       listItems.innerHTML = data.map(it=>(
         '<article class="rounded-xl border bg-white p-3 hover:shadow-sm transition">'+
-          safeImg(it.img, it.name, 'w-full h-36 object-contain rounded-lg mb-2 bg-white')+
+          safeImg(it.img || DEFAULT_IMG, it.name, '')+
           '<h3 class="font-semibold">'+it.name+'</h3>'+
           '<div class="flex items-center gap-2 text-xs text-gray-600 mt-0.5">'+
             '<span class="px-2 py-0.5 rounded-full border bg-white">'+(it.category || it.type || '-')+'</span>'+
@@ -260,17 +282,16 @@
     }
   }
 
-  // --- Events ---
-  // 탭 클릭
+  // Events
   $$('.tab-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       activeTab = btn.getAttribute('data-tab');
       applyActiveTabClasses();
+    if(playerHint) playerHint.textContent='필터: 입력 레벨(≤) 이하만 표시 • 현재: 없음';
       render();
     });
   });
 
-  // 필터들
   if(searchInput) searchInput.addEventListener('input', render);
   if(regionSelect) regionSelect.addEventListener('input', render);
   if(lvMinRange && lvMaxRange){
@@ -286,6 +307,9 @@
     lvMaxRange.addEventListener('input', updateLv);
   }
   if(typeSelect) typeSelect.addEventListener('change', render);
+
+  if(levelCompSelect){ levelCompSelect.addEventListener('change', function(){ render(); }); }
+
   if(expRatioMinRange){
     expRatioMinRange.addEventListener('input', function(){
       expRatioMin = Number(expRatioMinRange.value)||0;
@@ -294,13 +318,18 @@
     });
   }
   if(playerLevelInput){
-    playerLevelInput.addEventListener('input', function(){
-      var lv = Math.max(1, Math.min(200, Number(playerLevelInput.value)||100));
-      if(EXP_TABLE.hasOwnProperty(lv)) expBucket = EXP_TABLE[lv];
+    function onPlayerLvChange(){
+      var raw = playerLevelInput.value;
+      var lv = raw === '' ? null : Math.max(1, Math.min(200, Number(raw)||1));
+      playerLevel = lv;
+      if(lv!=null && EXP_TABLE.hasOwnProperty(lv)) expBucket = EXP_TABLE[lv];
       if(expBucketInput) expBucketInput.value = formatNumber(expBucket);
       if(bucketLabelValue) bucketLabelValue.textContent = (expBucket||0).toLocaleString();
+      if(playerHint) playerHint.textContent = '필터: 입력 레벨(≤) 이하만 표시 • 현재: ' + (lv==null ? '없음' : ('Lv.'+lv));
       render();
-    });
+    }
+    playerLevelInput.addEventListener('input', onPlayerLvChange);
+    playerLevelInput.addEventListener('change', onPlayerLvChange);
   }
   if(expBucketInput){
     expBucketInput.addEventListener('input', function(){
@@ -312,7 +341,7 @@
     });
   }
 
-  // 초기화 버튼
+  // Reset
   const resetBtn = $('resetBtn');
   if(resetBtn){
     resetBtn.addEventListener('click', function(){
@@ -321,24 +350,31 @@
       if(lvMinRange && lvMaxRange){ lvMinRange.value=1; lvMaxRange.value=200; levelRange=[1,200]; if(lvMinBadge) lvMinBadge.textContent='1'; if(lvMaxBadge) lvMaxBadge.textContent='200'; }
       if(typeSelect) typeSelect.value='all';
       if(expRatioMinRange){ expRatioMinRange.value=0; expRatioMin=0; if(expRatioBadge) expRatioBadge.textContent='0%'; }
-      if(playerLevelInput){ playerLevelInput.value=100; expBucket = EXP_TABLE[100]; }
+      if(playerLevelInput){ playerLevelInput.value=''; playerLevel=null; expBucket = EXP_TABLE[100]; if(playerHint) playerHint.textContent='필터: 입력 레벨(≤) 이하만 표시 • 현재: 없음'; }
       if(expBucketInput) expBucketInput.value = formatNumber(expBucket);
       if(bucketLabelValue) bucketLabelValue.textContent = (expBucket||0).toLocaleString();
-      activeTab='monsters'; applyActiveTabClasses(); render();
+      if(levelCompSelect){ levelCompSelect.value='ge'; levelComp='ge'; }
+      activeTab='monsters'; applyActiveTabClasses();
+    if(playerHint) playerHint.textContent='필터: 입력 레벨(≤) 이하만 표시 • 현재: 없음'; render();
     });
   }
 
-  // --- Init ---
+  // Init
   (function init(){
     buildRegions();
     buildItemTypes();
     if(expBucketInput) expBucketInput.value = formatNumber(expBucket);
     if(bucketLabelValue) bucketLabelValue.textContent = (expBucket||0).toLocaleString();
-    // 탭 표시 적용 후 첫 렌더
+    // Read ?tab=monsters|quests|items
+    try{
+      const params = new URLSearchParams(location.search);
+      const qtab = params.get('tab');
+      if(qtab && ['monsters','quests','items'].includes(qtab)) activeTab = qtab;
+    }catch(e){}
     applyActiveTabClasses();
+    if(playerHint) playerHint.textContent='필터: 입력 레벨(≤) 이하만 표시 • 현재: 없음';
     render();
   })();
-
 })(); // IIFE
 </script>
 </body>

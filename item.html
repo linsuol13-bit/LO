@@ -3,76 +3,105 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Item Detail • 로나월드</title>
+  <title>아이템 상세 • 로나월드</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+    .muted { color:#6b7280; }
+    .row { display:flex; align-items:center; gap:.75rem; }
+    img { max-width:100%; height:auto; }
+    .thumb { width:72px; height:72px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:6px; }
+    .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; }
+    .pill { font-size:12px; padding:.25rem .5rem; border:1px solid #e5e7eb; border-radius:999px; background:#fff; }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <a href="index.html?tab=items" class="inline-flex items-center gap-1 text-sm mb-3 text-blue-600 hover:underline">← 목록(아이템)으로</a>
-  <article id="detail" class="border rounded-xl bg-white p-4"></article>
+  <a href="index.html?tab=items" class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline">← 아이템 목록으로</a>
+  <article id="detail"></article>
 </div>
+
 <script>
-function safeImg(src, alt, cls){ if(!src) return ''; return `<img src="${src}" alt="${alt||''}" class="${cls||''}" onerror="this.style.display='none'">`; }
-const SAMPLE = {
-  items: [
-    { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻는 갓.',
-      img:'https://placehold.co/200x150?text=Cap' },
-    { id:'2000006', name:'레몬', type:'소비', category:'소모품', desc:'체력을 회복.', img:'https://placehold.co/200x150?text=Lemon' }
-  ],
-  quests: [
-    { id:'q-1', code:'넬라 1-1', title:'마파의 의뢰',
-      reqItems:[{ itemId:'4000012', qty:50, name:'초록버섯의 갓'}],
-      rewards:[{ itemId:'2000006', qty:50, name:'레몬'}, {exp:5600}]
-    }
-  ],
-  monsters:[
-    { id:'m-1', name:'초록버섯', level:10, img:'https://placehold.co/120x90?text=Green', drops:['4000012'] }
-  ]
-};
-const params = new URLSearchParams(location.search);
-const id = params.get('id')||'';
-const it = SAMPLE.items.find(x=> x.id===id);
-const qRequired = SAMPLE.quests.filter(q=> (q.reqItems||[]).some(r=> r.itemId===id));
-const qRewarded = SAMPLE.quests.filter(q=> (q.rewards||[]).some(r=> r.itemId===id));
-const mDroppers = (SAMPLE.monsters||[]).filter(m=> Array.isArray(m.drops) && m.drops.includes(id));
+(() => {
+  'use strict';
 
-const detail = document.getElementById('detail');
-if(!it){ detail.innerHTML = '<div class="p-6 text-center text-sm text-gray-500">아이템을 찾을 수 없어요</div>'; }
-else {
-  detail.innerHTML = `
-  <div class="flex items-start gap-4">
-    ${safeImg(it.img, it.name, 'w-28 h-28 object-contain rounded-lg border bg-white')}
-    <div class="min-w-0">
-      <h2 class="text-xl font-semibold">${it.name}</h2>
-      <div class="text-xs text-gray-600">${it.category||it.type||'-'} · ${it.type||'-'}</div>
-      ${ it.desc ? `<p class="text-sm text-gray-700 mt-2">${it.desc}</p>` : '' }
-    </div>
-  </div>
+  const IMG = {
+    greenCap: "https://drive.google.com/thumbnail?id=1e09hggjXTuuCOxBWE2jILeGe7rpaft5a&sz=w512",
+    lemon: "https://drive.google.com/thumbnail?id=1aIxoyI3w1lQkx4aGjX0OePhJmz0BNngw&sz=w512",
+    bubbleDrop: "https://drive.google.com/thumbnail?id=1ZtmZq-lnEPVRCr1BSUV8eKlCkFgPHm95&sz=w512",
+    bubbling: "https://placehold.co/120x90?text=Bubbling",
+    greenMush: "https://drive.google.com/thumbnail?id=1zyqRL1fHCHGqnDQED1VecF9g1vERURMe&sz=w256"
+  };
 
-  <section class="mt-6">
-    <h3 class="text-sm font-semibold mb-2">이 아이템이 필요한 퀘스트</h3>
-    ${ qRequired.length ? qRequired.map(q=>`<a class="block text-sm text-blue-600 hover:underline" href="quest.html?id=${encodeURIComponent(q.id)}">${q.code ? q.code+' · ' : ''}${q.title}</a>`).join('') : '<div class="text-sm text-gray-500">없음</div>' }
-  </section>
+  // Known items
+  const ITEMS = [
+    { id:'4000012', name:'초록버섯의 갓', type:'소재', category:'재료', desc:'초록버섯에서 얻는 갓.', img:IMG.greenCap, dropBy:['1110100'] },
+    { id:'2010004', name:'레몬', type:'소비', category:'소모품', desc:'체력을 회복.', img:IMG.lemon, dropBy:[] },
+    { id:'4000037', name:'버블링의 큰 방울', type:'소재', category:'재료', desc:'버블링에서 얻는 큰 방울.', img:IMG.bubbleDrop, dropBy:['1210103'] },
+  ];
 
-  <section class="mt-6">
-    <h3 class="text-sm font-semibold mb-2">이 아이템을 주는 퀘스트</h3>
-    ${ qRewarded.length ? qRewarded.map(q=>`<a class="block text-sm text-blue-600 hover:underline" href="quest.html?id=${encodeURIComponent(q.id)}">${q.code ? q.code+' · ' : ''}${q.title}</a>`).join('') : '<div class="text-sm text-gray-500">없음</div>' }
-  </section>
+  // Monsters (for drop source display)
+  const MONSTERS = [
+    { id:'1110100', name:'초록버섯', level:10, img:IMG.greenMush },
+    { id:'1210103', name:'버블링', level:12, img:IMG.bubbling },
+  ];
 
-  <section class="mt-6">
-    <h3 class="text-sm font-semibold mb-2">이 아이템을 주는 몬스터</h3>
-    ${ mDroppers.length ? (`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">` + mDroppers.map(m=>`
-      <article class="flex items-center gap-3 rounded-lg border p-2 bg-white">
-        ${safeImg(m.img, m.name, 'w-12 h-12 object-contain rounded-lg bg-white')}
+  const byId = Object.fromEntries(ITEMS.map(i=>[i.id, i]));
+  const monById = Object.fromEntries(MONSTERS.map(m=>[m.id, m]));
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id') || '4000012';
+  const it = byId[id] || ITEMS[0];
+
+  const $detail = document.getElementById('detail');
+  const img = (src, alt, cls='') => `<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="this.style.display='none'">`;
+
+  const pill = (t) => `<span class="pill">${t}</span>`;
+
+  const dropBox = (mid) => {
+    const m = monById[mid];
+    if(!m) return '';
+    return `
+      <a class="ibox" href="monster.html?id=${m.id}">
+        ${img(m.img, m.name, 'thumb')}
         <div class="min-w-0">
-          <div class="text-sm font-medium truncate">${m.name}</div>
-          <div class="text-xs text-gray-600">Lv.${m.level||'-'}</div>
-          <a href="monster.html?id=${encodeURIComponent(m.id)}" class="text-xs text-blue-600 hover:underline">몬스터 상세</a>
+          <div class="text-sm font-medium text-blue-600 hover:underline">${m.name}</div>
+          <div class="text-xs muted">Lv.${m.level||'-'}</div>
         </div>
-      </article>`).join('') + `</div>`) : '<div class="text-sm text-gray-500">없음</div>' }
-  </section>
+      </a>
+    `;
+  };
+
+  $detail.innerHTML = `
+    <header class="mb-4 row">
+      ${img(it.img, it.name, 'thumb')}
+      <div class="min-w-0">
+        <h1 class="text-2xl font-bold">${it.name}</h1>
+        <div class="row">
+          ${pill(it.category||'-')}
+          ${pill(it.type||'-')}
+          ${it.id ? pill('#'+it.id) : ''}
+        </div>
+        ${it.desc ? `<p class="text-sm text-gray-700 mt-2">${it.desc}</p>` : ''}
+      </div>
+    </header>
+
+    <section class="mb-6">
+      <h2 class="text-sm font-semibold mb-2">드랍 몬스터</h2>
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:.75rem;">
+        ${ (it.dropBy||[]).map(dropBox).join('') || '<div class="text-sm text-gray-500">알려진 드랍 몬스터가 없습니다.</div>' }
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-sm font-semibold mb-2">연관 퀘스트</h2>
+      <div class="card text-sm text-gray-700">
+        마파의 의뢰(2029)와 연관. 자세한 내용은 <a href="quest.html?id=2029" class="text-blue-600 hover:underline">퀘스트 상세</a>에서 확인.
+      </div>
+    </section>
   `;
-}
+})();
 </script>
 </body>
 </html>
