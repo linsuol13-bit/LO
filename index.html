@@ -46,6 +46,23 @@
   .row-2 { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
   @media (max-width:768px){ .row-2{ grid-template-columns: 1fr; } }
 </style>
+
+<style>
+.q-badge{
+  display:inline-block;
+  margin-top:6px;
+  padding:2px 8px;
+  border-radius:9999px;
+  font-size:11px;
+  font-weight:600;
+  background:#f3f4f6;
+  color:#374151;
+  border:1px solid #e5e7eb;
+}
+.card[data-type="대화"] .q-badge{ background:#e0f2fe; color:#075985; border-color:#bae6fd; }
+.card[data-type="몬스터 사냥"] .q-badge{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -275,7 +292,14 @@
     var lvMin = levelRange[0], lvMax = levelRange[1];
     var region = regionSelect ? regionSelect.value : 'all';
 
-    // Monsters
+    var _questTypeVal = 'all';
+try {
+  var _selQT = document.getElementById('questTypeSelect');
+  if (_selQT && _selQT.value) { _questTypeVal = String(_selQT.value); }
+  else { var _savedQT = null; try{ _savedQT = localStorage.getItem('questType.selected'); }catch(_e){}; if (_savedQT) _questTypeVal = String(_savedQT); }
+} catch(_e){}
+
+// Monsters
     if(activeTab==='monsters'){
       var mdata = [];
       for(var i=0;i<window.DATA.monsters.length;i++){
@@ -311,7 +335,8 @@
         var inLevel2 = (!qs.minLevel) || (qs.minLevel>=lvMin && qs.minLevel<=lvMax);
         var meetsPlayer = (playerLevel==null) || ((qs.minLevel||0) <= playerLevel);
         var ratio = computeExpRatio(qs, expBucket);
-        if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin)) qdata.push(qs);
+        var inType = (_questTypeVal==='all') || (String(qs.type||'')===String(_questTypeVal));
+if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin) && inType) qdata.push(qs);
       }
       var qhtml = [];
       for(var b=0;b<qdata.length;b++){
@@ -321,21 +346,21 @@
         var meta = (qq.region||'-')+' · '+(qq.type||'-')+(qq.minLevel? ' · Lv.'+qq.minLevel : '');
         var link = qq.href ? qq.href : ('quest-'+String(qq.id||'')+'.html');
         qhtml.push(
-          '<a class="card" style="display:block;text-decoration:none;color:inherit;" href="'+link+'">'+
-            '<div style="display:flex; gap:12px; align-items:flex-start;">'+
-              safeImg(qq.npcImg, 'NPC', 'thumb')+
-              '<div style="min-width:0;">'+
-                '<div style="font-weight:600;">'+(qq.code? qq.code+' · ' : '')+qq.title+'</div>'+
-                '<div style="font-size:12px; color:#6b7280;">'+ meta +'</div>'+
-                
-              '</div>'+
-            '</div>'+
-            '<div style="margin-top:10px;">'+
-              '<div class="bar"><div style="width:'+Math.max(0, Math.min(100, ratioNow))+'%;"></div></div>'+
-              '<div style="font-size:11px; color:#6b7280; margin-top:4px; text-align:right;">EXP '+formatNumber(exp)+' · × '+ratioNow+'%</div>'+
-            '</div>'+
-          '</a>'
-        );
+  '<a class="card" href="'+link+'" data-type="'+String(qq.type||'')+'" style="display:block;text-decoration:none;color:inherit;">'+
+    '<div style="display:flex; gap:12px; align-items:flex-start;">'+
+      safeImg(qq.npcImg, 'NPC', 'thumb')+
+      '<div style="min-width:0;">'+
+        '<div style="font-weight:600;">'+(qq.code? qq.code+' · ' : '')+qq.title+'</div>'+
+        '<div class="q-badge">'+(qq.type==="대화"?"🗨️ ":(qq.type==="몬스터 사냥"?"⚔️ ":"📌 "))+(qq.type||"-")+'</div>'+
+        '<div style="font-size:12px; color:#6b7280;">'+ meta +'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div style="margin-top:10px;">'+
+      '<div class="bar"><div style="width:'+Math.max(0, Math.min(100, ratioNow))+'%;"></div></div>'+
+      '<div style="font-size:11px; color:#6b7280; margin-top:4px; text-align:right;">EXP '+formatNumber(exp)+' · × '+(ratioNow.toFixed? ratioNow.toFixed(2) : ratioNow)+'</div>'+
+    '</div>'+
+  '</a>'
+);
       }
       listQuests.innerHTML = qhtml.join('') || '<div class="card">조건에 맞는 퀘스트가 없습니다.</div>';
     }
@@ -986,38 +1011,149 @@ addQuest({
 
 
 <script>
-addQuest({
-  id: 21703,
-  title: "수련만이 살 길이다! 3",
-  code: "아란 5-4",
-  region: "리엔",
-  type: "몬스터 사냥",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=1zELUnItOpbsWuVfXUpvkdhewjB7b8B3Q&sz=w400",
-  href: "quest-21703.html",
-  rewards: [
-    { exp: 19600 }
-  ]
-});
+(function(){
+  if (window.__qtEnsureInstalled) return;
+  window.__qtEnsureInstalled = true;
+
+  function ensureQuestTypeUI(){
+    var controls = document.querySelector('.controls');
+    if (!controls) return null;
+    var wrap = document.getElementById('questTypeWrap');
+    if (!wrap){
+      wrap = document.createElement('div');
+      wrap.id = 'questTypeWrap';
+      wrap.className = 'ctrl';
+      wrap.innerHTML = '<label class="label">퀘스트 타입</label><select id="questTypeSelect" class="select"></select>';
+      controls.appendChild(wrap);
+    } else if (!document.getElementById('questTypeSelect')) {
+      var sel = document.createElement('select');
+      sel.id = 'questTypeSelect';
+      sel.className = 'select';
+      wrap.appendChild(sel);
+    }
+    return document.getElementById('questTypeSelect');
+  }
+
+  function populateQuestTypeOptions(){
+    var sel = ensureQuestTypeUI();
+    if (!sel) return;
+    var quests = (window.DATA && Array.isArray(window.DATA.quests)) ? window.DATA.quests : [];
+    var types = Array.from(new Set(quests.map(function(q){return q && q.type;}).filter(Boolean))).sort();
+    sel.innerHTML = '';
+    var oAll = document.createElement('option');
+    oAll.value = 'all'; oAll.textContent = '전체';
+    sel.appendChild(oAll);
+    types.forEach(function(t){
+      var o = document.createElement('option');
+      o.value = t; o.textContent = t;
+      sel.appendChild(o);
+    });
+    try{
+      var saved = localStorage.getItem('questType.selected') || 'all';
+      if ([].some.call(sel.options, function(o){return o.value===saved;})) sel.value = saved;
+      else sel.value = 'all';
+    }catch(e){ sel.value = 'all'; }
+  }
+
+  function showOnlyOnQuestsTab(){
+    var wrap = document.getElementById('questTypeWrap');
+    if (!wrap) return;
+    var activeBtn = document.querySelector('.tab.on');
+    var isQuests = false;
+    if (activeBtn){
+      isQuests = activeBtn.getAttribute('data-tab') === 'quests';
+    } else {
+      var list = document.getElementById('listQuests');
+      isQuests = !!(list && !list.classList.contains('hidden'));
+    }
+    wrap.style.display = isQuests ? 'block' : 'none';
+  }
+
+  function wire(){
+    var sel = document.getElementById('questTypeSelect');
+    if (sel && !sel.__qtWired){
+      sel.__qtWired = true;
+      sel.addEventListener('change', function(){
+        try{ localStorage.setItem('questType.selected', sel.value || 'all'); }catch(e){}
+        if (typeof window.render === 'function') try{ window.render(); }catch(e){}
+      });
+      sel.addEventListener('input', function(){
+        try{ localStorage.setItem('questType.selected', sel.value || 'all'); }catch(e){}
+        if (typeof window.render === 'function') try{ window.render(); }catch(e){}
+      });
+    }
+    var tabs = document.querySelectorAll('.tab');
+    [].forEach.call(tabs, function(btn){
+      if (btn.__qtTabWired) return;
+      btn.__qtTabWired = true;
+      btn.addEventListener('click', function(){ setTimeout(showOnlyOnQuestsTab, 0); });
+    });
+  }
+
+  (function(){
+    if (typeof window.render !== 'function' || window.__qtEnsureWrapped) return;
+    window.__qtEnsureWrapped = true;
+    var _r = window.render;
+    window.render = function(){
+      var out = _r.apply(this, arguments);
+      try{
+        populateQuestTypeOptions();
+        wire();
+        showOnlyOnQuestsTab();
+      }catch(e){};
+      return out;
+    };
+  })();
+
+  function init(){
+    populateQuestTypeOptions();
+    wire();
+    showOnlyOnQuestsTab();
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
 
 
 <script>
-addQuest({
-  id: 21704,
-  title: "아주 작은 한 걸음",
-  code: "아란 5-5",
-  region: "리엔",
-  type: "대화",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
-  href: "quest-21704.html",
-  rewards: [
-    { exp: 3500 }
-  ]
-});
+(function(){
+  if (window.__qtRenderWire) return;
+  window.__qtRenderWire = true;
+  function hook(){
+    var sel = document.getElementById('questTypeSelect');
+    if (!sel) return;
+    if (sel.__wired) return;
+    sel.__wired = true;
+    function onChange(){
+      try{ localStorage.setItem('questType.selected', sel.value||'all'); }catch(e){}
+      if (typeof window.render==='function'){ try{ window.render(); }catch(e){} }
+    }
+    sel.addEventListener('change', onChange);
+    sel.addEventListener('input', onChange);
+  }
+  if (document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', hook);
+  } else {
+    hook();
+  }
+  // Also re-hook after each render
+  (function(){
+    if (typeof window.render !== 'function' || window.__qtRenderWrap2) return;
+    window.__qtRenderWrap2 = true;
+    var _r = window.render;
+    window.render = function(){
+      var out = _r.apply(this, arguments);
+      try{ hook(); }catch(e){}
+      return out;
+    };
+  })();
+})();
 </script>
-
 
 <script>
 addQuest({
@@ -1031,6 +1167,66 @@ addQuest({
   href: "quest-21705.html",
   rewards: [
     { exp: 3500 }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 21706,
+  title: "정보원의 일",
+  code: "아란 6-2",
+  region: "리스항구",
+  type: "퀘스트 완료",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400",
+  href: "quest-21706.html",
+  rewards: [
+    { exp: 4340 }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 21707,
+  title: "테오의 정보",
+  code: "아란 6-2-1",
+  region: "리스항구",
+  type: "아이템 수집",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1bAtC4YFFxwhrePbLVQgihPaFkJxddK_7&sz=w400",
+  href: "quest-21707.html",
+  rewards: [
+    { exp: 0 }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 21708,
+  title: "첫 번째 정보수집",
+  code: "아란 7-1",
+  region: "리스항구",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400",
+  href: "quest-21708.html",
+  rewards: [
+    { exp: 1400 }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 21709,
+  title: "주황버섯의 이상 조사",
+  code: "아란 7-2",
+  region: "헤네시스",
+  type: "아이템 수집",
+  minLevel: 13,
+  npcImg: "https://drive.google.com/thumbnail?id=192LWAkab2bHFBmoP1O_Dj0trz0x2-MKj&sz=w400",
+  href: "quest-21709.html",
+  rewards: [
+    { exp: 4340 }
   ]
 });
 </script>
