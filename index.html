@@ -335,7 +335,8 @@ try {
         var inLevel2 = (!qs.minLevel) || (qs.minLevel>=lvMin && qs.minLevel<=lvMax);
         var meetsPlayer = (playerLevel==null) || ((qs.minLevel||0) <= playerLevel);
         var ratio = computeExpRatio(qs, expBucket);
-        var inType = (_questTypeVal==='all') || (String(qs.type||'')===String(_questTypeVal));
+        var __tList = Array.isArray(qs.typeList) ? qs.typeList : String(qs.type||'').split(/[,·]/).map(function(s){return s.trim();}).filter(Boolean);
+        var inType = (_questTypeVal==='all') || (__tList.indexOf(String(_questTypeVal))>-1);
 if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin) && inType) qdata.push(qs);
       }
       var qhtml = [];
@@ -763,6 +764,7 @@ if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin) && inT
         if(!window.DATA) window.DATA = {monsters:[], items:[], quests:[]};
         if(!Array.isArray(window.DATA.quests)) window.DATA.quests = [];
         if(!q.rewards) q.rewards = [];
+        try{ q.typeList = Array.isArray(q.type) ? q.type.map(function(s){return String(s||'').trim();}).filter(Boolean) : String(q.type||'').split(/[,·]/).map(function(s){return s.trim();}).filter(Boolean); }catch(e){ q.typeList = []; }
         window.DATA.quests.push(q);
         if(typeof window.render === 'function'){ window.render(); }
         var tabBtn = document.querySelector('.tab[data-tab="quests"]') || document.querySelector('.tab[data-target="#listQuests"]');
@@ -1034,28 +1036,53 @@ addQuest({
     return document.getElementById('questTypeSelect');
   }
 
-  function populateQuestTypeOptions(){
-    var sel = ensureQuestTypeUI();
-    if (!sel) return;
-    var quests = (window.DATA && Array.isArray(window.DATA.quests)) ? window.DATA.quests : [];
-    var types = Array.from(new Set(quests.map(function(q){return q && q.type;}).filter(Boolean))).sort();
-    sel.innerHTML = '';
-    var oAll = document.createElement('option');
-    oAll.value = 'all'; oAll.textContent = '전체';
-    sel.appendChild(oAll);
-    types.forEach(function(t){
-      var o = document.createElement('option');
-      o.value = t; o.textContent = t;
-      sel.appendChild(o);
-    });
-    try{
-      var saved = localStorage.getItem('questType.selected') || 'all';
-      if ([].some.call(sel.options, function(o){return o.value===saved;})) sel.value = saved;
-      else sel.value = 'all';
-    }catch(e){ sel.value = 'all'; }
+  
+function populateQuestTypeOptions(){
+  var sel = ensureQuestTypeUI();
+  if (!sel) return;
+  var quests = (window.DATA && Array.isArray(window.DATA.quests)) ? window.DATA.quests : [];
+  function splitTokens(raw){
+    if (Array.isArray(raw)) return raw;
+    var text = String(raw==null ? '' : raw);
+    return text.split(/[,·‧․•、，·]/).map(function(s){return s.trim();}).filter(Boolean);
   }
+  // Build atomic token set
+  var bag = {};
+  quests.forEach(function(q){
+    if (!q) return;
+    var list = Array.isArray(q.typeList) ? q.typeList : splitTokens(q.type);
+    list.forEach(function(tok){
+      var t = String(tok||'').trim();
+      if (!t) return;
+      // exclude combined values that still contain comma-like separators
+      if (/[,·‧․•、，·]/.test(t)) return;
+      bag[t] = 1;
+    });
+  });
+  var types = Object.keys(bag).sort();
 
-  function showOnlyOnQuestsTab(){
+  // Remember old selection (localStorage or current select value)
+  var saved = (function(){
+    try{
+      var s = localStorage.getItem('questType.selected');
+      if (s) return s;
+    }catch(e){}
+    return sel.value || 'all';
+  })();
+
+  // Rebuild options
+  sel.innerHTML = '';
+  var oAll = document.createElement('option'); oAll.value='all'; oAll.textContent='전체';
+  sel.appendChild(oAll);
+  types.forEach(function(t){
+    var o = document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o);
+  });
+
+  // Restore selection if still valid, else default to 'all'
+  var values = Array.prototype.map.call(sel.options, function(o){ return o.value; });
+  sel.value = (values.indexOf(saved) > -1) ? saved : 'all';
+}
+function showOnlyOnQuestsTab(){
     var wrap = document.getElementById('questTypeWrap');
     if (!wrap) return;
     var activeBtn = document.querySelector('.tab.on');
@@ -1156,79 +1183,25 @@ addQuest({
 </script>
 
 <script>
-addQuest({
-  id: 21705,
-  title: "빅토리아 아일랜드로",
-  code: "아란 6-1",
-  region: "리엔",
-  type: "대화",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
-  href: "quest-21705.html",
-  rewards: [
-    { exp: 3500 }
-  ]
-});
+addQuest({ id: 21705, title: "빅토리아 아일랜드로", code: "아란 6-1", region: "리엔", type: "대화", minLevel: 10, npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400", href: "quest-21705.html", rewards: [{ exp: 3500 }] });
 </script>
 <script>
-addQuest({
-  id: 21706,
-  title: "정보원의 일",
-  code: "아란 6-2",
-  region: "리스항구",
-  type: "퀘스트 완료",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400",
-  href: "quest-21706.html",
-  rewards: [
-    { exp: 4340 }
-  ]
-});
+addQuest({ id: 21706, title: "정보원의 일", code: "아란 6-2", region: "리스항구", type: "퀘스트 완료", minLevel: 10, npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400", href: "quest-21706.html", rewards: [{ exp: 4340 }] });
 </script>
 <script>
-addQuest({
-  id: 21707,
-  title: "테오의 정보",
-  code: "아란 6-2-1",
-  region: "리스항구",
-  type: "아이템 수집",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=1bAtC4YFFxwhrePbLVQgihPaFkJxddK_7&sz=w400",
-  href: "quest-21707.html",
-  rewards: [
-    { exp: 0 }
-  ]
-});
+addQuest({ id: 21707, title: "테오의 정보", code: "아란 6-2-1", region: "리스항구", type: "아이템 수집", minLevel: 10, npcImg: "https://drive.google.com/thumbnail?id=1bAtC4YFFxwhrePbLVQgihPaFkJxddK_7&sz=w400", href: "quest-21707.html", rewards: [{ exp: 0 }] });
 </script>
 <script>
-addQuest({
-  id: 21708,
-  title: "첫 번째 정보수집",
-  code: "아란 7-1",
-  region: "리스항구",
-  type: "대화",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400",
-  href: "quest-21708.html",
-  rewards: [
-    { exp: 1400 }
-  ]
-});
+addQuest({ id: 21708, title: "첫 번째 정보수집", code: "아란 7-1", region: "리스항구", type: "대화", minLevel: 10, npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400", href: "quest-21708.html", rewards: [{ exp: 1400 }] });
 </script>
 <script>
-addQuest({
-  id: 21709,
-  title: "주황버섯의 이상 조사",
-  code: "아란 7-2",
-  region: "헤네시스",
-  type: "아이템 수집",
-  minLevel: 13,
-  npcImg: "https://drive.google.com/thumbnail?id=192LWAkab2bHFBmoP1O_Dj0trz0x2-MKj&sz=w400",
-  href: "quest-21709.html",
-  rewards: [
-    { exp: 4340 }
-  ]
-});
+addQuest({ id: 21709, title: "주황버섯의 이상 조사", code: "아란 7-2", region: "헤네시스", type: "아이템 수집", minLevel: 13, npcImg: "https://drive.google.com/thumbnail?id=192LWAkab2bHFBmoP1O_Dj0trz0x2-MKj&sz=w400", href: "quest-21709.html", rewards: [{ exp: 4340 }] });
+</script>
+<script>
+addQuest({ id: 21710, title: "몬스터 전쟁?", code: "아란 7-3", region: "헤네시스", type: "아이템 수집", minLevel: 14, npcImg: "https://drive.google.com/thumbnail?id=192LWAkab2bHFBmoP1O_Dj0trz0x2-MKj&sz=w400", href: "quest-21710.html", rewards: [{ exp: 5460 }] });
+</script>
+<script>
+addQuest({ id: 21711, title: "시니컬한 주황버섯 등장", code: "아란 7-4", region: "헤네시스", type: "몬스터 사냥 , 아이템 수집", minLevel: 15, npcImg: "https://drive.google.com/thumbnail?id=192LWAkab2bHFBmoP1O_Dj0trz0x2-MKj&sz=w400", href: "quest-21711.html", rewards: [{ exp: 6790 }] });
 </script>
 
 </body>
