@@ -163,23 +163,7 @@
   }
 
   // Data
-  var DATA = {
-    monsters: [
-      { id:'1110100', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://maplestory.io/api/KMS/338/mob/1110100/icon' }
-    ],
-    items: [
-      { id:'2010004', name:'레몬', type:'소비', category:'소모품', img:'https://maplestory.io/api/KMS/338/item/2010004/icon' }
-    ],
-    quests: [
-      { id:'21010', code:'아란 2-1', title:'영웅의 귀환', region:'리엔', type:'대화', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1LvuMCkoXrOZKcn6UBOjZPUI6xYcNgS2u&sz=w256', href:'quest-21010.html', rewards:[ { exp:112 } ] },
-      { id:'21011', code:'아란 2-2', title:'사라진 무기', region:'리엔', type:'대화', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1TLrva5JVw0QyLT0USv5KfNvgEfuqFpk_&sz=w256', href:'quest-21011.html', rewards:[ { exp:245 } ] },
-      { id:'21012', code:'아란 2-3', title:'사라진 능력', region:'리엔', type:'사냥', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1ScDqd3wMaz2JtAucajA-gbrnwiwgKEhQ&sz=w256', href:'quest-21012.html', rewards:[ { exp:399 } ] },
-      { id:'21013', code:'아란 2-4', title:'영웅을 위한 선물', region:'리엔', type:'수집', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1Iuu7iJJ6YcX321PoMlcO56JR_NmpfBN1&sz=w256', href:'quest-21013.html', rewards:[ { exp:665 } ] },
-      { id:'21014', code:'아란 2-5', title:'리린의 이야기', region:'리엔', type:'대화', minLevel:5, npcImg:'https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w256', href:'quest-21014.html', rewards:[ { exp:980 } ] },
-      { id:'21015', code:'아란 3-1', title:'기초 체력 단련1', region:'리엔', type:'사냥', minLevel:5, npcImg:'https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w256', href:'quest-21015.html', rewards:[ { exp:2240 } ] },
-      { id:'21016', code:'아란 3-2', title:'기초 체력 단련2', region:'리엔', type:'사냥', minLevel:5, npcImg:'https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w256', href:'quest-21016.html', rewards:[ { exp:3150 } ] }
-    ]
-  };
+  window.DATA = window.DATA || { monsters: [], items: [], quests: [] };
 
   // EXP table (safe)
   var EXP_TABLE = {1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324};
@@ -240,8 +224,8 @@
   // Build regions/types
   function buildRegions(){
     var regs = {'all':1};
-    for(var i=0;i<DATA.monsters.length;i++){ regs[DATA.monsters[i].region||''] = 1; }
-    for(var j=0;j<DATA.quests.length;j++){ regs[DATA.quests[j].region||''] = 1; }
+    for(var i=0;i<window.DATA.monsters.length;i++){ regs[window.DATA.monsters[i].region||''] = 1; }
+    for(var j=0;j<window.DATA.quests.length;j++){ regs[window.DATA.quests[j].region||''] = 1; }
     var opts = [];
     for(var k in regs){
       if(!regs.hasOwnProperty(k)) continue;
@@ -253,7 +237,7 @@
   }
   function buildItemTypes(){
     var types = {'all':1};
-    for(var i=0;i<DATA.items.length;i++){ types[DATA.items[i].type||''] = 1; }
+    for(var i=0;i<window.DATA.items.length;i++){ types[window.DATA.items[i].type||''] = 1; }
     var opts = [];
     for(var t in types){
       if(!types.hasOwnProperty(t)) continue;
@@ -294,8 +278,8 @@
     // Monsters
     if(activeTab==='monsters'){
       var mdata = [];
-      for(var i=0;i<DATA.monsters.length;i++){
-        var m = DATA.monsters[i];
+      for(var i=0;i<window.DATA.monsters.length;i++){
+        var m = window.DATA.monsters[i];
         var hit = !q || m.name.indexOf(q)>-1 || String(m.region||'').indexOf(q)>-1;
         var inRegion = region==='all' || String(m.region||'').indexOf(region)>-1;
         var inLevel = (!m.level) || (m.level>=lvMin && m.level<=lvMax);
@@ -320,8 +304,8 @@
     // Quests
     if(activeTab==='quests'){
       var qdata = [];
-      for(var i2=0;i2<DATA.quests.length;i2++){
-        var qs = DATA.quests[i2];
+      for(var i2=0;i2<window.DATA.quests.length;i2++){
+        var qs = window.DATA.quests[i2];
         var hit2 = !q || (qs.code && qs.code.indexOf(q)>-1) || String(qs.title||'').indexOf(q)>-1 || String(qs.region||'').indexOf(q)>-1;
         var inRegion2 = region==='all' || String(qs.region||'').indexOf(region)>-1;
         var inLevel2 = (!qs.minLevel) || (qs.minLevel>=lvMin && qs.minLevel<=lvMax);
@@ -360,8 +344,8 @@
     if(activeTab==='items'){
       var type = typeSelect ? typeSelect.value : 'all';
       var idata = [];
-      for(var i3=0;i3<DATA.items.length;i3++){
-        var it = DATA.items[i3];
+      for(var i3=0;i3<window.DATA.items.length;i3++){
+        var it = window.DATA.items[i3];
         var hit3 = !q || String(it.name||'').indexOf(q)>-1;
         var typeOk = type==='all' || (it.type===type);
         if(hit3 && typeOk) idata.push(it);
@@ -391,6 +375,9 @@
       listMaps.innerHTML = '<div class="card">등록된 맵이 없습니다.</div>';
     }
   }
+
+  try{ window.render = render; }catch(e){}
+
 
   // Events
   var tabs = qsa('.tab');
@@ -729,6 +716,323 @@
     localStorage.removeItem(STORAGE_KEY);
   };
 })();
+</script>
+
+
+
+<script>
+(function(){
+  if (!window.addQuest){
+    window.addQuest = function(detail){
+      var q = Object.assign({}, detail||{});
+      function toDriveDirect(u){
+        if(!u) return u;
+        try{
+          var m = String(u).match(/\/file\/d\/([\w-]+)/);
+          if(m && m[1]) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+          return u;
+        }catch(e){ return u; }
+      }
+      if(q.npcImg) q.npcImg = toDriveDirect(q.npcImg);
+      try{
+        if(!window.DATA) window.DATA = {monsters:[], items:[], quests:[]};
+        if(!Array.isArray(window.DATA.quests)) window.DATA.quests = [];
+        if(!q.rewards) q.rewards = [];
+        window.DATA.quests.push(q);
+        if(typeof window.render === 'function'){ window.render(); }
+        var tabBtn = document.querySelector('.tab[data-tab="quests"]') || document.querySelector('.tab[data-target="#listQuests"]');
+        if(tabBtn){ tabBtn.click(); }
+      }catch(e){ console.warn('[addQuest] failed', e); }
+    };
+  }
+})();
+</script>
+
+
+<script>
+addQuest({
+  id: 21010,
+  title: "영웅의 귀환",
+  code: "아란 2-1",
+  region: "리엔",
+  type: "아이템 사용",
+  minLevel: 1,
+  npcImg: "https://drive.google.com/thumbnail?id=1LvuMCkoXrOZKcn6UBOjZPUI6xYcNgS2u&sz=w400",
+  href: "quest-21010.html",
+  rewards: [{ exp: 112 }]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21011,
+  title: "사라진 무기",
+  code: "아란 2-2",
+  region: "리엔",
+  type: "대화",
+  minLevel: 1,
+  npcImg: "https://drive.google.com/thumbnail?id=1TLrva5JVw0QyLT0USv5KfNvgEfuqFpk_&sz=w400",
+  href: "quest-21011.html",
+  rewards: [
+    { exp: 245 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21012,
+  title: "사라진 능력",
+  code: "아란 2-3",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 1,
+  npcImg: "https://drive.google.com/thumbnail?id=1ScDqd3wMaz2JtAucajA-gbrnwiwgKEhQ&sz=w400",
+  href: "quest-21012.html",
+  rewards: [
+    { exp: 399 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21013,
+  title: "영웅을 위한 선물",
+  code: "아란 2-4",
+  region: "리엔",
+  type: "아이템 수집",
+  minLevel: 1,
+  npcImg: "https://drive.google.com/thumbnail?id=1Iuu7iJJ6YcX321PoMlcO56JR_NmpfBN1&sz=w400",
+  href: "quest-21013.html",
+  rewards: [
+    { exp: 665 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21014,
+  title: "리린의 이야기",
+  code: "아란 3-1",
+  region: "리엔",
+  type: "대화",
+  minLevel: 5,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21014.html",
+  rewards: [
+    { exp: 980 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21015,
+  title: "기초 체력 단련 1",
+  code: "아란 3-2",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 5,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21015.html",
+  rewards: [
+    { exp: 2240 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21016,
+  title: "기초 체력 단련 2",
+  code: "아란 3-3",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 5,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21016.html",
+  rewards: [
+    { exp: 3150 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21017,
+  title: "기초 체력 단련 3",
+  code: "아란 3-4",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 5,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21017.html",
+  rewards: [
+    { exp: 3850 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21018,
+  title: "기초 체력 테스트",
+  code: "아란 3-5",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 5,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21018.html",
+  rewards: [
+    { exp: 8400 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21100,
+  title: "다섯 명의 영웅",
+  code: "아란 4-1",
+  region: "리엔",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21100.html",
+  rewards: [
+    { exp: 0 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21101,
+  title: "폴암을 사용하던 영웅",
+  code: "아란 4-2",
+  region: "리엔",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1yzzW1t7PqniWrcypHFICZiVXs2O3e0L1&sz=w400",
+  href: "quest-21101.html",
+  rewards: [
+    { exp: 0 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21700,
+  title: "새로운 시작",
+  code: "아란 5-1",
+  region: "리엔",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21700.html",
+  rewards: [
+    { exp: 700 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21701,
+  title: "수련만이 살 길이다! 1",
+  code: "아란 5-2",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1zELUnItOpbsWuVfXUpvkdhewjB7b8B3Q&sz=w400",
+  href: "quest-21701.html",
+  rewards: [
+    { exp: 9800 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21702,
+  title: "수련만이 살 길이다! 2",
+  code: "아란 5-3",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1zELUnItOpbsWuVfXUpvkdhewjB7b8B3Q&sz=w400",
+  href: "quest-21702.html",
+  rewards: [
+    { exp: 14000 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21703,
+  title: "수련만이 살 길이다! 3",
+  code: "아란 5-4",
+  region: "리엔",
+  type: "몬스터 사냥",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1zELUnItOpbsWuVfXUpvkdhewjB7b8B3Q&sz=w400",
+  href: "quest-21703.html",
+  rewards: [
+    { exp: 19600 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21704,
+  title: "아주 작은 한 걸음",
+  code: "아란 5-5",
+  region: "리엔",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21704.html",
+  rewards: [
+    { exp: 3500 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21705,
+  title: "빅토리아 아일랜드로",
+  code: "아란 6-1",
+  region: "리엔",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w400",
+  href: "quest-21705.html",
+  rewards: [
+    { exp: 3500 }
+  ]
+});
 </script>
 
 </body>
