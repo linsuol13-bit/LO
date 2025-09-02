@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로나월드 (안전 버전)</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif; background:#f8fafc; color:#111827; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px; transition: box-shadow .2s; }
+  .card:hover{ box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .btn { border:0; background:#111827; color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  .tabs { display:inline-flex; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:4px; }
+  .tab { padding:8px 12px; border-radius:10px; background:transparent; color:#374151; cursor:pointer; border:0; }
+  .tab.on { background:#111827; color:#fff; }
+  .grid { display:grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap:16px; }
+  @media (min-width:640px){ .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (min-width:1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  @media (min-width:1280px){ .grid{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
+  .hidden { display:none; }
+  .thumb { width:60px; height:60px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:4px; }
+  .range { width:100%; }
+  .badge { font-size:12px; padding:2px 6px; border-radius:6px; background:#f3f4f6; border:1px solid #e5e7eb; }
+  .bar { width:100%; height:8px; background:#f3f4f6; border-radius:8px; overflow:hidden; }
+  .bar > div { height:100%; background:#10b981; }
+  .controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+  gap: 12px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:12px;
+}
+.controls .ctrl{ min-width:0; }
+.controls .row-in{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.controls .badge{ white-space:nowrap; }
+.input, .select{ width:100%; box-sizing:border-box; }
+.range{ flex:1 1 140px; }
+  .label { font-size:12px; color:#6b7280; display:block; margin-bottom:6px; }
+  .input, .select { width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; }
+  .error { background:#fff1f2; color:#991b1b; border:1px solid #fecaca; padding:8px 12px; border-radius:10px; margin-bottom:12px; white-space:pre-wrap; }
+  .row-2 { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+  @media (max-width:768px){ .row-2{ grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="errorBox" class="error hidden"></div>
+
+  <header class="row" style="align-items:center; justify-content:space-between; margin-bottom:8px;">
+    <div>
+      <h1 style="margin:0; font-size:24px; font-weight:700;">로나월드 (안전 버전)</h1>
+      <div style="font-size:12px; color:#6b7280;">몬스터 · 퀘스트 · 아이템</div>
+    </div>
+    <div><button id="resetBtn" class="btn">초기화</button></div>
+  </header>
+
+  <section class="controls">
+    
+      <div>
+        <label class="label">검색</label>
+        <input id="searchInput" class="input" placeholder="이름/지역/아이템 검색">
+      </div>
+      <div>
+        <label class="label">지역</label>
+        <select id="regionSelect" class="select"></select>
+      </div>
+    
+      <div style="flex:1;">
+        <label class="label">레벨 범위</label>
+        <div class="row-in">
+          <span id="lvMinBadge" class="badge">1</span>
+          <input id="lvMinRange" type="range" min="1" max="200" step="1" value="1" class="range">
+          <input id="lvMaxRange" type="range" min="1" max="200" step="1" value="200" class="range">
+          <span id="lvMaxBadge" class="badge">200</span>
+        </div>
+      </div>
+      <div class="ctrl" id="itemTypeWrap" style="flex:1; display:none;">
+        <label class="label">아이템 타입</label>
+        <select id="typeSelect" class="select"></select>
+      </div>
+      <div class="ctrl" id="questExpWrap" style="flex:1; display:none;">
+        <label class="label">경험치 비율(이상)</label>
+        <div class="row-in">
+          <span id="expRatioBadge" class="badge">0%</span>
+          <input id="expRatioMinRange" type="range" min="0" max="100" step="5" value="0" class="range">
+        </div>
+      </div>
+      <div class="ctrl" id="playerLevelWrap" style="flex:1; display:none;">
+        <label class="label">플레이어 레벨</label>
+        <input id="playerLevelInput" type="number" min="1" max="200" class="input" value="10">
+        <div id="playerHint" style="font-size:12px; color:#6b7280; margin-top:6px;">필터: 입력 레벨(≤) 이하만 표시 • 현재: 10</div>
+      </div>
+      <div class="ctrl" id="expBucketWrap" style="flex:1; display:none;">
+        <label class="label">경험치 통</label>
+        <input id="expBucketInput" type="text" class="input" value="10223168">
+        <div style="font-size:12px; color:#6b7280; margin-top:6px;">EXP 통: <span id="bucketLabelValue">10,223,168</span></div>
+      </div>
+    </section>
+
+  <nav class="tabs" style="margin-bottom:12px;">
+    <button class="tab on" data-tab="monsters">몬스터</button>
+    <button class="tab" data-tab="quests">퀘스트</button>
+    <button class="tab" data-tab="items">아이템</button>
+    <button class="tab" data-tab="npc">NPC</button>
+    <button class="tab" data-tab="maps">맵</button>
+  </nav>
+
+  <section id="listMonsters" class="grid"></section>
+  <section id="listQuests" class="grid hidden"></section>
+  <section id="listItems" class="grid hidden"></section>
+  <section id="listNPCs" class="grid hidden"></section>
+  <section id="listMaps" class="grid hidden"></section>
+
+  <footer style="margin-top:24px; text-align:center; font-size:12px; color:#6b7280;">
+    © <span id="yy"></span> 로나월드
+  </footer>
+</div>
+
+<script>
+(function(){
+  // Error banner
+  function showError(msg){
+    var box = document.getElementById('errorBox');
+    if(!box) return;
+    box.className = 'error';
+    box.textContent = msg;
+  }
+  window.onerror = function(msg, src, line, col, err){
+    showError('[JS 오류] ' + msg + '\n' + (src||'') + ':' + (line||'') + ':' + (col||''));
+  };
+
+  var yy = document.getElementById('yy');
+  if(yy){ yy.textContent = new Date().getFullYear(); }
+
+  // Helpers (ES5)
+  function byId(id){ return document.getElementById(id); }
+  function qs(sel){ return document.querySelector(sel); }
+  function qsa(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  function formatNumber(n){ n = Number(String(n).replace(/[^0-9.-]/g,''))||0; return n.toLocaleString(); }
+  function uncomma(s){ return String(s||'').replace(/[^0-9]/g,''); }
+  function safeImg(src, alt, cls){
+    var d = 'https://placehold.co/120x120?text=NPC';
+    var s = '<img src="'+(src||d)+'" alt="'+(alt||'')+'" class="'+(cls||'thumb')+'" onerror="this.src=\''+d+'\';">';
+    return s;
+  }
+  function sumQuestExp(q){
+    var arr = q && q.rewards ? q.rewards : [];
+    var t = 0;
+    for(var i=0;i<arr.length;i++){
+      var r = arr[i];
+      if(r && typeof r.exp === 'number'){ t += r.exp; }
+    }
+    return t;
+  }
+  function computeExpRatio(q, bucket){
+    var b = Number(bucket||0); if(!b) return 0;
+    return Math.round((sumQuestExp(q)/b)*100);
+  }
+
+  // Data
+  var DATA = {
+    monsters: [
+      { id:'1110100', name:'초록버섯', level:10, region:'빅토리아 아일랜드', img:'https://maplestory.io/api/KMS/338/mob/1110100/icon' }
+    ],
+    items: [
+      { id:'2010004', name:'레몬', type:'소비', category:'소모품', img:'https://maplestory.io/api/KMS/338/item/2010004/icon' }
+    ],
+    quests: [
+      { id:'21010', code:'아란 2-1', title:'영웅의 귀환', region:'리엔', type:'대화', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1LvuMCkoXrOZKcn6UBOjZPUI6xYcNgS2u&sz=w256', href:'quest-21010.html', rewards:[ { exp:112 } ] },
+      { id:'21011', code:'아란 2-2', title:'사라진 무기', region:'리엔', type:'대화', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1TLrva5JVw0QyLT0USv5KfNvgEfuqFpk_&sz=w256', href:'quest-21011.html', rewards:[ { exp:245 } ] },
+      { id:'21012', code:'아란 2-3', title:'사라진 능력', region:'리엔', type:'사냥', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1ScDqd3wMaz2JtAucajA-gbrnwiwgKEhQ&sz=w256', href:'quest-21012.html', rewards:[ { exp:399 } ] },
+      { id:'21013', code:'아란 2-4', title:'영웅을 위한 선물', region:'리엔', type:'수집', minLevel:1, npcImg:'https://drive.google.com/thumbnail?id=1Iuu7iJJ6YcX321PoMlcO56JR_NmpfBN1&sz=w256', href:'quest-21013.html', rewards:[ { exp:665 } ] },
+      { id:'21014', code:'아란 2-5', title:'리린의 이야기', region:'리엔', type:'대화', minLevel:5, npcImg:'https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w256', href:'quest-21014.html', rewards:[ { exp:980 } ] },
+      { id:'21015', code:'아란 3-1', title:'기초 체력 단련1', region:'리엔', type:'사냥', minLevel:5, npcImg:'https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w256', href:'quest-21015.html', rewards:[ { exp:2240 } ] },
+      { id:'21016', code:'아란 3-2', title:'기초 체력 단련2', region:'리엔', type:'사냥', minLevel:5, npcImg:'https://drive.google.com/thumbnail?id=1gmTm8r-9Jf9dru1TOsTAWRaCueh3tvb4&sz=w256', href:'quest-21016.html', rewards:[ { exp:3150 } ] }
+    ]
+  };
+
+  // EXP table (safe)
+  var EXP_TABLE = {1:15,2:34,3:57,4:92,5:135,6:372,7:560,8:840,9:1242,10:1716,11:2360,12:3216,13:4200,14:5460,15:7050,16:8840,17:11040,18:13716,19:16680,20:20216,21:24402,22:28980,23:34320,24:40512,25:47216,26:54900,27:63666,28:73080,29:83720,30:95700,31:108480,32:122760,33:138666,34:155540,35:174216,36:194832,37:216600,38:240500,39:266682,40:294216,41:324240,42:356916,43:391160,44:428280,45:468450,46:510420,47:555680,48:604416,49:655200,50:709716,51:748608,52:789631,53:832902,54:878545,55:926689,56:977471,57:1031036,58:1087536,59:1147132,60:1209994,61:1276301,62:1346242,63:1420016,64:1497832,65:1579913,66:1666492,67:1757815,68:1854143,69:1955750,70:2062925,71:2175973,72:2295216,73:2420993,74:2553663,75:2693603,76:2841212,77:2996910,78:3161140,79:3334370,80:3517093,81:3709829,82:3913127,83:4127566,84:4353756,85:4592341,86:4844001,87:5109452,88:5389449,89:5684790,90:5996316,91:6324914,92:6671519,93:7037118,94:7422752,95:7829518,96:8258575,97:8711144,98:9188514,99:9692044,100:10223168,101:10783397,102:11374327,103:11997640,104:12655110,105:13348610,106:14080113,107:14851703,108:15665576,109:16524049,110:17429566,111:18384706,112:19392187,113:20454878,114:21575805,115:22758159,116:24005306,117:25320796,118:26708375,119:28171993,120:29715818,121:31344244,122:33061908,123:34873700,124:36784778,125:38800583,126:40926854,127:43169645,128:45535341,129:48030677,130:50662758,131:53439077,132:56367538,133:59456479,134:62714694,135:66151459,136:69776558,137:73600313,138:77633610,139:81887931,140:86375389,141:91108760,142:96101520,143:101367883,144:106922842,145:112782213,146:118962678,147:125481832,148:132358236,149:139611467,150:147262175,151:155332142,152:163844343,153:172823012,154:182293713,155:192283408,156:202820538,157:213935103,158:225658746,159:238024845,160:251068606,161:264827165,162:279339693,163:294647508,164:310794191,165:327825712,166:345790561,167:364739883,168:384727628,169:405810702,170:428049128,171:451506220,172:476248760,173:502347192,174:529875818,175:558913012,176:589541445,177:621848316,178:655925603,179:691870326,180:729784819,181:769777027,182:811960808,183:856456260,184:903390063,185:952895838,186:1005114529,187:1060194805,188:1118293480,189:1179575962,190:1244216724,191:1312399800,192:1384319309,193:1460180007,194:1540197871,195:1624600714,196:1713628833,197:1807535693,198:1906588648,199:2011069705,200:2121276324};
+
+  // Helper: return a bucket for ANY level (nearest defined or fallback)
+  function getExpBucketByLevel(lv){
+    lv = Number(lv)||0;
+    var table = EXP_TABLE;
+    if(table.hasOwnProperty(lv)) return table[lv];
+    var best = null, bestKey = -1;
+    for(var k in table){
+      if(!table.hasOwnProperty(k)) continue;
+      var key = Number(k);
+      if(key <= lv && key > bestKey){ bestKey = key; best = table[k]; }
+    }
+    if(best != null) return best;
+    var up = null, upKey = 1e9;
+    for(var k2 in table){
+      if(!table.hasOwnProperty(k2)) continue;
+      var key2 = Number(k2);
+      if(key2 >= lv && key2 < upKey){ upKey = key2; up = table[k2]; }
+    }
+    return up != null ? up : table[100];
+  }
+
+
+  // State
+  var activeTab = 'monsters';
+  var levelRange = [1,200];
+  var playerLevel = 10;
+  var expBucket = getExpBucketByLevel(playerLevel);
+  var expRatioMin = 0;
+
+  // Elements
+  var listMonsters = byId('listMonsters');
+  var listQuests = byId('listQuests');
+  var listItems = byId('listItems');
+  var listNPCs = byId('listNPCs');
+  var listMaps = byId('listMaps');
+  var searchInput = byId('searchInput');
+  var regionSelect = byId('regionSelect');
+  var lvMinRange = byId('lvMinRange');
+  var lvMaxRange = byId('lvMaxRange');
+  var lvMinBadge = byId('lvMinBadge');
+  var lvMaxBadge = byId('lvMaxBadge');
+  var itemTypeWrap = byId('itemTypeWrap');
+  var typeSelect = byId('typeSelect');
+  var questExpWrap = byId('questExpWrap');
+  var expRatioMinRange = byId('expRatioMinRange');
+  var expRatioBadge = byId('expRatioBadge');
+  var playerLevelWrap = byId('playerLevelWrap');
+  var playerLevelInput = byId('playerLevelInput');
+  var playerHint = byId('playerHint');
+  var expBucketWrap = byId('expBucketWrap');
+  var expBucketInput = byId('expBucketInput');
+  var bucketLabelValue = byId('bucketLabelValue');
+
+  // Build regions/types
+  function buildRegions(){
+    var regs = {'all':1};
+    for(var i=0;i<DATA.monsters.length;i++){ regs[DATA.monsters[i].region||''] = 1; }
+    for(var j=0;j<DATA.quests.length;j++){ regs[DATA.quests[j].region||''] = 1; }
+    var opts = [];
+    for(var k in regs){
+      if(!regs.hasOwnProperty(k)) continue;
+      var label = (k==='all'?'전체':k);
+      if(label){ opts.push('<option value="'+k+'">'+label+'</option>'); }
+    }
+    regionSelect.innerHTML = opts.join('');
+    regionSelect.value = 'all';
+  }
+  function buildItemTypes(){
+    var types = {'all':1};
+    for(var i=0;i<DATA.items.length;i++){ types[DATA.items[i].type||''] = 1; }
+    var opts = [];
+    for(var t in types){
+      if(!types.hasOwnProperty(t)) continue;
+      var label = (t==='all'?'전체':t);
+      if(label){ opts.push('<option value="'+t+'">'+label+'</option>'); }
+    }
+    typeSelect.innerHTML = opts.join('');
+    typeSelect.value = 'all';
+  }
+
+  function applyTabUI(){ console.log('[TAB] applyTabUI', window.activeTab);
+    var tabs = qsa('.tab');
+    for(var i=0;i<tabs.length;i++){
+      var b = tabs[i];
+      var on = (b.getAttribute('data-tab') === activeTab);
+      b.className = 'tab' + (on ? ' on' : '');
+    }
+    listMonsters.className = 'grid' + (activeTab==='monsters' ? '' : ' hidden');
+    listQuests.className  = 'grid' + (activeTab==='quests' ? '' : ' hidden');
+    listItems.className   = 'grid' + (activeTab==='items' ? '' : ' hidden');
+    listNPCs.className    = 'grid' + (activeTab==='npc' ? '' : ' hidden');
+    listMaps.className    = 'grid' + (activeTab==='maps' ? '' : ' hidden');
+
+    // Tab-specific controls
+    itemTypeWrap.style.display = (activeTab==='items' ? 'block' : 'none');
+    var qOn = (activeTab==='quests');
+    questExpWrap.style.display = qOn ? 'block' : 'none';
+    playerLevelWrap.style.display = qOn ? 'block' : 'none';
+    expBucketWrap.style.display = qOn ? 'block' : 'none';
+  }
+
+  function render(){
+    applyTabUI();
+    var q = (searchInput && searchInput.value ? String(searchInput.value).trim() : '');
+    var lvMin = levelRange[0], lvMax = levelRange[1];
+    var region = regionSelect ? regionSelect.value : 'all';
+
+    // Monsters
+    if(activeTab==='monsters'){
+      var mdata = [];
+      for(var i=0;i<DATA.monsters.length;i++){
+        var m = DATA.monsters[i];
+        var hit = !q || m.name.indexOf(q)>-1 || String(m.region||'').indexOf(q)>-1;
+        var inRegion = region==='all' || String(m.region||'').indexOf(region)>-1;
+        var inLevel = (!m.level) || (m.level>=lvMin && m.level<=lvMax);
+        if(hit && inRegion && inLevel) mdata.push(m);
+      }
+      var mhtml = [];
+      for(var a=0;a<mdata.length;a++){
+        var mm = mdata[a];
+        mhtml.push(
+          '<div class="card">'+
+            '<a href="monster.html?id='+encodeURIComponent(mm.id)+'">'+
+              safeImg(mm.img, mm.name, 'thumb')+
+              '<div style="margin-top:6px; font-weight:600;">'+mm.name+'</div>'+
+              '<div style="font-size:12px; color:#6b7280;">Lv.'+(mm.level||'-')+' · '+(mm.region||'-')+'</div>'+
+            '</a>'+
+          '</a>'
+        );
+      }
+      listMonsters.innerHTML = mhtml.join('') || '<div class="card">조건에 맞는 몬스터가 없습니다.</div>';
+    }
+
+    // Quests
+    if(activeTab==='quests'){
+      var qdata = [];
+      for(var i2=0;i2<DATA.quests.length;i2++){
+        var qs = DATA.quests[i2];
+        var hit2 = !q || (qs.code && qs.code.indexOf(q)>-1) || String(qs.title||'').indexOf(q)>-1 || String(qs.region||'').indexOf(q)>-1;
+        var inRegion2 = region==='all' || String(qs.region||'').indexOf(region)>-1;
+        var inLevel2 = (!qs.minLevel) || (qs.minLevel>=lvMin && qs.minLevel<=lvMax);
+        var meetsPlayer = (playerLevel==null) || ((qs.minLevel||0) <= playerLevel);
+        var ratio = computeExpRatio(qs, expBucket);
+        if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin)) qdata.push(qs);
+      }
+      var qhtml = [];
+      for(var b=0;b<qdata.length;b++){
+        var qq = qdata[b];
+        var exp = sumQuestExp(qq);
+        var ratioNow = computeExpRatio(qq, expBucket);
+        var meta = (qq.region||'-')+' · '+(qq.type||'-')+(qq.minLevel? ' · Lv.'+qq.minLevel : '');
+        var link = qq.href ? qq.href : ('quest-'+String(qq.id||'')+'.html');
+        qhtml.push(
+          '<a class="card" style="display:block;text-decoration:none;color:inherit;" href="'+link+'">'+
+            '<div style="display:flex; gap:12px; align-items:flex-start;">'+
+              safeImg(qq.npcImg, 'NPC', 'thumb')+
+              '<div style="min-width:0;">'+
+                '<div style="font-weight:600;">'+(qq.code? qq.code+' · ' : '')+qq.title+'</div>'+
+                '<div style="font-size:12px; color:#6b7280;">'+ meta +'</div>'+
+                
+              '</div>'+
+            '</div>'+
+            '<div style="margin-top:10px;">'+
+              '<div class="bar"><div style="width:'+Math.max(0, Math.min(100, ratioNow))+'%;"></div></div>'+
+              '<div style="font-size:11px; color:#6b7280; margin-top:4px; text-align:right;">EXP '+formatNumber(exp)+' · × '+ratioNow+'%</div>'+
+            '</div>'+
+          '</a>'
+        );
+      }
+      listQuests.innerHTML = qhtml.join('') || '<div class="card">조건에 맞는 퀘스트가 없습니다.</div>';
+    }
+
+    // Items
+    if(activeTab==='items'){
+      var type = typeSelect ? typeSelect.value : 'all';
+      var idata = [];
+      for(var i3=0;i3<DATA.items.length;i3++){
+        var it = DATA.items[i3];
+        var hit3 = !q || String(it.name||'').indexOf(q)>-1;
+        var typeOk = type==='all' || (it.type===type);
+        if(hit3 && typeOk) idata.push(it);
+      }
+      var ihtml = [];
+      for(var c=0;c<idata.length;c++){
+        var ii = idata[c];
+        ihtml.push(
+          '<div class="card">'+
+            '<a href="item.html?id='+encodeURIComponent(ii.id)+'">'+
+              safeImg(ii.img, ii.name, 'thumb')+
+              '<div style="margin-top:6px; font-weight:600;">'+ii.name+'</div>'+
+              '<div style="font-size:12px; color:#6b7280;">'+(ii.category||'-')+' · '+(ii.type||'-')+'</div>'+
+            '</a>'+
+          '</a>'
+        );
+      }
+      listItems.innerHTML = ihtml.join('') || '<div class="card">조건에 맞는 아이템이 없습니다.</div>';
+    }
+
+    // NPC
+    if(activeTab==='npc'){
+      listNPCs.innerHTML = '<div class="card">등록된 NPC가 없습니다.</div>';
+    }
+    // Maps
+    if(activeTab==='maps'){
+      listMaps.innerHTML = '<div class="card">등록된 맵이 없습니다.</div>';
+    }
+  }
+
+  // Events
+  var tabs = qsa('.tab');
+  for(var i=0;i<tabs.length;i++){
+    (function(btn){
+      btn.onclick = function(){
+        activeTab = btn.getAttribute('data-tab');
+        render();
+      };
+    })(tabs[i]);
+  }
+
+  if(searchInput) searchInput.oninput = render;
+  if(regionSelect) regionSelect.oninput = render;
+
+  if(lvMinRange && lvMaxRange){
+    var updateLv = function(){
+      var min = Math.min(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+      var max = Math.max(Number(lvMinRange.value)||1, Number(lvMaxRange.value)||1);
+      levelRange = [min, max];
+      lvMinBadge.textContent = String(min);
+      lvMaxBadge.textContent = String(max);
+      render();
+    };
+    lvMinRange.oninput = updateLv;
+    lvMaxRange.oninput = updateLv;
+  }
+
+  if(typeSelect) typeSelect.oninput = render;
+
+  if(expRatioMinRange){
+    var syncRatio = function(){
+      expRatioMin = Number(expRatioMinRange.value)||0;
+      expRatioBadge.textContent = expRatioMin + '%';
+      render();
+    };
+    expRatioMinRange.oninput = syncRatio;
+    expRatioMinRange.onchange = syncRatio;
+    expRatioMinRange.onblur = syncRatio;
+  }
+
+  if(playerLevelInput){
+    var onLv = function(){
+      var lv = Number(playerLevelInput.value)||null;
+      playerLevel = (lv && lv>=1 && lv<=200) ? lv : null;
+      if(playerHint) playerHint.textContent = '필터: 입력 레벨(≤) 이하만 표시 • 현재: ' + (playerLevel||'없음');
+      expBucket = getExpBucketByLevel(playerLevel);
+      if(expBucketInput) expBucketInput.value = formatNumber(expBucket);
+      if(bucketLabelValue) bucketLabelValue.textContent = formatNumber(expBucket);
+      render();
+    };
+    playerLevelInput.oninput = onLv;
+    playerLevelInput.onchange = onLv;
+    playerLevelInput.onblur = onLv;
+  }
+
+  if(expBucketInput){
+    var onBucket = function(){
+      var raw = uncomma(expBucketInput.value);
+      expBucket = Math.max(1, Number(raw)||1);
+      expBucketInput.value = formatNumber(expBucket);
+      if(bucketLabelValue) bucketLabelValue.textContent = formatNumber(expBucket);
+      render();
+    };
+    expBucketInput.oninput = onBucket;
+    expBucketInput.onchange = onBucket;
+    expBucketInput.onblur = onBucket;
+  }
+
+  var resetBtn = byId('resetBtn');
+  if(resetBtn){
+    resetBtn.onclick = function(){
+      if(searchInput) searchInput.value = '';
+      if(regionSelect) regionSelect.value = 'all';
+      if(lvMinRange) lvMinRange.value = 1;
+      if(lvMaxRange) lvMaxRange.value = 200;
+      levelRange = [1,200];
+      lvMinBadge.textContent = '1';
+      lvMaxBadge.textContent = '200';
+      if(typeSelect) typeSelect.value = 'all';
+      if(expRatioMinRange){ expRatioMinRange.value = 0; expRatioMin = 0; expRatioBadge.textContent='0%'; }
+      if(playerLevelInput){ playerLevelInput.value = 10; playerLevel = 10; if(playerHint) playerHint.textContent = '필터: 입력 레벨(≤) 이하만 표시 • 현재: 10'; }
+      expBucket = getExpBucketByLevel(playerLevel);
+      if(expBucketInput) expBucketInput.value = formatNumber(expBucket);
+      if(bucketLabelValue) bucketLabelValue.textContent = formatNumber(expBucket);
+      activeTab = 'monsters';
+      render();
+    };
+  }
+
+  // Init
+  buildRegions();
+  buildItemTypes();
+  /* RONA_FILTERS_V2 */
+  (function(){
+    var KEY = 'ronaFiltersV2';
+
+    function qs(sel){ return document.querySelector(sel); }
+    function saveState(){
+      try {
+        var st = {
+          search: (qs('#searchInput')||{}).value || '',
+          region: (qs('#regionSelect')||{}).value || 'all',
+          type:   (qs('#typeSelect')||{}).value || 'all',
+          lvMin:  (qs('#lvMinRange')||{}).value || '1',
+          lvMax:  (qs('#lvMaxRange')||{}).value || '200',
+          expMin: (qs('#expRatioMinRange')||{}).value || '0',
+          playerLevel: (qs('#playerLevelInput')||{}).value || '',
+          expBucket:   (qs('#expBucketInput')||{}).value || '',
+          activeTab: (typeof window.activeTab!=='undefined' && window.activeTab) ? window.activeTab : null
+        };
+        localStorage.setItem(KEY, JSON.stringify(st));
+      } catch(e){}
+    }
+    function loadState(){
+      try {
+        var raw = localStorage.getItem(KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch(e){ return null; }
+    }
+    function setVal(el, v){
+      if(!el || v==null) return;
+      el.value = v;
+      try{
+        el.dispatchEvent(new Event('input',{bubbles:true}));
+        el.dispatchEvent(new Event('change',{bubbles:true}));
+      }catch(e){}
+    }
+    function applyState(st){
+      if(!st) return;
+      setVal(qs('#searchInput'), st.search);
+      setVal(qs('#regionSelect'), st.region);
+      setVal(qs('#typeSelect'), st.type);
+      setVal(qs('#lvMinRange'), st.lvMin);
+      setVal(qs('#lvMaxRange'), st.lvMax);
+      setVal(qs('#expRatioMinRange'), st.expMin);
+      setVal(qs('#playerLevelInput'), st.playerLevel);
+      setVal(qs('#expBucketInput'), st.expBucket);
+      if (st.activeTab){
+        try { window.activeTab = st.activeTab; } catch(e){}
+      }
+      try { if (typeof applyTabUI==='function') applyTabUI(); } catch(e){}
+      try { if (typeof render==='function') render(); } catch(e){}
+    }
+    // Save on input changes
+    document.addEventListener('input', function(e){
+      var id = e.target && e.target.id;
+      if(!id) return;
+      if(/searchInput|regionSelect|typeSelect|lvMinRange|lvMaxRange|expRatioMinRange|playerLevelInput|expBucketInput/.test(id)){
+        saveState();
+      }
+    }, true);
+    document.addEventListener('change', function(e){
+      var id = e.target && e.target.id;
+      if(!id) return;
+      if(/searchInput|regionSelect|typeSelect|lvMinRange|lvMaxRange|expRatioMinRange|playerLevelInput|expBucketInput/.test(id)){
+        saveState();
+      }
+    }, true);
+    // Save on any link click (detail/목록 이동 전)
+    document.addEventListener('click', function(e){
+      var a = e.target && e.target.closest('a');
+      if(!a) return;
+      saveState();
+    }, true);
+
+    // Expose a manual save for tab handler to call
+    window.__saveFiltersV2 = saveState;
+
+    // After builders are done, load state and apply once
+    setTimeout(function(){
+      var st = loadState();
+      if(st){
+        applyState(st);
+      }
+    }, 0);
+  })();
+  /* END RONA_FILTERS_V2 */
+
+  // Re-apply restored filters after building options, so 'value' isn't reset by builders
+  try {
+    if (window.__restored && window.__restoredState && typeof deserialize === 'function') {
+      deserialize(window.__restoredState);
+    }
+  } catch(e){}
+  try { if (typeof render === 'function') render(); } catch(e){}
+
+  // URL tab
+  try{
+    var params = (location && location.search) ? location.search : '';
+    if(!window.__restored && params.indexOf('tab=quests')>-1) { activeTab = 'quests'; window.activeTab = 'quests'; }
+    if(!window.__restored && params.indexOf('tab=items')>-1) { activeTab = 'items'; window.activeTab = 'items'; }
+    if(!window.__restored && params.indexOf('tab=npc')>-1) { activeTab = 'npc'; window.activeTab = 'npc'; }
+    if(!window.__restored && params.indexOf('tab=maps')>-1) { activeTab = 'maps'; window.activeTab = 'maps'; }
+  }catch(e){}
+  render();
+})();
+</script>
+
+<script>
+/**
+ * Filter Auto-Save (V1)
+ * - Stores all <input>, <select>, <textarea> values and active tab state in localStorage.
+ * - Restores them on load so that after viewing a detail page and returning, the filters persist.
+ * - Key: FILTERS_AUTOSAVE_V1 (scoped by location.pathname)
+ */
+(function () {
+  const STORAGE_KEY = "FILTERS_AUTOSAVE_V1::" + location.pathname;
+
+  function getElKey(el, idx) {
+    // Unique-ish key per control
+    if (el.dataset && el.dataset.persistKey) return el.dataset.persistKey;
+    if (el.id) return el.tagName + "#" + el.id;
+    if (el.name) return el.tagName + "[name=" + el.name + "]";
+    return el.tagName + "@" + idx;
+  }
+
+  function collectState() {
+    const controls = Array.from(document.querySelectorAll("input, select, textarea"));
+    const state = { values: {}, tabs: {}, hash: location.hash || "" };
+    controls.forEach((el, idx) => {
+      const key = getElKey(el, idx);
+      if (el.type === "checkbox" || el.type === "radio") {
+        state.values[key] = el.checked;
+      } else if (el.tagName === "SELECT" && el.multiple) {
+        state.values[key] = Array.from(el.selectedOptions).map(o => o.value);
+      } else {
+        state.values[key] = el.value;
+      }
+    });
+
+    // Try to capture tab state (common patterns)
+    const activeTab = document.querySelector(
+      '[role="tab"][aria-selected="true"], .tab.is-active, .tab.active, .tabs .tab[aria-current="page"]'
+    );
+    if (activeTab) {
+      state.tabs.selector = "[data-tab-id]";
+      // mark all tabs with data-tab-id if not present
+      const tabs = document.querySelectorAll('[role="tab"], .tab');
+      tabs.forEach((t, i) => t.dataset.tabId = t.dataset.tabId || String(i));
+      state.tabs.activeId = activeTab.dataset.tabId || activeTab.id || activeTab.textContent?.trim() || "";
+    }
+    return state;
+  }
+
+  function applyState(state) {
+    if (!state || !state.values) return;
+    const controls = Array.from(document.querySelectorAll("input, select, textarea"));
+    controls.forEach((el, idx) => {
+      const key = getElKey(el, idx);
+      if (!(key in state.values)) return;
+      const val = state.values[key];
+      if (el.type === "checkbox" || el.type === "radio") {
+        el.checked = !!val;
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      } else if (el.tagName === "SELECT" && el.multiple && Array.isArray(val)) {
+        Array.from(el.options).forEach(opt => opt.selected = val.includes(opt.value));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      } else if (typeof val === "string" || typeof val === "number") {
+        // Avoid stomping on placeholder-only fields
+        if (String(el.value) !== String(val)) {
+          el.value = val;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+    });
+
+    // Restore tab if we saved one
+    if (state.tabs && state.tabs.activeId) {
+      const tabs = document.querySelectorAll('[role="tab"], .tab');
+      let target = null;
+      tabs.forEach(t => {
+        if (
+          t.dataset.tabId === state.tabs.activeId ||
+          t.id === state.tabs.activeId ||
+          t.textContent?.trim() === state.tabs.activeId
+        ) target = t;
+      });
+      if (target) {
+        target.click?.();
+      }
+    }
+
+    // Optionally restore hash (deep link to a specific list section)
+    if (state.hash && state.hash !== location.hash) {
+      try { location.hash = state.hash; } catch (e) {}
+    }
+  }
+
+  function save() {
+    try {
+      const state = collectState();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      // Swallow
+    }
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      applyState(state);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Save on any interaction that changes filters
+  window.addEventListener("beforeunload", save);
+  document.addEventListener("change", save, true);
+  document.addEventListener("input", save, true);
+
+  // Also save right before following links (e.g., to detail pages)
+  document.addEventListener("click", function (e) {
+    const a = e.target.closest && e.target.closest("a[href]");
+    if (!a) return;
+    // Only save for same-origin navigations
+    const url = new URL(a.href, location.href);
+    if (url.origin === location.origin) {
+      save();
+    }
+  }, true);
+
+  // Restore ASAP after DOM ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", load, { once: true });
+  } else {
+    load();
+  }
+
+  // Expose small helper to clear filters quickly from console
+  window.__clearSavedFilters = function() {
+    localStorage.removeItem(STORAGE_KEY);
+  };
+})();
+</script>
+
+</body>
+</html>
