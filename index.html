@@ -1204,5 +1204,139 @@ addQuest({ id: 21710, title: "몬스터 전쟁?", code: "아란 7-3", region: "�
 addQuest({ id: 21711, title: "시니컬한 주황버섯 등장", code: "아란 7-4", region: "헤네시스", type: "몬스터 사냥 , 아이템 수집", minLevel: 15, npcImg: "https://drive.google.com/thumbnail?id=192LWAkab2bHFBmoP1O_Dj0trz0x2-MKj&sz=w400", href: "quest-21711.html", rewards: [{ exp: 6790 }] });
 </script>
 
+
+<!-- Inline multi-type quest patch (no external JS needed) -->
+<script>
+(function(){
+  if (window.__QuestTypePatch) return; window.__QuestTypePatch = true;
+
+  function splitTokens(raw){
+    if (Array.isArray(raw)) return raw;
+    var text = String(raw == null ? "" : raw);
+    return text.split(/[,\u00B7\u2027\u2024\u2022\u3001\uFF0C·]/)
+      .map(function(s){ return String(s||"").trim(); })
+      .filter(Boolean);
+  }
+
+  // 1) Patch addQuest to compute q.typeList (non-destructive)
+  (function(){
+    var originalAdd = window.addQuest;
+    if (typeof originalAdd === "function"){
+      window.addQuest = function(q){
+        try{
+          if (q) q.typeList = splitTokens(q.type);
+        }catch(e){}
+        return originalAdd.apply(this, arguments);
+      };
+    }
+  })();
+
+  // 2) Patch populateQuestTypeOptions to list only atomic tokens (no combined values)
+  (function(){
+    var originalPopulate = window.populateQuestTypeOptions;
+    window.populateQuestTypeOptions = function(){
+      var sel = (typeof window.ensureQuestTypeUI === "function")
+                  ? window.ensureQuestTypeUI()
+                  : document.getElementById("questTypeSelect");
+      if (!sel) return;
+
+      var quests = (window.DATA && Array.isArray(window.DATA.quests)) ? window.DATA.quests : [];
+      var bag = {};
+      quests.forEach(function(q){
+        if (!q) return;
+        var list = Array.isArray(q.typeList) ? q.typeList : splitTokens(q.type);
+        list.forEach(function(tok){
+          var t = String(tok||"").trim();
+          if (!t || /[,\u00B7\u2027\u2024\u2022\u3001\uFF0C·]/.test(t)) return;
+          bag[t] = 1;
+        });
+      });
+      var types = Object.keys(bag).sort();
+
+      var selEl = sel; // remember
+      var saved = (function(){
+        try{ var v = localStorage.getItem("questType.selected"); if (v) return v; }catch(e){}
+        return selEl.value || "all";
+      })();
+
+      sel.innerHTML = "";
+      var oAll = document.createElement("option"); oAll.value = "all"; oAll.textContent = "전체";
+      sel.appendChild(oAll);
+      types.forEach(function(t){
+        var o = document.createElement("option"); o.value = t; o.textContent = t; sel.appendChild(o);
+      });
+
+      var exists = Array.prototype.some.call(sel.options, function(o){ return o.value === saved; });
+      sel.value = exists ? saved : "all";
+    };
+
+    if (typeof originalPopulate === "function"){
+      var _patched = window.populateQuestTypeOptions;
+      window.populateQuestTypeOptions = function(){
+        try{ originalPopulate.apply(this, arguments); }catch(e){}
+        try{ _patched.apply(this, arguments); }catch(e){}
+      };
+    }
+  })();
+
+  // 3) Ensure filtering uses inclusion against q.typeList (post-filter after render)
+  (function(){
+    var originalRender = window.render;
+    function getSelectedType(){
+      var sel = document.getElementById("questTypeSelect");
+      if (!sel) return "all";
+      return sel.value || "all";
+    }
+    function ensureTypeList(q){
+      if (!q) return [];
+      if (Array.isArray(q.typeList)) return q.typeList;
+      return splitTokens(q.type);
+    }
+    function postFilter(){
+      try{
+        var selected = String(getSelectedType());
+        if (selected === "all") return;
+        var list = document.getElementById("listQuests");
+        if (!list) return;
+        var links = list.querySelectorAll('.card a[href*="quest-"]');
+        var map = {};
+        var arr = (window.DATA && Array.isArray(window.DATA.quests)) ? window.DATA.quests : [];
+        for (var i=0;i<arr.length;i++){ var q = arr[i]; if (!q || q.id==null) continue; map[String(q.id)] = ensureTypeList(q); }
+        Array.prototype.forEach.call(links, function(a){
+          var m = (a.getAttribute("href")||"").match(/quest-(\d+)\.html/i);
+          var id = m ? m[1] : null;
+          var tlist = id && map[id] ? map[id] : [];
+          var show = tlist.indexOf(selected) > -1;
+          var card = a.closest ? a.closest(".card") : null;
+          if (card) card.style.display = show ? "" : "none";
+        });
+      }catch(e){}
+    }
+    if (typeof originalRender === "function"){
+      window.render = function(){
+        var out = originalRender.apply(this, arguments);
+        try{ postFilter(); }catch(e){}
+        return out;
+      };
+    } else {
+      if (document.readyState === "loading"){
+        document.addEventListener("DOMContentLoaded", postFilter);
+      } else {
+        postFilter();
+      }
+    }
+  })();
+
+  // 4) Rebuild options once after DOM ready (covers cases where template populates before quests load)
+  (function(){
+    function go(){
+      try{ if (typeof window.populateQuestTypeOptions === "function") window.populateQuestTypeOptions(); }catch(e){}
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go);
+    else go();
+  })();
+})();
+</script>
+
 </body>
 </html>
