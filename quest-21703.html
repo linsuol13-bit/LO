@@ -131,7 +131,8 @@
       "title": "수련만이 살 길이다! 2"
     }
   ],
-  "followups": []
+  "followups": [],
+  "nexts": [ { "id": "21704", "title": "아주 작은 한 걸음" } ]
 };
 
   const img = (src, alt='', cls='') => `<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="this.style.display='none'">`;
@@ -260,6 +261,42 @@ const reqItemBox = r => {
       </div>
     </section>` : ''}
   `;
+  // ---- Append Next Quest section via DOM ----
+  try {
+    if (Array.isArray(q.nexts) && q.nexts.length) {
+      const nextSec = document.createElement('section');
+      nextSec.className = 'mb-16';
+      nextSec.innerHTML = `<h2 class="text-sm font-semibold mb-2">다음 퀘스트</h2>`;
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      q.nexts.forEach(n => {
+        const a = document.createElement('a');
+        a.className = 'ibox';
+        a.href = `quest-${n.id}.html`;
+        a.innerHTML = `<div class="text-sm">
+          <div class="muted">다음 퀘스트</div>
+          <div class="font-medium">[${n.id}] ${n.title || ''}</div>
+        </div>`;
+        grid.appendChild(a);
+      });
+      nextSec.appendChild(grid);
+      const detail = document.getElementById('detail');
+      // Insert right after "완료 보상" section if present; else append at end
+      const h2s = detail.querySelectorAll('h2');
+      let placed = false;
+      h2s.forEach(h => {
+        if (h.textContent.trim() === '완료 보상') {
+          const sec = h.closest('section');
+          if (sec && sec.parentNode) {
+            sec.parentNode.insertBefore(nextSec, sec.nextSibling);
+            placed = true;
+          }
+        }
+      });
+      if (!placed) detail.appendChild(nextSec);
+    }
+  } catch (e) { console.warn('Next quest append failed:', e); }
+
 })();
 </script>
 

@@ -121,7 +121,8 @@
       "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w400"
     }
   ],
-  "prereqs": []
+  "prereqs": [],
+  "nexts": [ { "id": "2247", "title": "뿔버섯의 포악성" } ]
 };
 
   const img = (src, alt='', cls='') => `<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="this.style.display='none'">`;
@@ -199,7 +200,24 @@ const reqItemBox = r => {
     return `<section class="mb-6"><h2 class="text-sm font-semibold mb-2">선행 퀘스트</h2><div class="grid">${boxes}</div></section>`;
   };
 
-  const $detail = document.getElementById('detail');
+  
+  const nextSection = (list=[]) => {
+    if (!Array.isArray(list) || !list.length) return '';
+    const boxes = list.map(n => {
+      const href = `https://linsuol13-bit.github.io/LO/quest-${n.id}.html`;
+      return `<a class="ibox" href="${href}">
+                <div class="text-sm">
+                  <div class="muted">다음 퀘스트</div>
+                  <div class="font-medium">[${n.id}] ${n.title}</div>
+                </div>
+              </a>`;
+    }).join('');
+    return `<section class="mb-16">
+              <h2 class="text-sm font-semibold mb-2">다음 퀘스트</h2>
+              <div class="grid">${boxes}</div>
+            </section>`;
+  };
+const $detail = document.getElementById('detail');
   $detail.innerHTML = `
     <header class="mb-4">
       <h1 class="text-2xl font-bold">${q.code} · ${q.title}</h1>
@@ -249,6 +267,8 @@ const reqItemBox = r => {
         ${q.rewards.map(rewardBox).join('')}
       </div>
     </section>` : ''}
+
+    ${nextSection(q.nexts)}
   `;
 })();
 </script>

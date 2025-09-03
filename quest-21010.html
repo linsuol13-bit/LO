@@ -134,7 +134,8 @@
     }
   ],
   "prereqs": [],
-  "followups": []
+  "followups": [],
+  "nexts": [ { "id": "21011", "title": "사라진 무기" } ]
 };
 
   const img = (src, alt='', cls='') => `<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="this.style.display='none'">`;
@@ -255,6 +256,42 @@
       </div>
     </section>` : ''}
   `;
+  // ---- Append Next Quest section via DOM ----
+  try {
+    if (Array.isArray(q.nexts) && q.nexts.length) {
+      const nextSec = document.createElement('section');
+      nextSec.className = 'mb-16';
+      nextSec.innerHTML = `<h2 class="text-sm font-semibold mb-2">다음 퀘스트</h2>`;
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      q.nexts.forEach(n => {
+        const a = document.createElement('a');
+        a.className = 'ibox';
+        a.href = `quest-${n.id}.html`;
+        a.innerHTML = `<div class="text-sm">
+          <div class="muted">다음 퀘스트</div>
+          <div class="font-medium">[${n.id}] ${n.title || ''}</div>
+        </div>`;
+        grid.appendChild(a);
+      });
+      nextSec.appendChild(grid);
+      const detail = document.getElementById('detail');
+      // Try to place right after the "완료 보상" section, else append at end
+      const headers = detail.querySelectorAll('h2');
+      let placed = false;
+      headers.forEach(h => {
+        if (h.textContent.trim() === '완료 보상') {
+          const section = h.closest('section');
+          if (section && section.parentNode) {
+            section.parentNode.insertBefore(nextSec, section.nextSibling);
+            placed = true;
+          }
+        }
+      });
+      if (!placed) detail.appendChild(nextSec);
+    }
+  } catch (e) { console.warn('Next quest append failed:', e); }
+
 })();
 </script>
 
