@@ -151,16 +151,24 @@
     const title = `${r.name||''}${(r.qty && r.qty>0) ? ' ×'+r.qty : ''}`;
     const pic = img(r.img, r.name, 'thumb');
     const inner = `<div class="text-sm font-medium">${title}</div>`;
-    return r.itemId ? `<a class="ibox" href="item.html?id=${r.itemId}">${pic}${inner}</a>` : `<div class="ibox">${pic}${inner}</div>`;
+    return r.itemId ? `<a class="ibox" href="https://linsuol13-bit.github.io/LO/item-${r.itemId}.html">${pic}${inner}</a>` : `<div class="ibox">${pic}${inner}</div>`;
   };
 
-  const reqItemBox = r => {
-    const title = `${r.name||''}${(r.qty && r.qty>0) ? ' ×'+r.qty : ''}`;
-    const pic = img(r.img, r.name, 'thumb');
-    const inner = `<div class="text-sm font-medium">${title}${r.qty===0 ? ' (전달)' : ''}</div>`;
-    const href = r.id ? `monster.html?id=${r.id}` : (r.itemId ? `item.html?id=${r.itemId}` : '');
-    return href ? `<a class="ibox" href="${href}">${pic}${inner}</a>` : `<div class="ibox">${pic}${inner}</div>`;
-  };
+  
+const reqItemBox = r => {
+  const qtyPart = (r.qty && r.qty>0) ? (' ×'+r.qty) : (r.qty===0 ? ' (전달)' : (r.qty<0 ? ' (사용)' : ''));
+  const title = `${r.name}${qtyPart}`;
+  const pic = img(r.img, r.name, 'thumb');
+  const inner = `<div class="text-sm font-medium">${title}</div>`;
+  let href = '';
+  if (r.itemId) {
+    const t = (r.type||'');
+    if (t.includes('몬스터')) href = `https://linsuol13-bit.github.io/LO/monster-${r.itemId}.html`;
+    else if (t.includes('아이템')) href = `https://linsuol13-bit.github.io/LO/item-${r.itemId}.html`;
+  }
+  return href ? `<a class="ibox" href="${href}">${pic}${inner}</a>` : `<div class="ibox">${pic}${inner}</div>`;
+};
+        
 
   const isPlayer = (w) => /^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
   const avatarFor = (who) => {
@@ -184,7 +192,7 @@
       const pic = t.img ? img(t.img, t.name || 'TIP', 'thumb') : '';
       const meta = `${t.subtitle || (t.level != null ? 'Lv.'+t.level : '')}`;
       const text = `<div>${t.name ? `<div class="text-sm font-medium">${t.name}</div>` : ''}${meta ? `<div class="muted" style="font-size:12px">${meta}</div>` : ''}</div>`;
-      const href = t.id ? `monster.html?id=${t.id}` : (t.link||t.url||'');
+      const href = t.id ? `https://linsuol13-bit.github.io/LO/monster-${t.id}.html` : (t.link||t.url||'');
       return href ? `<a class="ibox" href="${href}">${pic}${text}</a>` : `<div class="ibox">${pic}${text}</div>`;
     }).join('');
     return `<section class="mb-10"><h2 class="text-sm font-semibold mb-2">TIP</h2><div class="grid">${boxes}</div></section>`;
@@ -193,7 +201,7 @@
   const prereqSection = (list=[]) => {
     if (!Array.isArray(list) || !list.length) return '';
     const boxes = list.map(p => {
-      const href = `quest.html?id=${p.id}`;
+      const href = `https://linsuol13-bit.github.io/LO/quest-${p.id}.html`;
       return `<a class="ibox" href="${href}"><div class="text-sm"><div class="muted">선행 퀘스트</div><div class="font-medium">[${p.id}] ${p.title}</div></div></a>`;
     }).join('');
     return `<section class="mb-6"><h2 class="text-sm font-semibold mb-2">선행 퀘스트</h2><div class="grid">${boxes}</div></section>`;
@@ -211,11 +219,11 @@
     <section class="grid" style="grid-template-columns:1fr 1fr;">
       <div class="card">
         <h2 class="text-sm font-semibold mb-3">시작</h2>
-        ${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`npc.html?id=${q.start.npc.id}`:''), (q.start.place.code?`map.html?id=${q.start.place.code}`:''))}
+        ${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}
       </div>
       <div class="card">
         <h2 class="text-sm font-semibold mb-3">완료</h2>
-        ${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`npc.html?id=${q.finish.npc.id}`:''), (q.finish.place.code?`map.html?id=${q.finish.place.code}`:''))}
+        ${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}
       </div>
     </section>
 

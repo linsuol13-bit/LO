@@ -178,7 +178,7 @@
   const prereqSection = (list=[]) => {
     if (!Array.isArray(list) || !list.length) return '';
     const boxes = list.map(p => {
-      const href = `quest.html?id=${p.id}`;
+      const href = `quest-${p.id}.html`;
       return `<a class="ibox" href="${href}"><div class="text-sm"><div class="muted">선행 퀘스트</div><div class="font-medium">[${p.id}] ${p.title}</div></div></a>`;
     }).join('');
     return `<section class="mb-6"><h2 class="text-sm font-semibold mb-2">선행 퀘스트</h2><div class="grid">${boxes}</div></section>`;
