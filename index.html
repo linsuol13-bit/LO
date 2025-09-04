@@ -294,7 +294,10 @@
       var b = tabs[i];
       var on = (b.getAttribute('data-tab') === activeTab);
       b.className = 'tab' + (on ? ' on' : '');
-    }
+    
+    var qOn = (activeTab==='quests'); var _fameWrap = document.getElementById('fameOnlyWrap'); if(_fameWrap){ _fameWrap.style.display = qOn ? 'block' : 'none'; }
+}
+
     listMonsters.className = 'grid' + (activeTab==='monsters' ? '' : ' hidden');
     listQuests.className  = 'grid' + (activeTab==='quests' ? '' : ' hidden');
     listItems.className   = 'grid' + (activeTab==='items' ? '' : ' hidden');
@@ -2092,7 +2095,7 @@ addQuest({
     var fameWrap = byId('fameOnlyWrap');
     var scrollWrap = byId('scrollFilterWrap');
     // if app exposes activeTab, use it; otherwise show if quest list exists
-    var questing = (window.activeTab==='quests') || !!byId('listQuests');
+    var list = byId('listQuests'); var questing = (window.activeTab==='quests') || (list && !list.classList.contains('hidden'));
     if (fameWrap) fameWrap.style.display = questing ? '' : 'none';
     if (scrollWrap) scrollWrap.style.display = questing ? '' : 'none';
   }
