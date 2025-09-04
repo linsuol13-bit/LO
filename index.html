@@ -117,7 +117,15 @@
         <input id="expBucketInput" type="text" class="input" value="10223168">
         <div style="font-size:12px; color:#6b7280; margin-top:6px;">EXP 통: <span id="bucketLabelValue">10,223,168</span></div>
       </div>
-    </section>
+    
+      <div class="ctrl" id="fameOnlyWrap" style="flex:1;">
+        <label class="label">인기도 보상</label>
+        <div class="row-in">
+          <input type="checkbox" id="fameOnlyCheckbox">
+          <span>인기도 보상만 보기</span>
+        </div>
+      </div>
+</section>
 
   <nav class="tabs" style="margin-bottom:12px;">
     <button class="tab on" data-tab="monsters">몬스터</button>
@@ -287,6 +295,8 @@
   }
 
   function render(){
+    var fameOnly = !!(document.getElementById('fameOnlyCheckbox') && document.getElementById('fameOnlyCheckbox').checked);
+
     applyTabUI();
     var q = (searchInput && searchInput.value ? String(searchInput.value).trim() : '');
     var lvMin = levelRange[0], lvMax = levelRange[1];
@@ -327,6 +337,8 @@ try {
 
     // Quests
     if(activeTab==='quests'){
+      if (typeof fameOnly === 'undefined') { var fameOnly = false; }
+
       var qdata = [];
       for(var i2=0;i2<window.DATA.quests.length;i2++){
         var qs = window.DATA.quests[i2];
@@ -337,7 +349,7 @@ try {
         var ratio = computeExpRatio(qs, expBucket);
         var __tList = Array.isArray(qs.typeList) ? qs.typeList : String(qs.type||'').split(/[,·]/).map(function(s){return s.trim();}).filter(Boolean);
         var inType = (_questTypeVal==='all') || (__tList.indexOf(String(_questTypeVal))>-1);
-if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin) && inType) qdata.push(qs);
+if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin) && inType && (!fameOnly || qs.hasFame)) qdata.push(qs);
       }
       var qhtml = [];
       for(var b=0;b<qdata.length;b++){
@@ -775,6 +787,37 @@ if(hit2 && inRegion2 && inLevel2 && meetsPlayer && (ratio >= expRatioMin) && inT
 })();
 </script>
 
+<script>
+(function(){
+  if (window.__famePatchInstalled_v2) return;
+  window.__famePatchInstalled_v2 = true;
+  var oldAdd = window.addQuest;
+  if (typeof oldAdd === 'function'){
+    window.addQuest = function(detail){
+      try{
+        var q = Object.assign({}, detail||{});
+        if (Array.isArray(q.rewards)){
+          var fame = 0;
+          q.rewards.forEach(function(r){
+            if (!r) return;
+            if (typeof r.fame === 'number' && r.fame > 0){ fame = Math.max(fame, r.fame); }
+            else if (String(r.name||'').indexOf('인기도') > -1 && Number(r.qty||0) > 0){
+              fame = Math.max(fame, Number(r.qty));
+              if (typeof r.fame !== 'number') r.fame = Number(r.qty)||0;
+            }
+          });
+          q.hasFame = fame > 0;
+        }
+        return oldAdd(q);
+      }catch(e){
+        try { return oldAdd(detail); } catch(_e){ throw _e; }
+      }
+    };
+  }
+})();
+</script>
+
+
 
 <script>
 addQuest({
@@ -837,6 +880,23 @@ addQuest({
   href: "quest-21013.html",
   rewards: [
     { exp: 665 }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 1031,
+  title: "히나와 세라",
+  code: "히나 1-1",
+  region: "메이플로드",
+  type: "대화",
+  minLevel: 1,
+  npcImg: "https://drive.google.com/thumbnail?id=1fKDWRkJb76-Suww-WLOuncCUkeFf-ctT&sz=w400",
+  href: "quest-1031.html",
+  rewards: [
+    { exp: 35 }
   ]
 });
 </script>
@@ -926,6 +986,39 @@ addQuest({
 });
 </script>
 
+<script>
+addQuest({
+  id: 2090,
+  title: "심심해요 1",
+  code: "이카루스 1-1",
+  region: "커닝시티",
+  type: "대화",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=11HAbvWVKmE75xKLb-o5bdNcqpOKJ1jd3&sz=w400",
+  href: "quest-2090.html",
+  rewards: [
+    { exp: 0 }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 2091,
+  title: "심심해요 2",
+  code: "이카루스 1-2",
+  region: "커닝시티",
+  type: "아이템 수집",
+  minLevel: 10,
+  npcImg: "https://drive.google.com/thumbnail?id=11HAbvWVKmE75xKLb-o5bdNcqpOKJ1jd3&sz=w400",
+  href: "quest-2091.html",
+  rewards: [
+    { name: "빨간 포션", qty: 25 },
+    { name: "파란 포션", qty: 15 },
+    { exp: 1750 }
+  ]
+});
+</script>
 
 <script>
 addQuest({
@@ -1457,37 +1550,134 @@ addQuest({
 
 <script>
 addQuest({
-  id: 2090,
-  title: "심심해요 1",
-  code: "이카루스 1-1",
-  region: "커닝시티",
-  type: "대화",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=11HAbvWVKmE75xKLb-o5bdNcqpOKJ1jd3&sz=w400",
-  href: "quest-2090.html",
+  id: 3065,
+  title: "휴즈의 취미",
+  code: "휴즈 1-1",
+  region: "아쿠아리움",
+  type: "아이템 수집 , 몬스터 사냥",
+  minLevel: 35,
+  npcImg: "https://drive.google.com/thumbnail?id=1QViQQbLwFTs6kGIC9fwPEid-DSngQrwa&sz=w400",
+  href: "quest-3065.html",
   rewards: [
-    { exp: 0 }
-  ]
-});
+    { exp: 63000 }, { name: "공기방울", qty: 30 }
+  ]});
+</script>
+
+
+
+
+
+<script>
+(function(){
+  function wireFame(){
+    var cb = document.getElementById('fameOnlyCheckbox');
+    if(!cb || cb.__wired) return;
+    cb.__wired = true;
+    cb.addEventListener('change', function(){
+      if (typeof window.render === 'function') try { window.render(); } catch(e){}
+    });
+  }
+  if (document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', wireFame); } else { wireFame(); }
+  (function(){
+    if (typeof window.render !== 'function' || window.__fameWireWrapped) return;
+    window.__fameWireWrapped = true;
+    var _r = window.render;
+    window.render = function(){
+      var out = _r.apply(this, arguments);
+      try{ wireFame(); }catch(e){}
+      return out;
+    };
+  })();
+})();
 </script>
 
 <script>
 addQuest({
-  id: 2091,
-  title: "심심해요 2",
-  code: "이카루스 1-2",
-  region: "커닝시티",
+  id: 2009,
+  title: "피아와 파란버섯",
+  code: "피아 1-1",
+  region: "헤네시스",
   type: "아이템 수집",
-  minLevel: 10,
-  npcImg: "https://drive.google.com/thumbnail?id=11HAbvWVKmE75xKLb-o5bdNcqpOKJ1jd3&sz=w400",
-  href: "quest-2091.html",
+  minLevel: 20,
+  npcImg: "https://drive.google.com/thumbnail?id=1kHcDsN0RfrbEA26T00glqyg9eXtNj-cK&sz=w400",
+  href: "quest-2009.html",
   rewards: [
-    { name: "빨간 포션", qty: 25 },
-    { name: "파란 포션", qty: 15 },
-    { exp: 1750 }
+    { name: "투구 방어력 주문서 100% [랜덤]", itemId: "2040000", img: "https://drive.google.com/thumbnail?id=1oT3lovqE0CHKNFZABvxSWbrz621TapjL&sz=w200" },
+    { name: "투구 방어력 주문서 60% [랜덤]", itemId: "2040001", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "투구 방어력 주문서 10% [랜덤]", itemId: "2040002", img: "https://drive.google.com/thumbnail?id=13PYrg8x28VFmCoxWQJYyqUXxozl9IDY5&sz=w200" },
+    { exp: 21000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
   ]
 });
 </script>
 
+
+<script>
+addQuest({
+  id: 2153,
+  title: "오래된 달팽이",
+  code: "피아 2-1",
+  region: "헤네시스",
+  type: "아이템 전달",
+  minLevel: 20,
+  npcImg: "https://drive.google.com/thumbnail?id=1kHcDsN0RfrbEA26T00glqyg9eXtNj-cK&sz=w400",
+  href: "quest-2153.html",
+  rewards: [
+    { exp: 35, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 2154,
+  title: "이야기의 주인공",
+  code: "피아 2-2",
+  region: "헤네시스",
+  type: "대화",
+  minLevel: 20,
+  npcImg: "https://drive.google.com/thumbnail?id=1yNG0ueLjlGKSPiZz3iO8DAM0tlYm9-lR&sz=w400",
+  href: "quest-2154.html",
+  rewards: [
+    { exp: 35, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 2155,
+  title: "달팽이 사냥",
+  code: "피아 2-3",
+  region: "엘리니아",
+  type: "아이템 수집",
+  minLevel: 20,
+  npcImg: "https://drive.google.com/thumbnail?id=1pOh-nVeOmq7DDzXWL1nYHR8tWskNGkmf&sz=w400",
+  href: "quest-2155.html",
+  rewards: [
+    { exp: 700, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 2156,
+  title: "소원을 들어주는 무지개색 달팽이 껍질!?",
+  code: "피아 2-4",
+  region: "헤네시스",
+  type: "몬스터 사냥",
+  minLevel: 20,
+  npcImg: "https://drive.google.com/thumbnail?id=1kHcDsN0RfrbEA26T00glqyg9eXtNj-cK&sz=w400",
+  href: "quest-2156.html",
+  rewards: [
+    { name: "메소", qty: 30000, img: "https://drive.google.com/thumbnail?id=1hK1QvgRe2KDxu-ddHHAf5cpkCZdlyyge&sz=w200" },
+    { fame: 3, img: "https://drive.google.com/thumbnail?id=1k0lVbg3UnmONWdTV_-AK8CXUswre90n2&sz=w200" },
+    { exp: 52500, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
 </body>
 </html>
