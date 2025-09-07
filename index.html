@@ -1639,6 +1639,23 @@ function showOnlyOnQuestsTab(){
   }
 })();
 </script>
+<script>
+addQuest({
+  id: 2197,
+  code: "티앤크 1-1",
+  title: "몬스터북 영업사원 티앤크",
+  region: "리스항구",
+  type: "대화",
+  minLevel: 1,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(티앤크)
+  npcImg: "https://drive.google.com/thumbnail?id=1Im4MaruTSZvZ-NySCXNwqIzE37g8ygl0&sz=w200",
+  href: "quest-2197.html",
+  rewards: [
+    { name: "리스 항구 귀환 주문서", qty: 3, itemId: "2030001", img: "https://drive.google.com/thumbnail?id=1jtv5hpUmRL6XoxQIIPumW2jCE30W6DUT&sz=w200" },
+    { exp: 0, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
 
 <script>
 addQuest({
@@ -1782,6 +1799,41 @@ addQuest({
   rewards: [
     { name: "버섯 사탕", qty: 2, itemId: "2022253", img: "https://drive.google.com/thumbnail?id=1alU_N839QPNPe41DWbnbtZdfOqHqdtbW&sz=w200" },
     { exp: 140, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 1021,
+  code: "로저 1-1",
+  title: "로저와 사과",
+  region: "메이플로드",
+  type: "아이템 사용",
+  minLevel: 1,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(로저)
+  npcImg: "https://drive.google.com/thumbnail?id=1HMmAggKjdJqanxfjsQTEtSYShTmnzu4w&sz=w400",
+  href: "quest-1021.html",
+  rewards: [
+    { name: "빨간 포션", qty: 3, itemId: "2000000", img: "https://drive.google.com/thumbnail?id=1BI7XGQzhhfB43PPUq2p-N47BvzkemuLU&sz=w200" },
+    { name: "파란 포션", qty: 3, itemId: "2000003", img: "https://drive.google.com/thumbnail?id=1RWW2pkOJTnmhvKz-2R5bk0FKqRyvab-E&sz=w200" },
+    { exp: 70, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 1036,
+  code: "로빈 1-1",
+  title: "만물박사 로빈",
+  region: "메이플로드",
+  type: "대화",
+  minLevel: 1,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(로빈)
+  npcImg: "https://drive.google.com/thumbnail?id=1o64oHjikNkBJvfirmWSgS7P9IbYL9vaW&sz=w400",
+  href: "quest-1036.html",
+  rewards: [
+    { exp: 280, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
   ]
 });
 </script>
@@ -2397,6 +2449,73 @@ addQuest({
 
 <script>
 addQuest({
+  id: 2010,
+  code: "제인 1-1",
+  title: "제인과 와일드보어",
+  region: "리스항구",
+  type: "아이템 수집",
+  minLevel: 25,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(제인)
+  npcImg: "https://drive.google.com/thumbnail?id=1MgvLqqjitSeAb_0O6YS5F1abUpAMesfN&sz=w200",
+  href: "quest-2010.html",
+  rewards: [
+    { name: "활 공격력 주문서 60%", qty: 1, itemId: "2044501", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "석궁 공격력 주문서 60%", qty: 1, itemId: "2044601", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "한손검 공격력 주문서 60%", qty: 1, itemId: "2043001", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "한손도끼 공격력 주문서 60%", qty: 1, itemId: "2043101", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "한손둔기 공격력 주문서 60%", qty: 1, itemId: "2043201", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "단검 공격력 주문서 60%", qty: 1, itemId: "2043301", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "두손검 공격력 주문서 60%", qty: 1, itemId: "2044001", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "두손도끼 공격력 주문서 60%", qty: 1, itemId: "2044101", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "두손둔기 공격력 주문서 60%", qty: 1, itemId: "2044201", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "창 공격력 주문서 60%", qty: 1, itemId: "2044301", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "폴암 공격력 주문서 60%", qty: 1, itemId: "2044401", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "완드 마력 주문서 60%", qty: 1, itemId: "2043701", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "스태프 마력 주문서 60%", qty: 1, itemId: "2043801", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "아대 공격력 주문서 60%", qty: 1, itemId: "2044701", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "너클 공격력 주문서 60%", qty: 1, itemId: "2044801", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { name: "건 공격력 주문서 60%", qty: 1, itemId: "2044901", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { exp: 24500, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 2170,
+  code: "롤로네 1-1",
+  title: "김박사님에게 보낼 정보",
+  region: "노틸러스",
+  type: "아이템 전달",
+  minLevel: 30,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(롤로네)
+  npcImg: "https://drive.google.com/thumbnail?id=1fY3vkjQZkcmqIXT3pTRCKh3nrI7lJS8y&sz=w400",
+  href: "quest-2170.html",
+  rewards: [
+    { exp: 70000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 2187,
+  code: "보니 1-1",
+  title: "구멍난 노틸러스호",
+  region: "노틸러스",
+  type: "아이템 수집",
+  minLevel: 30,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(보니)
+  npcImg: "https://drive.google.com/thumbnail?id=1mNOrX4rzF1lInH6mvOxvOa7dsRf7aLiH&sz=w200",
+  href: "quest-2187.html",
+  rewards: [
+    { exp: 98000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
   id: 3065,
   title: "휴즈의 취미",
   code: "휴즈 1-1",
@@ -2445,6 +2564,98 @@ addQuest({
   ]
 });
 </script>
+
+<script>
+addQuest({
+  id: 3072,
+  code: "로빈슨 1-1",
+  title: "병 속에 든 편지[히든]",
+  region: "아쿠아리움",
+  type: "아이템 수집",
+  minLevel: 35,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(로빈슨)
+  npcImg: "https://drive.google.com/thumbnail?id=11nfn9wOlqP3vE0XI-dsxgoH0vSpXqXke&sz=w200",
+  href: "quest-3072.html",
+  rewards: [
+    { exp: 35000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 3073,
+  code: "로빈슨 1-2",
+  title: "로빈슨의 ID카드",
+  region: "아쿠아리움",
+  type: "아이템 전달",
+  minLevel: 35,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(로빈슨)
+  npcImg: "https://drive.google.com/thumbnail?id=11nfn9wOlqP3vE0XI-dsxgoH0vSpXqXke&sz=w200",
+  href: "quest-3073.html",
+  rewards: [
+    { exp: 70000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" },
+    { name: "인기도", qty: 2, img: "https://drive.google.com/thumbnail?id=1k0lVbg3UnmONWdTV_-AK8CXUswre90n2&sz=w200" }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 3074,
+  code: "로빈슨 1-3",
+  title: "구조대 파견",
+  region: "지구방위본부",
+  type: "아이템 전달",
+  minLevel: 35,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(케이)
+  npcImg: "https://drive.google.com/thumbnail?id=1sb9izPd0ApQTN5G4b0pEBvJWAJeKRi-c&sz=w200",
+  href: "quest-3074.html",
+  rewards: [
+    { name: "레드 그레이트 헬멧[직업에 맞춰서]", qty: 1, itemId: "1002047", img: "https://drive.google.com/thumbnail?id=1yu8MqxPx-QWChSWycSCRCv3IjgaDa9F2&sz=w200" },
+    { name: "레드 길티언[직업에 맞춰서]", qty: 1, itemId: "1002153", img: "https://drive.google.com/thumbnail?id=1Na9GpanvDpg-ApZpu4ddw0-4GZc3eUky&sz=w200" },
+    { name: "레드 크라페[직업에 맞춰서]", qty: 1, itemId: "1002166", img: "https://drive.google.com/thumbnail?id=1Cxv11IPVNzrKR2-sWfBjVYFKNhP-vpNQ&sz=w200" },
+    { name: "레드 필퍼[직업에 맞춰서]", qty: 1, itemId: "1002181", img: "https://drive.google.com/thumbnail?id=1RnYyf9ACGCc4VYVh-f9VVwUCpzOIJPu6&sz=w200" },
+    { name: "빨간색 별 두건[직업에 맞춰서]", qty: 1, itemId: "1002020", img: "https://drive.google.com/thumbnail?id=1VC5UAQfc4eMtl2EEv_ed2AGBNKbAl7ou&sz=w200" },
+    { name: "블루 데네마린[직업에 맞춰서]", qty: 1, itemId: "1002625", img: "https://drive.google.com/thumbnail?id=1L9uH9qpzfq9BFVAtiSJkLfUkhV_TzD8q&sz=w200" },
+    { exp: 70000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 2011,
+  code: "제인 2-1",
+  title: "제인의 첫번째 도전",
+  region: "리스항구",
+  type: "아이템 수집",
+  minLevel: 40,
+  npcImg: "https://drive.google.com/thumbnail?id=1MgvLqqjitSeAb_0O6YS5F1abUpAMesfN&sz=w200",
+  href: "quest-2011.html",
+  rewards: [
+    { name: "엘릭서", qty: 10, itemId: "2000004", img: "https://drive.google.com/thumbnail?id=1WQKAOc0vettHB8PmqO5l-En10mhyYA6m&sz=w200" },
+    { exp: 45500, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 2012,
+  code: "제인 2-2",
+  title: "제인의 두번째 도전",
+  region: "리스항구",
+  type: "아이템 수집",
+  minLevel: 40,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(제인)
+  npcImg: "https://drive.google.com/thumbnail?id=1MgvLqqjitSeAb_0O6YS5F1abUpAMesfN&sz=w200",
+  href: "quest-2012.html",
+  rewards: [
+    { name: "파워 엘릭서", qty: 15, itemId: "2000005", img: "https://drive.google.com/thumbnail?id=1v25YsOKCwrTTb-zp5xaXErUY5BJ7iUr5&sz=w200" },
+    { exp: 47600, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
 
 <script>
 addQuest({
@@ -2579,7 +2790,43 @@ addQuest({
   npcImg: "https://drive.google.com/thumbnail?id=1jx5XV_yeon3DcZAJPJOIuWmSj08as1MU&sz=w200",
   href: "quest-2112.html",
   rewards: [
-    { exp: 0, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+    { exp: 31500, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+<script>
+addQuest({
+  id: 3703,
+  code: "팜 1-1",
+  title: "팜의 부탁",
+  region: "리프레",
+  type: "아이템 수집",
+  minLevel: 78,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(팜)
+  npcImg: "https://drive.google.com/thumbnail?id=1BftM7pIdpgFNuWkO5aYlcsmzRaSKRECG&sz=w200",
+  href: "quest-3703.html",
+  rewards: [
+    { name: "신발 점프력 주문서 10%", qty: 1, itemId: "2040705", img: "https://drive.google.com/thumbnail?id=13PYrg8x28VFmCoxWQJYyqUXxozl9IDY5&sz=w200" },
+    { name: "신발 점프력 주문서 60%", qty: 1, itemId: "2040704", img: "https://drive.google.com/thumbnail?id=1KhOKODVfNThiVBdxUqkoPM6xaY-vvEHi&sz=w200" },
+    { exp: 308000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ]
+});
+</script>
+
+<script>
+addQuest({
+  id: 3704,
+  code: "팜 2-1",
+  title: "치료약의 재료",
+  region: "리프레",
+  type: "아이템 수집",
+  minLevel: 85,
+  // 목록 카드 아이콘 = 시작 NPC 이미지(팜)
+  npcImg: "https://drive.google.com/thumbnail?id=1BftM7pIdpgFNuWkO5aYlcsmzRaSKRECG&sz=w200",
+  href: "quest-3704.html",
+  rewards: [
+    { name: "만병통치약", qty: 30, itemId: "2001556", img: "https://drive.google.com/thumbnail?id=1N4uTGzI49QUOJC8_QVDHzxjIaeQImF71&sz=w200" },
+    { exp: 406000, img: "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
   ]
 });
 </script>
