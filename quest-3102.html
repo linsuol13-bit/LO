@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>퀘스트 상세 • 폭스상사의 비밀</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.45;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; line-height:1.55;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {
+    "id": "3102",
+    "code": "폭스상사 1-1",
+    "title": "폭스상사의 비밀",
+    "type": "아이템 수집",
+    "region": "엘나스",
+    "minLevel": 33,
+    "start": {
+      "npc": {
+        "name": "폭스상사",
+        "img": "https://drive.google.com/thumbnail?id=1VvAELR9RxdbjyInfhIW4rTxuc9SVmrn3&sz=w400",
+        "id": "2020003"
+      },
+      "place": {
+        "name": "엘나스",
+        "img": "https://drive.google.com/thumbnail?id=1V7hGToqGOnRPcoVjQ_Z9yIaomTifrATF&sz=w800",
+        "code": "211000000"
+      }
+    },
+    "finish": {
+      "npc": {
+        "name": "폭스상사",
+        "img": "https://drive.google.com/thumbnail?id=1VvAELR9RxdbjyInfhIW4rTxuc9SVmrn3&sz=w400",
+        "id": "2020003"
+      },
+      "place": {
+        "name": "엘나스",
+        "img": "https://drive.google.com/thumbnail?id=1V7hGToqGOnRPcoVjQ_Z9yIaomTifrATF&sz=w800",
+        "code": "211000000"
+      }
+    },
+    "dialogues": [
+      {"who": "폭스상사", "text": "아니, 자네는 왜 그렇게 움츠리고 있는 건가. 기백이 없어, 기백이! 자네가 알파소대의 대원이었다면 당장 혼쭐이 났을 걸세!"},
+      {"who": "플레이어", "text": "엘나스는 너무 추워요."},
+      {"who": "폭스상사", "text": "아, 하긴. 깜빡했군. 엘나스의 추위라면 외계인의 레이저보다 무섭지. 하지만 그래도 너무 움츠리고 있어서는 안 되네. 좀 더 가슴을 펴게!"},
+      {"who": "플레이어", "text": "당신은 추위를 안 타는 모양이지요?"},
+      {"who": "폭스상사", "text": "알파소대의 상사로서 이 정도 추위에 물러설 수는 없지. 기합만 제대로 들어가 있으면 추위 따위는 타지 않는다네. …사실, 거기에 필요한 것이 하나 더 있긴 하지만…"},
+      {"who": "플레이어", "text": "필요한 것? 그게 뭔데요? 알려주실 수 없나요?"},
+      {"who": "폭스상사", "text": "그것에 대해 알려 달라고? 흐음… 이건 비밀인데… 알려줄 수 있기는 하지만 그냥은 안 되지. 알고 싶다면, 부탁 하나만 들어줘야겠어. 어때? 할 수 있겠나?"},
+      {"who": "폭스상사", "text": "그렇다면 주니어 페페의 물고기 40개와 팥죽 10개, 사과 10개, 달걀10개를 구해다 주게. 본부로 가기 전까지 비상용 도시락이라도 만들어 둘 생각이거든. 재료를 구해다 주면, 엘나스의 추위를 이길 수 있는 비밀을 알려 주겠네."}
+    ],
+    "completionDialogues": [
+      {"who": "폭스상사", "text": "흠. 모든 재료를 구해 왔군. 이 정도면 본부에 가기 전까지 충분한 영양이 되어 주겠어. 고맙네. 그렇다면 엘나스의 추위를 이기는 비밀을 알려 주도록 할까?"},
+      {"who": "폭스상사", "text": "그 비밀은 이 망토에 있네. 예전에 엘나스에 오게 되었을 때, 어떤 친절한 노인이 준 마법이 걸린 망토인데, 그는 300년이나 엘나스에 살아서 추위를 안 탄다며 거리낌없이 입고 있던 망토를 주더군. 정말 훌륭한 사람이지. 그에게 가면 다시 마법이 걸린 망토를 구할 수 있지 않을까?"}
+    ],
+    "descHtml": "<p>폭스상사는 원래 추위를 무척 많이 탄다고 한다. 그런 그가 오시리아에서도 가장 추운 엘나스에서 멀쩡한 것은 어떤 물건을 가지고 있어서라는데… 비밀을 알려 주는 대신 폭스상사는 본부로 가기 전에 식량을 모아 두어야겠다며 재료들을 가져오라고 했다.</p>",
+    "reqs": [
+      {"kind": "item", "name": "주니어 페페의 물고기", "img": "https://drive.google.com/thumbnail?id=1g6tXgfcZRZlnsegBYZ1CnCfxHc8Ay4Qe&sz=w200", "qty": 40, "id": "4000088"},
+      {"kind": "item", "name": "팥죽", "img": "https://drive.google.com/thumbnail?id=1Nb4LOoYvzRu6ASDnhrdqMKvgrWuzimw2&sz=w200", "qty": 10, "id": "2022001"},
+      {"kind": "item", "name": "사과", "img": "https://drive.google.com/thumbnail?id=1syICBQCnn1m3-gj_O6FVCt_UvzO42Pxo&sz=w200", "qty": 10, "id": "2010000"},
+      {"kind": "item", "name": "달걀", "img": "https://drive.google.com/thumbnail?id=1Jtlf4EIYbR0vM5XzogMihmh7ceoi828q&sz=w200", "qty": 10, "id": "2001533"}
+    ],
+    "craftReqs": [],
+    "craftNpcs": [],
+    "tips": [
+      {"kind":"note","text":"주니어 페페의 물고기는 주니어 페페에게 , 팥죽,사과,달걀은 상점에서 구매"},
+      {"kind": "monster", "name": "주니어 페페", "level": 35, "id": "5400000", "img": "https://drive.google.com/thumbnail?id=1fRQrtkaMEelHxaJMYm0C5MJ-e_HdrP06&sz=w200"}
+    ],
+    "rewards": [
+      {"exp": 101500, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}
+    ],
+    "prereqs": [],
+    "nexts": []
+  };
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox=r=>{
+    if(typeof r.exp==='number'){
+      const pic=img(r.img,'EXP','thumb');
+      const txt=`<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+      return `<div class='ibox'>${pic}${txt}</div>`;
+    }
+    const title=`${r.name||''}${(r.qty&&r.qty>0)?' ×'+r.qty:''}`;
+    const pic=img(r.img,r.name,'thumb');
+    const inner=`<div class='text-sm font-medium'>${title}</div>`;
+    return r.itemId?boxLink(
+      `https://linsuol13-bit.github.io/LO/item-${r.itemId}.html`, `${pic}${inner}`):`<div class='ibox'>${pic}${inner}</div>`;
+  };
+  const reqBox=r=>{
+    const title=`${r.name} ×${r.qty||''}`;
+    const pic=img(r.img,r.name,'thumb');
+    const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>필요 아이템</div><div class='font-medium'>${title}</div></div>`;
+    return boxLink(href, inner);
+  };
+  const craftBox=r=>{
+    const title=`${r.name} ×${r.qty||''}`;
+    const pic=img(r.img,r.name,'thumb');
+    const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>제작 재료</div><div class='font-medium'>${title}</div></div>`;
+    return boxLink(href, inner);
+  };
+  const craftNpcBox=n=>{
+    const pic=n.img?img(n.img,n.name,'thumb'):'';
+    let href='';
+    if(n.npcId){href=`https://linsuol13-bit.github.io/LO/npc-${n.npcId}.html`;}
+    else if(n.mapId){href=`https://linsuol13-bit.github.io/LO/map-${n.mapId}.html`;}
+    const inner = `${pic}<div class='text-sm'><div class='muted'>제작 NPC</div><div class='font-medium'>${n.name}</div><div class='muted text-xs'>${n.place||''}</div></div>`;
+    return href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  };
+  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+  const avatarFor=who=>{
+    if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
+    if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
+    return '';
+  };
+  const dialogueRow=d=>{
+    d=d||{};
+    const left=!isPlayer(d.who);
+    const av=left?avatarFor(d.who):'';
+    const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
+    return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+  };
+  // TIP 카드: note는 부제목 없이, monster는 '몬스터 사냥' 부제목 표시
+  const tipBox=t=>{
+    if(t.kind==='note'){
+      return `<div class='ibox'><div class='text-sm leading-relaxed'>${t.text||''}</div></div>`;
+    }
+    const pic=img(t.img,t.name,'thumb');
+    const level=t.level?` (Lv.${t.level})`:'';
+    const content=`${pic}<div class='text-sm'><div class='muted'>몬스터 사냥</div><div class='font-medium'>${t.name||''}${level}</div></div>`;
+    const href=t.id?`https://linsuol13-bit.github.io/LO/monster-${t.id}.html`:'';
+    return href?`<a class='ibox' href='${href}'>${content}</a>`:`<div class='ibox'>${content}</div>`;
+  };
+  const tipsSection=list=>{ if(!Array.isArray(list)||!list.length) return ''; return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>TIP</h2><div class='grid'>${list.map(tipBox).join('')}</div></section>`; };
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    ${(q.dialogues&&q.dialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>`:''}
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
+      <div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.reqs.map(r=>{
+        const title = r.name + ' ×' + (r.qty||'');
+        const pic = `<img src="${r.img}" alt="${r.name}" class="thumb" onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+        const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+        const inner = pic + '<div class="text-sm"><div class="muted">필요 아이템</div><div class="font-medium">'+title+'</div></div>';
+        return href?('<a class="ibox" href="'+href+'">'+inner+'</a>'):('<div class="ibox">'+inner+'</div>');
+      }).join('')}</div></div>
+      ${tipsSection(q.tips)}
+      ${(q.completionDialogues&&q.completionDialogues.length)?`
+      <div class='mt-4 pt-3 border-t'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></div>`:''}
+    </section>
+    ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(r=>{
+      const pic = `<img src="${r.img}" alt="EXP" class="thumb" onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+      return `<div class='ibox'>${pic}<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div></div>`;
+    }).join('')}</div></section>`:''}
+  `;
+})();
+</script>
+<script>
+(function(){
+  var a=document.getElementById('back-to-quests');
+  if(!a) return;
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    try{
+      var href=this.getAttribute('href')||'index.html?tab=quests';
+      var u=href+(href.indexOf('?')>-1?'&':'?')+'nocache='+Date.now();
+      location.replace(u);
+    }catch(err){ location.href='index.html?tab=quests'; }
+  });
+})();
+</script>
+</body>
+</html>
