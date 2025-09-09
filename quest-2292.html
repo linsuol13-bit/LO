@@ -30,7 +30,7 @@
 <script>
 (()=>{
   'use strict';
-  const q = {'id': '2292', 'code': '커닝스퀘어 1-1', 'title': '혁이의 소원', 'type': '대화', 'region': '커닝시티', 'minLevel': 35, 'start': {'npc': {'name': '웅이', 'img': 'https://drive.google.com/thumbnail?id=1bM09kJDdf-AZACsUMlWYiBthS_JQao2d&sz=w400', 'id': '1052006'}, 'place': {'name': '커닝시티 지하철매표소', 'img': 'https://drive.google.com/thumbnail?id=1tAWYuAvX4hZY8JI0O1N57caFetngar8L&sz=w800', 'code': '103020000'}}, 'finish': {'npc': {'name': '혁이', 'img': 'https://drive.google.com/thumbnail?id=1c4nifv4UooMglg3wT10CPxR4hRXRxOoh&sz=w400', 'id': '1052117'}, 'place': {'name': '커닝스퀘어 역', 'img': 'https://drive.google.com/thumbnail?id=1HC-wqvaFmIF-yd6iPk1f3HPm6HOi4NAo&sz=w800', 'code': '103020020'}}, 'dialogues': [{'who': '웅이', 'text': '아… 안타까워요, 너무너무 안타까워요. 제 이야기를 좀 들어보시겠어요?'}, {'who': '웅이', 'text': '저랑 같이 근무를 하고 있는 혁이라는 아이가 있어요. 혁이에게는 꼭 이루고 싶은 소원이 있습니다. 그 아이의 재능이라면 제가 조금만 도와주면 될 것 같지만, 보시다시피 저는 근무 중이라 자리를 뜰 수 없습니다.'}, {'who': '웅이', 'text': '저 대신 혁이를 만나서 소원을 들어 주세요. 혁이는 제가 있는 커닝시티 지하철의 개찰구를 통해 들어가 커닝 스퀘어역으로 가면 만나실 수 있습니다.'}, {'who': '혁이', 'text': '안전! 지금은 다른 분의 분실물을 찾는 중이니 잠시만 기다려주세요!'}], 'descHtml': '<p>웅이는 같이 근무하는 혁이의 소원이 꼭 이루어 졌으면 한다. 대체 혁이는 누구지? 개찰구로 들어가서 커닝 스퀘어 역에 가보자.</p>', 'reqs': [], 'rewards': [{'exp': 16800, 'img': 'https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200'}], 'prereqs': [], 'nexts': [{'id': '2270', 'title': '내 꿈은..'}]};
+  const q = {'id': '2292', 'code': '커닝스퀘어 1-1', 'title': '혁이의 소원', 'type': '대화', 'region': '커닝시티', 'minLevel': 35, 'start': {'npc': {'name': '웅이', 'img': 'https://drive.google.com/thumbnail?id=1bM09kJDdf-AZACsUMlWYiBthS_JQao2d&sz=w400', 'id': '1052006'}, 'place': {'name': '커닝시티 지하철매표소', 'img': 'https://drive.google.com/thumbnail?id=1tAWYuAvX4hZY8JI0O1N57caFetngar8L&sz=w800', 'code': '103020000'}}, 'finish': {'npc': {'name': '혁이', 'img': 'https://drive.google.com/thumbnail?id=1c4nifv4UooMglg3wT10CPxR4hRXRxOoh&sz=w400', 'id': '1052117'}, 'place': {'name': '커닝스퀘어 역', 'img': 'https://drive.google.com/thumbnail?id=1HC-wqvaFmIF-yd6iPk1f3HPm6HOi4NAo&sz=w800', 'code': '103020020'}}, 'progress': [{'who': '웅이', 'text': '아… 안타까워요, 너무너무 안타까워요. 제 이야기를 좀 들어보시겠어요?'}, {'who': '웅이', 'text': '저랑 같이 근무를 하고 있는 혁이라는 아이가 있어요. 혁이에게는 꼭 이루고 싶은 소원이 있습니다. 그 아이의 재능이라면 제가 조금만 도와주면 될 것 같지만, 보시다시피 저는 근무 중이라 자리를 뜰 수 없습니다.'}, {'who': '웅이', 'text': '저 대신 혁이를 만나서 소원을 들어 주세요. 혁이는 제가 있는 커닝시티 지하철의 개찰구를 통해 들어가 커닝 스퀘어역으로 가면 만나실 수 있습니다.'}], 'complete': [{'who': '혁이', 'text': '안전! 지금은 다른 분의 분실물을 찾는 중이니 잠시만 기다려주세요!'}], 'descHtml': '<p>웅이는 같이 근무하는 혁이의 소원이 꼭 이루어 졌으면 한다. 대체 혁이는 누구지? 개찰구로 들어가서 커닝 스퀘어 역에 가보자.</p>', 'reqs': [], 'rewards': [{'exp': 16800, 'img': 'https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200'}], 'prereqs': [], 'nexts': [{'id': '2270', 'title': '내 꿈은..'}]};
   const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
   const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
     const cell=(label,im,name,link)=>{
@@ -69,7 +69,23 @@
       return boxLink(href, inner);
     }).join('')}</div></section>`;
   };
-  const tipsSection=list=>{ if(!Array.isArray(list)||!list.length) return ''; return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>TIP</h2><div class='grid'>${list.map(t=>`<div class='ibox'><div class='text-sm leading-relaxed'>${t.text||''}</div></div>`).join('')}</div></section>`; };
+  const sectionDialogues=(title, list)=>{
+    if(!Array.isArray(list)||!list.length) return '';
+    const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+    const avatarFor=who=>{
+      if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
+      if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
+      return '';
+    };
+    const dialogueRow=d=>{
+      d=d||{};
+      const left=!isPlayer(d.who);
+      const av=left?avatarFor(d.who):'';
+      const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
+      return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+    };
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>${title}</h2><div class='card'>${list.map(dialogueRow).join("")}</div></section>`;
+  };
   const prereqSection=list=>{
     if(!Array.isArray(list)||!list.length)return'';
     const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>[${p.id}] ${p.title}</div></div></a>`).join('');
@@ -81,20 +97,6 @@
     return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
   };
 
-  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
-  const avatarFor=who=>{
-    if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
-    if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
-    return '';
-  };
-  const dialogueRow=d=>{
-    d=d||{};
-    const left=!isPlayer(d.who);
-    const av=left?avatarFor(d.who):'';
-    const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
-    return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
-  };
-
   const $detail=document.getElementById('detail');
   $detail.innerHTML=`
     <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
@@ -103,9 +105,10 @@
       <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
       <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
     </section>
-    ${(q.dialogues&&q.dialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>`:''}
+    ${sectionDialogues('진행중 대사', q.progress)}
     <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800'>${q.descHtml}</div></section>
-    ${reqSection(q.reqs)}
+    ${sectionDialogues('완료 대사', q.complete)}
+    ${(q.reqs&&q.reqs.length)?reqSection(q.reqs):''}
     ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>`:''}
     ${nextSection(q.nexts)}
   `;
