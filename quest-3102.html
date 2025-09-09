@@ -15,7 +15,7 @@
   .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
   .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
   .ibox:hover { background:#f9fafb; }
-  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.45;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; line-height:1.55;}
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
   .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
   .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
   .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
@@ -92,7 +92,7 @@
       {"exp": 101500, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}
     ],
     "prereqs": [],
-    "nexts": []
+    "nexts": [{"id":"3103","title":"알케스터의 망토"}]
   };
 
   const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
@@ -113,8 +113,7 @@
     const title=`${r.name||''}${(r.qty&&r.qty>0)?' ×'+r.qty:''}`;
     const pic=img(r.img,r.name,'thumb');
     const inner=`<div class='text-sm font-medium'>${title}</div>`;
-    return r.itemId?boxLink(
-      `https://linsuol13-bit.github.io/LO/item-${r.itemId}.html`, `${pic}${inner}`):`<div class='ibox'>${pic}${inner}</div>`;
+    return r.itemId?boxLink(`https://linsuol13-bit.github.io/LO/item-${r.itemId}.html`, `${pic}${inner}`):`<div class='ibox'>${pic}${inner}</div>`;
   };
   const reqBox=r=>{
     const title=`${r.name} ×${r.qty||''}`;
@@ -151,7 +150,6 @@
     const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
     return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
   };
-  // TIP 카드: note는 부제목 없이, monster는 '몬스터 사냥' 부제목 표시
   const tipBox=t=>{
     if(t.kind==='note'){
       return `<div class='ibox'><div class='text-sm leading-relaxed'>${t.text||''}</div></div>`;
@@ -163,30 +161,33 @@
     return href?`<a class='ibox' href='${href}'>${content}</a>`:`<div class='ibox'>${content}</div>`;
   };
   const tipsSection=list=>{ if(!Array.isArray(list)||!list.length) return ''; return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>TIP</h2><div class='grid'>${list.map(tipBox).join('')}</div></section>`; };
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>[${p.id}] ${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const nextSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><div class='muted'>다음 퀘스트</div><div class='font-medium'>[${n.id}] ${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
   const $detail=document.getElementById('detail');
   $detail.innerHTML=`
     <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
     <section class='grid' style='grid-template-columns:1fr 1fr;'>
       <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
       <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
     </section>
     ${(q.dialogues&&q.dialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>`:''}
     <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
-      <div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.reqs.map(r=>{
-        const title = r.name + ' ×' + (r.qty||'');
-        const pic = `<img src="${r.img}" alt="${r.name}" class="thumb" onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
-        const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
-        const inner = pic + '<div class="text-sm"><div class="muted">필요 아이템</div><div class="font-medium">'+title+'</div></div>';
-        return href?('<a class="ibox" href="'+href+'">'+inner+'</a>'):('<div class="ibox">'+inner+'</div>');
-      }).join('')}</div></div>
+      <div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.reqs.map(reqBox).join('')}</div></div>
       ${tipsSection(q.tips)}
       ${(q.completionDialogues&&q.completionDialogues.length)?`
       <div class='mt-4 pt-3 border-t'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></div>`:''}
     </section>
-    ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(r=>{
-      const pic = `<img src="${r.img}" alt="EXP" class="thumb" onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
-      return `<div class='ibox'>${pic}<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div></div>`;
-    }).join('')}</div></section>`:''}
+    ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>`:''}
+    ${nextSection(q.nexts)}
   `;
 })();
 </script>
