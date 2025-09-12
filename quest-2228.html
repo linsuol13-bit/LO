@@ -38,16 +38,16 @@
   const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{const cell=(label,im,name,link)=>{const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;};return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;};
   const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
   const rewardBox = (r) => {
-  // 경험치
-  if (typeof r.exp === 'number') {
-    const pic = r.img ? img(r.img, 'exp', 'thumb') : '';
-    const txt = `<div class='text-sm font-semibold'>경험치 ${r.exp} exp</div>`;
-    return `<div class='ibox'>${pic}${txt}</div>`;
-  }
   // 인기도
   if (typeof r.fame === 'number') {
     const pic = r.img ? img(r.img, 'fame', 'thumb') : '';
     const txt = `<div class='text-sm font-semibold'>인기도 ×${r.fame}</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  // 경험치
+  if (typeof r.exp === 'number') {
+    const pic = r.img ? img(r.img, 'exp', 'thumb') : '';
+    const txt = `<div class='text-sm font-semibold'>경험치 ${r.exp} exp</div>`;
     return `<div class='ibox'>${pic}${txt}</div>`;
   }
   // 아이템

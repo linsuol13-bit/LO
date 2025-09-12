@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>퀘스트 상세 • 작곡료 지불하기</title>
+<title>퀘스트 상세 • 에오스탑의 위협</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
@@ -34,131 +34,11 @@
 <script>
 (()=>{
   'use strict';
-  const q = {
-  "id": "2287",
-  "code": "커닝스퀘어 1-19",
-  "title": "작곡료 지불하기",
-  "type": "아이템 수집",
-  "region": "커닝스퀘어",
-  "minLevel": 35,
-  "start": {
-    "npc": {
-      "name": "노마에",
-      "img": "https://drive.google.com/thumbnail?id=1gPaPgw9Np0tk7NwuxnBiCOxkjmX0Na_z&sz=w400",
-      "id": "1052120"
-    },
-    "place": {
-      "name": "커닝스퀘어 로비",
-      "img": "https://drive.google.com/thumbnail?id=1-WTiV08Xb71vq71Wjqo7SlUDSneDDhze&sz=w800",
-      "code": "103040000"
-    }
-  },
-  "finish": {
-    "npc": {
-      "name": "노마에",
-      "img": "https://drive.google.com/thumbnail?id=1gPaPgw9Np0tk7NwuxnBiCOxkjmX0Na_z&sz=w400",
-      "id": "1052120"
-    },
-    "place": {
-      "name": "커닝스퀘어 로비",
-      "img": "https://drive.google.com/thumbnail?id=1-WTiV08Xb71vq71Wjqo7SlUDSneDDhze&sz=w800",
-      "code": "103040000"
-    }
-  },
-  "dialogues": [
-    {
-      "who": "노마에",
-      "text": "앗! 당신은 내 MP3를 찾아다 준 무비! 지난번 말하려고 하던 건 뭐였죠?"
-    },
-    {
-      "who": "플레이어",
-      "text": "커닝 스퀘어 지하철역에서 분실물을 맡고 있는 혁이가… ( .. 자초지종을 설명한다.) 가수로 데뷔할 때 필요한 신곡이 필요해요. 한 곡만 작곡해 주시지 않겠어요?"
-    },
-    {
-      "who": "노마에",
-      "text": "작곡이라… 아시는 지 모르겠지만, 저는 꽤 유명한 작곡가라서 제 노래의 작곡료는 매우 비싸답니다. 물론 작곡료를 지불할 생각은 있는거겠죠?"
-    },
-    {
-      "who": "노마에",
-      "text": "작곡료는 현금대신 다른 걸로 받겠어요. 제가 꼭 갖고 싶은 고급 앰프의 전선! 그것이 필요해요. 커닝스퀘어 7~8층에 있는 고급 앰프전선 50개를 구해와 주세요."
-    }
-  ],
-  "completionDialogues": [
-    {
-      "who": "노마에",
-      "text": "제가 말한 작곡료를 지불할 준비는 된 건가요? 좋아요."
-    },
-    {
-      "who": "노마에",
-      "text": "하나.둘. 셋.. 약속대로 전선을 가지고 오셨군요. 자, 여기 약속대로 신곡이 있는 저의 작곡노트.. (하지만 왠지 내게 주지 않고 머뭇거린다.)"
-    }
-  ],
-  "descHtml": "<p>작곡료를 지불해야 한다고? 뭐. 천재 작곡가이니까 그 정도쯤은 지불해야겠지? 7~8층에서 고급 앰프전선을 구해서 노마에에게 가져다 주자.</p>",
-  "reqs": [
-    {
-      "kind": "item",
-      "name": "고급 앰프 전선",
-      "qty": 50,
-      "id": "4000537",
-      "img": "https://drive.google.com/thumbnail?id=1zcmjhwBR-b1LntJ6QffmyJFNtULOk98u&sz=w200"
-    }
-  ],
-  "craftReqs": [],
-  "craftNpcs": [],
-  "tips": [
-    {
-      "name": "고급 앰프",
-      "level": 49,
-      "id": "4300012",
-      "img": "https://drive.google.com/thumbnail?id=1whYYTCy_3nr9y3DbKUDEpxFjGftLlHCi&sz=w200"
-    }
-  ],
-  "rewards": [
-    {
-      "exp": 92400,
-      "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"
-    }
-  ],
-  "prereqs": [
-    {
-      "id": "2286",
-      "title": "신곡 부탁하기"
-    }
-  ],
-  "nexts": [
-    {
-      "id": "2288",
-      "title": "표절은 안돼"
-    }
-  ],
-  "monsters": [
-    {
-      "name": "고급 앰프",
-      "level": 49,
-      "img": "https://drive.google.com/thumbnail?id=1whYYTCy_3nr9y3DbKUDEpxFjGftLlHCi&sz=w200",
-      "id": "4300012"
-    }
-  ]
-};
+  const q = {"id": "3203", "code": "마르셀 1-4", "title": "에오스탑의 위협", "type": "몬스터 사냥", "region": "루디브리엄", "minLevel": 35, "start": {"npc": {"name": "마르셀", "img": "https://drive.google.com/thumbnail?id=1z_zXUodvu6UQG2lSqRwg01wO2HF5u0Bg&sz=w400", "id": "2041004"}, "place": {"name": "루디브리엄", "img": "https://drive.google.com/thumbnail?id=1Kj9oNwnGKxoPcTN6XasMfh7yT6TzS5Kc&sz=w400", "code": "220000000"}}, "finish": {"npc": {"name": "마르셀", "img": "https://drive.google.com/thumbnail?id=1z_zXUodvu6UQG2lSqRwg01wO2HF5u0Bg&sz=w400", "id": "2041004"}, "place": {"name": "루디브리엄", "img": "https://drive.google.com/thumbnail?id=1Kj9oNwnGKxoPcTN6XasMfh7yT6TzS5Kc&sz=w400", "code": "220000000"}}, "dialogues": [{"who": "마르셀", "text": "어머나! 기다리던 참이었는데 잘 와 주셨어요. 이번에는 꽤 심각한 문제가 생겼거든요. 엄청나게 흉폭한 몬스터가 생겨나서 탑은 물론 루디브리엄까지 위협하고 있다는 소식입니다. 그래서 대신 퇴치해 주셨으면 하는데 제 부탁을 들어 주시겠어요?"}, {"who": "마르셀", "text": "좋습니다! 에오스탑을 건설하다가 남은 장난감 블록에 어두운 힘이 깃들어 스스로 움직이는 골렘으로 다시 태어나 지나가는 이들을 공격하는 것은 물론 에오스탑 이곳 저곳을 파괴하고 다닌다는 정보입\n니다. 많이 위험하겠지만 에오스탑 어딘가에서 골렘들을 찾아 녀석들의 수를 좀 줄여주셨으면 해요."}, {"who": "마르셀", "text": "에오스탑 어딘가에서 발견할 수 있다는 블록골렘 20 마리와 킹 블록골렘 12 마리를 쓰러뜨리고 돌아와 주세요. 장난감 블록으로 된 몸을 가진 거대한 골렘이랍니다. 이 녀석들은 이제까지 몬스터들보다\n훨씬 강하니까 조심하셔야 해요. 그럼 이곳에서 기다리고 있겠습니다!"}], "completionDialogues": [{"who": "마르셀", "text": "그 난폭한 골렘들을 모두 쓰러뜨리고 오시다니 정말 제가 생각한 것 이상이시로군요! 어땠나요? 녀석들이 에오스탑을 많이 파괴한 건 아니겠죠? 아무튼 이렇게 제 부탁을 들어주셨으니 보답을 해야 겠네요. 사냥에 꼭 필요한 물품을 드릴테니 사양하지 말고 받아 주세요!"}, {"who": "마르셀", "text": "보답은 잘 받으셨나요? 도와주셔서 고마웠습니다. 이제 에오스탑도 어느 정도 안전해 진 것 같군요. 하지만 왠지 모를 이 불안감은 뭘까요... 아무튼 혹시 모르니 시간이 나신다면 다음 번에 꼭 다시 찾아주세요."}], "descHtml": "루디브리엄의 마르셀로부터 에오스탑 어딘가에 살고 있는 골렘인 블록골렘 20마리와 킹 블록골렘 12마리를 쓰러뜨리고 돌아와 달라는 부탁을 받았다.", "reqs": [{"kind": "monster", "name": "킹 블록골렘", "img": "https://drive.google.com/thumbnail?id=1BjUnumULxqeJT06RQic33_S1gABndFt_&sz=w200", "qty": 12, "id": "4230110"}, {"kind": "monster", "name": "블록골렘", "img": "https://drive.google.com/thumbnail?id=1tKvHFr0HfiQZop7d50JsBueY8IG8n7lO&sz=w200", "qty": 20, "id": "4230109"}], "craftReqs": [], "craftNpcs": [], "tips": [], "rewards": [{"name": "활 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044501", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "석궁 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044601", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "폴암 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044401", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "완드 마력 주문서 60% [랜덤]", "qty": 1, "itemId": "2043701", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "스태프 마력 주문서 60% [랜덤]", "qty": 1, "itemId": "2043801", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "아대 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044701", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "너클 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044801", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "건 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044901", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "한손검 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2043001", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "한손둔기 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2043201", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "단검 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2043301", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "두손검 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044001", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "두손도끼 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044101", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "한손도끼 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2043101", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "두손둔기 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044201", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"name": "창 공격력 주문서 60% [랜덤]", "qty": 1, "itemId": "2044301", "img": "https://drive.google.com/thumbnail?id=1UCddyOp3Mx_VAtbjwQpSDhoTG_S2HAgN&sz=w200"}, {"exp": 49000, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}], "prereqs": [{"id": "3202", "title": "에오스탑 외부 청소"}], "nexts": []};
   const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
   const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{const cell=(label,im,name,link)=>{const inner=`${img(im,name)}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;};return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;};
   const rewardBox=r=>{if(typeof r.exp==='number'){const pic=img(r.img,'EXP','thumb');const txt=`<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;return `<div class='ibox'>${pic}${txt}</div>`;}const title=`${r.name||''}${(r.qty&&r.qty>0)?' ×'+r.qty:''}`;const pic=img(r.img,r.name,'thumb');const inner=`<div class='text-sm font-medium'>${title}</div>`;return r.itemId?`<a class='ibox' href='https://linsuol13-bit.github.io/LO/item-${r.itemId}.html'>${pic}${inner}</a>`:`<div class='ibox'>${pic}${inner}</div>`;};
-  const reqBox=r=>{const isItem=r.kind==='item';const title=isItem?`${r.name} ×${r.qty||''}`:`${r.name} ×${r.qty||''}`;const pic=img(r.img,r.name,'thumb');const href = r.id ? (isItem ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : `https://linsuol13-bit.github.io/LO/monster-${r.id}.html`) : '';const inner = `${pic}<div class='text-sm'><div class='muted'>${isItem?'필요 아이템':'처치 대상'}</div><div class='font-medium'>${title}</div></div>`;return href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;};
-  const tipBox=t=>{
-    if(t.kind==='note'){
-      return `<div class='ibox'><div class='text-sm leading-relaxed'>${t.text||''}</div></div>`;
-    }
-    const pic=img(t.img,t.name,'thumb');
-    const level=t.level?` (Lv.${t.level})`:'';
-    const content=`${pic}<div class='text-sm'><div class='muted'>몬스터 사냥</div><div class='font-medium'>${t.name||''}${level}</div></div>`;
-    const href=t.id?`https://linsuol13-bit.github.io/LO/monster-${t.id}.html`:'';
-    return href?`<a class='ibox' href='${href}'>${content}</a>`:`<div class='ibox'>${content}</div>`;
-  };
-  const tipsSection=list=>{
-    if(!Array.isArray(list)||!list.length) return '';
-    return `<section class='mb-3'><h2 class='text-sm font-semibold mb-2'>TIP</h2><div class='grid'>${list.map(tipBox).join('')}</div></section>`;
-  };
-
+  const reqBox=r=>{const isItem=r.kind==='item';const isMonster=r.kind==='monster';const title=isMonster?`${r.name} ×${r.qty||''}`:`${r.name} ×${r.qty||''}`;const pic=img(r.img,r.name,'thumb');let href='';if(r.id){href = isItem ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : `https://linsuol13-bit.github.io/LO/monster-${r.id}.html`;}const inner = `${pic}<div class='text-sm'><div class='muted'>${isMonster?'처치 대상':'필요 아이템'}</div><div class='font-medium'>${title}</div></div>`;return href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;};
   const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
   const avatarFor=who=>{if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;return '';};
   const dialogueRow=d=>{d=d||{};const left=!isPlayer(d.who);const av=left?avatarFor(d.who):'';const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div class='text-sm leading-snug' style='white-space:pre-line'>${d.text||''}</div></div></div>`;};
@@ -167,7 +47,7 @@
   const reqSection=list=>{if(!Array.isArray(list)||!list.length)return'';return `<div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${list.map(reqBox).join('')}</div></div>`;};
   const $detail=document.getElementById('detail');
   $detail.innerHTML=`
-    <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    <header class='mb-4'><h1 class='text-2xl font-bold'>[${q.id}] ${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
     ${prereqSection(q.prereqs)}
     <section class='grid' style='grid-template-columns:1fr 1fr;'>
       <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
@@ -175,17 +55,6 @@
     </section>
     <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>대사</h2><div class='card' style='display:grid; gap:.5rem'>${(q.dialogues||[]).map(dialogueRow).join('')}</div></section>
     <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>${reqSection(q.reqs)}
-      ${tipsSection(q.tips)}
-    ${(Array.isArray(q.craftReqs)&&q.craftReqs.length)?`
-    <div class='mt-3'>
-      <div class='muted text-xs mb-1'>제작 재료</div>
-      <div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.craftReqs.map(reqBox).join('')}</div>
-    </div>`:''}
-    ${(Array.isArray(q.craftNpcs)&&q.craftNpcs.length)?`
-    <div class='mt-3'>
-      <div class='muted text-xs mb-1'>제작 NPC</div>
-      <div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.craftNpcs.map(craftNpcBox).join('')}</div>
-    </div>`:''}
       ${(q.completionDialogues&&q.completionDialogues.length)?`
       <div class='mt-4 pt-3 border-t'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${(q.completionDialogues||[]).map(dialogueRow).join("")}</div></div>`:''}
     </section>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>퀘스트 상세 • 작곡료 지불하기</title>
+<title>퀘스트 상세 • 이름난 모험가의 특권을 누려보자!</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
@@ -34,131 +34,11 @@
 <script>
 (()=>{
   'use strict';
-  const q = {
-  "id": "2287",
-  "code": "커닝스퀘어 1-19",
-  "title": "작곡료 지불하기",
-  "type": "아이템 수집",
-  "region": "커닝스퀘어",
-  "minLevel": 35,
-  "start": {
-    "npc": {
-      "name": "노마에",
-      "img": "https://drive.google.com/thumbnail?id=1gPaPgw9Np0tk7NwuxnBiCOxkjmX0Na_z&sz=w400",
-      "id": "1052120"
-    },
-    "place": {
-      "name": "커닝스퀘어 로비",
-      "img": "https://drive.google.com/thumbnail?id=1-WTiV08Xb71vq71Wjqo7SlUDSneDDhze&sz=w800",
-      "code": "103040000"
-    }
-  },
-  "finish": {
-    "npc": {
-      "name": "노마에",
-      "img": "https://drive.google.com/thumbnail?id=1gPaPgw9Np0tk7NwuxnBiCOxkjmX0Na_z&sz=w400",
-      "id": "1052120"
-    },
-    "place": {
-      "name": "커닝스퀘어 로비",
-      "img": "https://drive.google.com/thumbnail?id=1-WTiV08Xb71vq71Wjqo7SlUDSneDDhze&sz=w800",
-      "code": "103040000"
-    }
-  },
-  "dialogues": [
-    {
-      "who": "노마에",
-      "text": "앗! 당신은 내 MP3를 찾아다 준 무비! 지난번 말하려고 하던 건 뭐였죠?"
-    },
-    {
-      "who": "플레이어",
-      "text": "커닝 스퀘어 지하철역에서 분실물을 맡고 있는 혁이가… ( .. 자초지종을 설명한다.) 가수로 데뷔할 때 필요한 신곡이 필요해요. 한 곡만 작곡해 주시지 않겠어요?"
-    },
-    {
-      "who": "노마에",
-      "text": "작곡이라… 아시는 지 모르겠지만, 저는 꽤 유명한 작곡가라서 제 노래의 작곡료는 매우 비싸답니다. 물론 작곡료를 지불할 생각은 있는거겠죠?"
-    },
-    {
-      "who": "노마에",
-      "text": "작곡료는 현금대신 다른 걸로 받겠어요. 제가 꼭 갖고 싶은 고급 앰프의 전선! 그것이 필요해요. 커닝스퀘어 7~8층에 있는 고급 앰프전선 50개를 구해와 주세요."
-    }
-  ],
-  "completionDialogues": [
-    {
-      "who": "노마에",
-      "text": "제가 말한 작곡료를 지불할 준비는 된 건가요? 좋아요."
-    },
-    {
-      "who": "노마에",
-      "text": "하나.둘. 셋.. 약속대로 전선을 가지고 오셨군요. 자, 여기 약속대로 신곡이 있는 저의 작곡노트.. (하지만 왠지 내게 주지 않고 머뭇거린다.)"
-    }
-  ],
-  "descHtml": "<p>작곡료를 지불해야 한다고? 뭐. 천재 작곡가이니까 그 정도쯤은 지불해야겠지? 7~8층에서 고급 앰프전선을 구해서 노마에에게 가져다 주자.</p>",
-  "reqs": [
-    {
-      "kind": "item",
-      "name": "고급 앰프 전선",
-      "qty": 50,
-      "id": "4000537",
-      "img": "https://drive.google.com/thumbnail?id=1zcmjhwBR-b1LntJ6QffmyJFNtULOk98u&sz=w200"
-    }
-  ],
-  "craftReqs": [],
-  "craftNpcs": [],
-  "tips": [
-    {
-      "name": "고급 앰프",
-      "level": 49,
-      "id": "4300012",
-      "img": "https://drive.google.com/thumbnail?id=1whYYTCy_3nr9y3DbKUDEpxFjGftLlHCi&sz=w200"
-    }
-  ],
-  "rewards": [
-    {
-      "exp": 92400,
-      "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"
-    }
-  ],
-  "prereqs": [
-    {
-      "id": "2286",
-      "title": "신곡 부탁하기"
-    }
-  ],
-  "nexts": [
-    {
-      "id": "2288",
-      "title": "표절은 안돼"
-    }
-  ],
-  "monsters": [
-    {
-      "name": "고급 앰프",
-      "level": 49,
-      "img": "https://drive.google.com/thumbnail?id=1whYYTCy_3nr9y3DbKUDEpxFjGftLlHCi&sz=w200",
-      "id": "4300012"
-    }
-  ]
-};
+  const q = {"id": "2234", "code": "리더 알 1-4", "title": "이름난 모험가의 특권을 누려보자!", "type": "대화", "region": "리스항구", "minLevel": 10, "start": {"npc": {"name": "리더 알", "img": "https://drive.google.com/thumbnail?id=148PqBS5AWNVDHdkpQgFVFjX3udxdVxH-&sz=w400", "id": "1002103"}, "place": {"name": "리스항구", "img": "https://drive.google.com/thumbnail?id=1u8he4VAl-2zo7NNSdGxzRyImiNoTLljH&sz=w400", "code": "104000000"}}, "finish": {"npc": {"name": "리더 알", "img": "https://drive.google.com/thumbnail?id=148PqBS5AWNVDHdkpQgFVFjX3udxdVxH-&sz=w400", "id": "1002103"}, "place": {"name": "리스항구", "img": "https://drive.google.com/thumbnail?id=1u8he4VAl-2zo7NNSdGxzRyImiNoTLljH&sz=w400", "code": "104000000"}}, "dialogues": [{"who": "리더 알", "text": "자네는 정말 뛰어난 모험가였군. 이렇게 적응을 잘 할줄은 나도 몰랐네. 마지막 과제에 도전해볼텐가?"}, {"who": "리더 알", "text": "자네의 높아진 명성도를 보니 ….. 나도 정말 감탄할 뿐이네. 하지만,패밀리의 진정한 묘미는 명성도가 아닐세. 그것은 바로 유명한 모험가들만 누릴 수 있다는 이름난 모험가의 특권! 자네 정도의 명성도라\n면 이미 사용할 수 있는 특권이 있겠군…"}, {"who": "리더 알", "text": "자네에게 내가 주문하는 마지막 과제는 바로 이 특권을 직접 사용해보라는 것일세. 패밀리 창에 표시되는 명성도는 '/'를 기준으로 왼쪽이 현재 명성도, 오른쪽이 총 명성도를 나타내는데, 특권을 사용할때는 현재 명성도만 소비가 된다네. 총 명성도는 일종의 기록이라고 할 수 있지."}, {"who": "리더 알", "text": "총 명성도 2,000 이상 달성하고 현재 명성도를 500 이하까지 소비한 후 나에게 돌아오면 되네. 패밀리 창을 열어서 명성도를 확인하는 것을 잊지 말게나. 그럼 행운을 빌겠네!"}], "completionDialogues": [{"who": "리더 알", "text": "그럼, 앞으로도 좋은 엘더가 되어 주게나. 패밀리에 대해 궁금한 점이 있거나 칭호에 관심이 생긴다면 언제든지 나를 찾아오게."}], "descHtml": "이번 과제는 바로 이름난 모험가의 특권을 맛보는 것이다! 리더 알의 주문은 특권을 사용해 현재 명성도를 500까지 소비해보라는 것이었다. 게다가 명성도를 충분히 쌓았는지 확인해 보기 위해 총 명성도를 2,000까지 만들라고 했지? 목표를 달성하면 리더 알에게 돌아가자.", "reqs": [], "craftReqs": [], "craftNpcs": [], "tips": [], "rewards": [{"exp": 19500, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}], "prereqs": [{"id": "2233", "title": "명성도를 올려보자!"}], "nexts": []};
   const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
   const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{const cell=(label,im,name,link)=>{const inner=`${img(im,name)}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;};return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;};
   const rewardBox=r=>{if(typeof r.exp==='number'){const pic=img(r.img,'EXP','thumb');const txt=`<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;return `<div class='ibox'>${pic}${txt}</div>`;}const title=`${r.name||''}${(r.qty&&r.qty>0)?' ×'+r.qty:''}`;const pic=img(r.img,r.name,'thumb');const inner=`<div class='text-sm font-medium'>${title}</div>`;return r.itemId?`<a class='ibox' href='https://linsuol13-bit.github.io/LO/item-${r.itemId}.html'>${pic}${inner}</a>`:`<div class='ibox'>${pic}${inner}</div>`;};
   const reqBox=r=>{const isItem=r.kind==='item';const title=isItem?`${r.name} ×${r.qty||''}`:`${r.name} ×${r.qty||''}`;const pic=img(r.img,r.name,'thumb');const href = r.id ? (isItem ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : `https://linsuol13-bit.github.io/LO/monster-${r.id}.html`) : '';const inner = `${pic}<div class='text-sm'><div class='muted'>${isItem?'필요 아이템':'처치 대상'}</div><div class='font-medium'>${title}</div></div>`;return href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;};
-  const tipBox=t=>{
-    if(t.kind==='note'){
-      return `<div class='ibox'><div class='text-sm leading-relaxed'>${t.text||''}</div></div>`;
-    }
-    const pic=img(t.img,t.name,'thumb');
-    const level=t.level?` (Lv.${t.level})`:'';
-    const content=`${pic}<div class='text-sm'><div class='muted'>몬스터 사냥</div><div class='font-medium'>${t.name||''}${level}</div></div>`;
-    const href=t.id?`https://linsuol13-bit.github.io/LO/monster-${t.id}.html`:'';
-    return href?`<a class='ibox' href='${href}'>${content}</a>`:`<div class='ibox'>${content}</div>`;
-  };
-  const tipsSection=list=>{
-    if(!Array.isArray(list)||!list.length) return '';
-    return `<section class='mb-3'><h2 class='text-sm font-semibold mb-2'>TIP</h2><div class='grid'>${list.map(tipBox).join('')}</div></section>`;
-  };
-
   const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
   const avatarFor=who=>{if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;return '';};
   const dialogueRow=d=>{d=d||{};const left=!isPlayer(d.who);const av=left?avatarFor(d.who):'';const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div class='text-sm leading-snug' style='white-space:pre-line'>${d.text||''}</div></div></div>`;};
@@ -167,28 +47,16 @@
   const reqSection=list=>{if(!Array.isArray(list)||!list.length)return'';return `<div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${list.map(reqBox).join('')}</div></div>`;};
   const $detail=document.getElementById('detail');
   $detail.innerHTML=`
-    <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    <header class='mb-4'><h1 class='text-2xl font-bold'>[${q.id}] ${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
     ${prereqSection(q.prereqs)}
     <section class='grid' style='grid-template-columns:1fr 1fr;'>
       <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
       <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
     </section>
     <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>대사</h2><div class='card' style='display:grid; gap:.5rem'>${(q.dialogues||[]).map(dialogueRow).join('')}</div></section>
-    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>${reqSection(q.reqs)}
-      ${tipsSection(q.tips)}
-    ${(Array.isArray(q.craftReqs)&&q.craftReqs.length)?`
-    <div class='mt-3'>
-      <div class='muted text-xs mb-1'>제작 재료</div>
-      <div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.craftReqs.map(reqBox).join('')}</div>
-    </div>`:''}
-    ${(Array.isArray(q.craftNpcs)&&q.craftNpcs.length)?`
-    <div class='mt-3'>
-      <div class='muted text-xs mb-1'>제작 NPC</div>
-      <div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.craftNpcs.map(craftNpcBox).join('')}</div>
-    </div>`:''}
-      ${(q.completionDialogues&&q.completionDialogues.length)?`
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div></section>
+    ${(q.completionDialogues&&q.completionDialogues.length)?`
       <div class='mt-4 pt-3 border-t'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${(q.completionDialogues||[]).map(dialogueRow).join("")}</div></div>`:''}
-    </section>
     ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>`:''}
     ${nextSection(q.nexts)}
   `;
