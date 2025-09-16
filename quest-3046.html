@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>퀘스트 상세 • 네로를 위한 선물</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {
+  "id": "3046",
+  "code": "알퐁스 그린 1-2-1",
+  "title": "네로를 위한 선물",
+  "type": "아이템 수집",
+  "region": "오르비스",
+  "minLevel": 40,
+  "prereqs": [
+    {
+      "id": "3045",
+      "title": "고양이를 좋아하는 에릭손"
+    }
+  ],
+  "start": {
+    "npc": {
+      "name": "가정부 엘마",
+      "img": "https://drive.google.com/thumbnail?id=1wcUArveK4aJp0ygVEp-cvIs1hW3-kfDM&sz=w200",
+      "id": "2012010"
+    },
+    "place": {
+      "name": "오르비스공원",
+      "img": "https://drive.google.com/thumbnail?id=1cyH9w-fJQIw3FMIvNLHHezJnakDSr8qz&sz=w800",
+      "code": "200000200"
+    }
+  },
+  "finish": {
+    "npc": {
+      "name": "가정부 엘마",
+      "img": "https://drive.google.com/thumbnail?id=1wcUArveK4aJp0ygVEp-cvIs1hW3-kfDM&sz=w200",
+      "id": "2012010"
+    },
+    "place": {
+      "name": "오르비스공원",
+      "img": "https://drive.google.com/thumbnail?id=1cyH9w-fJQIw3FMIvNLHHezJnakDSr8qz&sz=w800",
+      "code": "200000200"
+    }
+  },
+  "dialogues": [
+    {
+      "who": "가정부 엘마",
+      "text": "당신 네펜데스 즙을 구하고 있다고요? 그건 에릭손 밖에 만들지 못하는 것입니다."
+    },
+    {
+      "who": "가정부 엘마",
+      "text": "에릭손이 자기 고양이와 놀아야 된다고해서 바쁘다고 그랬어요? 음... 그럼 이건 어때요? 고양이를 위한 작은 선물을 만들어 가는 거에요. 그럼 에릭손도 고마워서 네펜데스 즙을 만들어 줄거에요~"
+    },
+    {
+      "who": "가정부 엘마",
+      "text": "주인님도 안계시니까 제가 아르바이트하는 셈치고 도와드리겠습니다. 제가 손재주가 좀 있어서 루나 팔찌라는 것을 만들 수 있거든요."
+    },
+    {
+      "who": "가정부 엘마",
+      "text": "이것을 에릭손의 고양이에게 선물하면 좋아할 것 입니다. 루나 팔찌를 만들기 위해서는 스타픽시의 별조각 100개, 루나픽시의 달조각 80개가 필요해요. 저에게 수고비로 1만 메소를 주신다면 만들어 드리겠어요."
+    }
+  ],
+  "completionDialogues": [
+    {
+      "who": "가정부 엘마",
+      "text": "재료를 다 모아오셨군요. 수고 많으셨어요~ 잠시만 기다리세요. 금방 팔찌를 만들어 드리겠습니다."
+    },
+    {
+      "who": "가정부 엘마",
+      "text": "여기 있습니다. 이걸 가지고 에릭손에게 가면 분명히 네펜데스 즙을 만들어 줄거에요~"
+    }
+  ],
+  "descHtml": "<p>그녀는 에릭손을 설득 시킬 방법으로 에릭손의 고양이를 위해 선물을 만들어 가라고 한다. 그래서 루나팔찌를 선물로 만들어 가기로 했다.</p>",
+  "reqs": [
+    {
+      "type": "item",
+      "name": "스타픽시의 별조각",
+      "img": "https://drive.google.com/thumbnail?id=1VSt5xY5hTlF7SetMIECLgYne2tmKp56c&sz=w200",
+      "qty": 100,
+      "id": "4000059"
+    },
+    {
+      "type": "item",
+      "name": "루나픽시의 달조각",
+      "img": "https://drive.google.com/thumbnail?id=1SUC0iKbBcpZvbo53u1l30a61Eg1OudDZ&sz=w200",
+      "qty": 80,
+      "id": "4000060"
+    }
+  ],
+  "tips": [
+    {
+      "type": "monster",
+      "name": "스타픽시",
+      "level": 35,
+      "img": "https://drive.google.com/thumbnail?id=1fsn-qzzy3R1qfT7AW7URKh0MnWmBnftx&sz=w200",
+      "id": "3230200"
+    },
+    {
+      "type": "monster",
+      "name": "루나픽시",
+      "level": 45,
+      "img": "https://drive.google.com/thumbnail?id=1ZoLE6vmptIb41N-JdKbsRNGKBHUzNN8W&sz=w200",
+      "id": "4230106"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "item",
+      "name": "루나 팔찌",
+      "id": "4031199",
+      "img": "https://drive.google.com/thumbnail?id=1KT1q7lubdCqhCrVFiCws8u9GOINMUEda&sz=w200",
+      "qty": 1
+    },
+    {
+      "type": "meso",
+      "name": "-10,000 메소",
+      "img": "https://drive.google.com/thumbnail?id=1hK1QvgRe2KDxu-ddHHAf5cpkCZdlyyge&sz=w200"
+    },
+    {
+      "type": "exp",
+      "name": "52500 EXP",
+      "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"
+    }
+  ],
+  "nexts": [
+    {
+      "id": "3047",
+      "title": "에릭손의 보답"
+    }
+  ]
+};
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox = r => {
+  // EXP reward
+  if (typeof r.exp === 'number') {
+    const pic = img(r.img, 'EXP', 'thumb');
+    const txt = `<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  // FAME reward
+  if (typeof r.fame === 'number') {
+    const pic = img(r.img, 'FAME', 'thumb');
+    const txt = `<div class='text-sm font-medium'>인기도 +${r.fame.toLocaleString()}</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  // Item reward (with optional quantity)
+  const title = `${r.name || ''}${(r.qty && r.qty > 0) ? ' ×' + r.qty : ''}`;
+  const pic = img(r.img, r.name, 'thumb');
+  const inner = `<div class='text-sm font-medium'>${title}</div>`;
+  return r.itemId
+    ? boxLink(`https://linsuol13-bit.github.io/LO/item-${r.itemId}.html`, `${pic}${inner}`)
+    : `<div class='ibox'>${pic}${inner}</div>`;
+};
+  const reqBox = r => {
+  const qty = (r.qty && r.qty>0) ? ' ×'+r.qty : '';
+  const title = `${r.name||''}${qty}`;
+  const pic = img(r.img, r.name, 'thumb');
+  // Monster vs Item
+  if (r.type === 'monster') {
+    const href = r.id ? `https://linsuol13-bit.github.io/LO/monster-${r.id}.html` : '';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>처치 대상</div><div class='font-medium'>${title}</div></div>`;
+    return boxLink(href, inner);
+  }
+  // Default: item
+  const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+  const inner = `${pic}<div class='text-sm'><div class='muted'>필요 아이템</div><div class='font-medium'>${title}</div></div>`;
+  return boxLink(href, inner);
+};
+  const craftBox=r=>{
+    const title=`${r.name} ×${r.qty||''}`;
+    const pic=img(r.img,r.name,'thumb');
+    const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>제작 재료</div><div class='font-medium'>${title}</div></div>`;
+    return boxLink(href, inner);
+  };
+  const craftNpcBox=n=>{
+    const pic=n.img?img(n.img,n.name,'thumb'):'';
+    let href='';
+    if(n.npcId){href=`https://linsuol13-bit.github.io/LO/npc-${n.npcId}.html`;}
+    else if(n.mapId){href=`https://linsuol13-bit.github.io/LO/map-${n.mapId}.html`;}
+    const inner = `${pic}<div class='text-sm'><div class='muted'>제작 NPC</div><div class='font-medium'>${n.name}</div><div class='muted text-xs'>${n.place||''}</div></div>`;
+    return href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  };
+  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+  const avatarFor=who=>{
+    if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
+    if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
+    return '';
+  };
+  const dialogueRow=d=>{
+    d=d||{};
+    const left=!isPlayer(d.who);
+    const av=left?avatarFor(d.who):'';
+    const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
+    return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+  };
+  const tipBox=t=>{
+    if(t.kind==='note'){
+      return `<div class='ibox'><div class='text-sm leading-relaxed'>${t.text||''}</div></div>`;
+    }
+    const pic=img(t.img,t.name,'thumb');
+    const level=t.level?` (Lv.${t.level})`:'';
+    const content=`${pic}<div class='text-sm'><div class='muted'>몬스터 사냥</div><div class='font-medium'>${t.name||''}${level}</div></div>`;
+    const href=t.id?`https://linsuol13-bit.github.io/LO/monster-${t.id}.html`:'';
+    return href?`<a class='ibox' href='${href}'>${content}</a>`:`<div class='ibox'>${content}</div>`;
+  };
+  const tipsSection=list=>{ if(!Array.isArray(list)||!list.length) return ''; return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>TIP</h2><div class='grid'>${list.map(tipBox).join('')}</div></section>`; };
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>[${p.id}] ${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const nextSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><div class='muted'>다음 퀘스트</div><div class='font-medium'>[${n.id}] ${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+
+const relatedSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><div class='muted'>연계 퀘스트</div><div class='font-medium'>[${n.id}] ${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>연계 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const reqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    return `<div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${list.map(reqBox).join('')}</div></div>`;
+  };
+  const craftReqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>제작 시 필요 아이템</h2><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${list.map(craftBox).join('')}</div></section>`;
+  };
+  const craftNpcSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>제작 NPC</h2><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${list.map(craftNpcBox).join('')}</div></section>`;
+  };
+
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>알퐁스 그린 1-2-1 · 네로를 위한 선물</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    ${(q.dialogues&&q.dialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>`:''}
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
+      ${reqSection(q.reqs)}
+    ${relatedSection(q.related)}
+      ${tipsSection(q.tips)}
+      ${(q.completionDialogues&&q.completionDialogues.length)?`
+      <div class='mt-4 pt-3 border-t'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></div>`:''}
+    </section>
+    ${craftReqSection(q.craftReqs)}
+    ${craftNpcSection(q.craftNpcs)}
+    ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>`:''}
+    ${nextSection(q.nexts)}
+  `;
+})();
+</script>
+<script>
+(function(){
+  var a=document.getElementById('back-to-quests');
+  if(!a) return;
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    try{
+      var href=this.getAttribute('href')||'index.html?tab=quests';
+      var u=href+(href.indexOf('?')>-1?'&':'?')+'nocache='+Date.now();
+      location.replace(u);
+    }catch(err){ location.href='index.html?tab=quests'; }
+  });
+})();
+</script>
+</body>
+</html>
