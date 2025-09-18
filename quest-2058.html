@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>퀘스트 상세 • 플로리나비치의 별미</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {
+  "id": "2058",
+  "code": "리엘 1-1",
+  "title": "플로리나비치의 별미",
+  "type": "아이템 수집",
+  "region": "플로리나비치",
+  "minLevel": 35,
+  "prereqs": [],
+  "start": {
+    "npc": {
+      "name": "리엘",
+      "img": "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w120",
+      "id": "1081100"
+    },
+    "place": {
+      "name": "플로리나비치",
+      "img": "https://drive.google.com/thumbnail?id=1_awfHf-lXFRxjgcIEQlu2VXNPZeWYf6Y&sz=w800",
+      "code": "110000000"
+    }
+  },
+  "finish": {
+    "npc": {
+      "name": "리엘",
+      "img": "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w120",
+      "id": "1081100"
+    },
+    "place": {
+      "name": "플로리나비치",
+      "img": "https://drive.google.com/thumbnail?id=1_awfHf-lXFRxjgcIEQlu2VXNPZeWYf6Y&sz=w800",
+      "code": "110000000"
+    }
+  },
+  "dialogues": [
+    {"who":"리엘","text":"뜨거운 햇살과 바다 내음이 물씬 나는 플로리나 비치에 오신 것을 환영합…니 …. 에 ?? 에? 아, 아르바이트요? 와아~ 마침 딱 일손이 필요하던 참인데 정말 잘 되었군요. 플로리나비치는 달콤하고 시원한 코코넛쥬스와 과일과 해산물이 유명하답니다. 그 재료들을 모아오는 아르바이트에요. 어때요?"},
+    {"who":"리엘","text":"좋아요 !! 우선 얼마나 일을 잘 할 수 있는지 테스트를 해보아야 할 것 같아요. 물론 그에 대한 아르바이트 수당은 드리니 걱정하지 마세요. 당신에게도 좋은 경험이 될 거에요. 이 곳에서 오른쪽에 위치한 해변으로 가면 코코넛 나무들을 볼 수 있을 거여요. 그 중 싱싱한 코코넛 열매 10개를 따 오면 되는 겁니다. 반드시 싱싱한 것만을 고르셔야해요. 아셨죠?"}
+  ],
+  "completionDialogues": [
+    {"who":"리엘","text":"코코넛 열매 10개는 모아오셨나요? 아, 싱싱한 것으로 10개를 골라 따오셨다면 .. 앞으로도 계속 일을 부탁할 수 있을텐데요 .. 어떨까요? 갖고 오신 걸 제게 보여주시겠어요?"},
+    {"who":"리엘","text":"정말 싱싱한 코코넛 열매로군요. 아, 리엘은 정말 감동이에요. 이렇게 일을 잘하는 분이라니요. 자, 처음 테스트라 500 메소를 드릴게요. 앞으로의 일은 그리 적지 않은 보수가 주어질 것입니다. 이 곳의 생활을 즐기며 일을 하고 싶다면 언제든 저를 찾아오세요. 당신이라면 언제든 환영입니다."}
+  ],
+  "descHtml": "<p>플로리나비치의 리엘을 통해 코코넛 열매 10개를 모아가는 아르바이트를 하게 되었다. 오른쪽 해변으로 가서 싱싱한 코코넛 열매를 따볼까?</p>",
+  "reqs": [
+    {"type":"item","name":"코코넛 열매","qty":10,"img":"https://drive.google.com/thumbnail?id=1vhZeOpTM2g-U-dupOw3EwsPl-7-PzHJ-&sz=w200","id":"4000136"}
+  ],
+  "craftReqs": [],
+  "craftNpcs": [],
+  "rewards": [
+    {"exp":7000,"img":"https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"},
+    {"meso":500,"img":"https://drive.google.com/thumbnail?id=1hK1QvgRe2KDxu-ddHHAf5cpkCZdlyyge&sz=w200"}
+  ],
+  "related": [],
+  "nexts": [
+    {"id":"2059","title":"플로리나비치의 별미 Ⅱ"}
+  ]
+};
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox = r => {
+  if (typeof r.exp === 'number') {
+    const pic = img(r.img, 'EXP', 'thumb');
+    const txt = `<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  if (typeof r.meso === 'number') {
+    const pic = img(r.img, 'MESO', 'thumb');
+    const txt = `<div class='text-sm font-medium'>${r.meso.toLocaleString()} 메소</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  if (typeof r.fame === 'number') {
+    const pic = img(r.img, 'FAME', 'thumb');
+    const txt = `<div class='text-sm font-medium'>인기도 +${r.fame.toLocaleString()}</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  const title = `${r.name || ''}${(r.qty && r.qty > 0) ? ' ×' + r.qty : ''}`;
+  const pic = img(r.img, r.name, 'thumb');
+  const inner = `<div class='text-sm font-medium'>${title}</div>`;
+  return r.id
+    ? boxLink(`https://linsuol13-bit.github.io/LO/item-${r.id}.html`, `${pic}${inner}`)
+    : `<div class='ibox'>${pic}${inner}</div>`;
+};
+  const reqBox = r => {
+  const qty = (r.qty && r.qty>0) ? ' ×'+r.qty : '';
+  const title = `${r.name||''}${qty}`;
+  const pic = img(r.img, r.name, 'thumb');
+  const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+  const inner = `${pic}<div class='text-sm'><div class='muted'>필요 아이템</div><div class='font-medium'>${title}</div></div>`;
+  return boxLink(href, inner);
+};
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>[${p.id}] ${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const nextSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><div class='muted'>다음 퀘스트</div><div class='font-medium'>[${n.id}] ${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+  const avatarFor=who=>{
+    if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
+    if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
+    return '';
+  };
+  const dialogueRow=d=>{
+    d=d||{};
+    const left=!isPlayer(d.who);
+    const av=left?avatarFor(d.who):'';
+    const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
+    return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+  };
+
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>리엘 1-1 · 플로리나비치의 별미</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    ${(q.dialogues&&q.dialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>`:''}
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2>
+      <div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
+      <div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.reqs.map(reqBox).join("")}</div></div>
+    </section>
+    ${(q.completionDialogues&&q.completionDialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></section>`:''}
+    ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>`:''}
+    ${nextSection(q.nexts)}
+  `;
+})();
+</script>
+<script>
+(function(){
+  var a=document.getElementById('back-to-quests');
+  if(!a) return;
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    try{
+      var href=this.getAttribute('href')||'index.html?tab=quests';
+      var u=href+(href.indexOf('?')>-1?'&':'?')+'nocache='+Date.now();
+      location.replace(u);
+    }catch(err){ location.href='index.html?tab=quests'; }
+  });
+})();
+</script>
+</body>
+</html>

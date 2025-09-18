@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>리엘 2-1 · 킹크랑의 제물</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+  .pill {display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:.75rem;border:1px solid #c7d2fe}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {
+    "id": "2157",
+    "code": "2157",
+    "title": "킹크랑의 제물",
+    "type": "퀘스트 완료",
+    "region": "플로리나비치",
+    "minLevel": 55,
+    "prereqs": [
+      { "id": "2061", "title": "플로리나비치의 별미 Ⅳ" }
+    ],
+    "start": {
+      "npc": {
+        "name": "리엘",
+        "img": "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w120",
+        "id": "1081100"
+      },
+      "place": {
+        "name": "플로리나비치",
+        "img": "https://drive.google.com/thumbnail?id=1yrQdOb8gy577lF4y8z5aVCluZY5CC03f&sz=w800",
+        "code": "110000000"
+      }
+    },
+    "finish": {
+      "npc": {
+        "name": "리엘",
+        "img": "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w120",
+        "id": "1081100"
+      },
+      "place": {
+        "name": "플로리나비치",
+        "img": "https://drive.google.com/thumbnail?id=1yrQdOb8gy577lF4y8z5aVCluZY5CC03f&sz=w800",
+        "code": "110000000"
+      }
+    },
+    "dialogues": [
+      {"who":"리엘","text":"플로리나 비치로 휴양오신 여행자라면 어서 자리를 피하세요! 이 곳은 더 이상 평화롭지 않아요! 아름다운 해변을 무시무시한 몬스터가 점령해 버렸거든요! 저 먼 바다에서 난류를 타고 흘러들어온 킹크랑이 말이에요!"},
+      {"who":"리엘","text":"거대한 소라 껍데기에 몸을 숨긴 킹크랑은 강력한 힘으로 다른 몬스터들을 누르고 이 플로리나 비치의 제왕으로 군림하고 있어요! 플로리나 비치의 모든 사람들은 킹크랑으로 인해 두려움에 떨고 있답니다. 언제 그에게 잡아먹힐지 모르니까요!"},
+      {"who":"리엘","text":"그래서 우리 세 자매는 결심했답니다. 마을 사람들을 괴물로부터 구하기 위해 한 명이 킹크랑에게 제물로 가기로요. 네? 킹크랑이 제물을 요구했냐고요? 물론 킹크랑은 아무 말도 하지 않았지만 …. 원래 이런 때는 다 이렇게 하는 거잖아요?"},
+      {"who":"리엘","text":"이야기책을 보세요. 마을을 위해 눈물을 머금고 희생을 자처하는 가련하고 고귀한 소녀 …. 마치 한 떨기의 꽃과도 같이 아름다운 소녀의 이야기를 읽어보셨다면 이 역할의 로망을 아실 거예요 !! 아아 …. 얼마나 낭만적인지."},
+      {"who":"리엘","text":"하지만 누가 제물로 갈지는 결정하지 못했어요. 로엘도 라엘도 이 역할은 양보 못하겠다고 하더라고요. 하는 수 없이 내기로 킹크랑의 제물을 뽑기로 했답니다. 이제부터 내기를 시작해야 하니 잠시만 비켜주세… 음? 혹시 내기에 관심 있으신가요?"},
+      {"who":"리엘","text":"앗. 잘 됐네요. 그럼 이 내기의 심판을 봐주시겠어요? 모두들 정정당당하게 내기에 임하는지, 혹시 부정한 방법을 쓰지는 않는지 잘 살펴봐 주시면 돼요. 그럼 부탁 드릴게요!"}
+    ],
+    "completionDialogues": [
+      {"who":"리엘","text":"아아~ 이런. 여행자님! 정정당당한 내기를 위해 심판을 봐달라고 부탁드렸는데, 심판이 먼저 부정을 저지르시면 안 되죠! 차라리 한 명만 도와주시면 모를까, 모두 다 도와주시면 내기가 성립이 안 되잖아요!"},
+      {"who":"리엘","text":"아이 참 …. 그럼 어떻게 하지? 내기는 이미 물 건너 간 것 같은데 …."}
+    ],
+    "descHtml": "<p>무시무시한 몬스터 킹크랑이 따뜻한 난류를 타고 흘러들어와 플로리나 비치를 위협하고 있다. 킹크랑의 분노를 막기 위해서는 아름다운 소녀를 제물로 바쳐야만 한다는 리엘. 리엘은 로엘, 라엘과 함께 누가 괴물의 제물이 될 것인지 내기를 하기로 했다며 심판을 봐달라고 했다. 진심으로 그런 이상한 같은 내기를 하겠다는 걸까?</p>",
+    "reqs": [],
+    "links": [
+      {"id":"2158","title":"리엘 돕기"},
+      {"id":"2159","title":"로엘 돕기"},
+      {"id":"2160","title":"라엘 돕기"}
+    ],
+    "rewards": [
+      {"exp":7000,"img":"https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}
+    ],
+    "related": [],
+    "nexts": [
+      {"id":"2161","title":"킹크랑을 물리칠 용사 등장!"}
+    ]
+  };
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox = r => {
+    if (typeof r.exp === 'number') {
+      const pic = img(r.img, 'EXP', 'thumb');
+      const txt = `<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+      return `<div class='ibox'>${pic}${txt}</div>`;
+    }
+    const title = `${r.name || ''}${(r.qty && r.qty > 0) ? ' ×' + r.qty : ''}`;
+    const pic = img(r.img, r.name, 'thumb');
+    const inner = `<div class='text-sm font-medium'>${title}</div>`;
+    return r.id
+      ? boxLink(`https://linsuol13-bit.github.io/LO/item-${r.id}.html`, `${pic}${inner}`)
+      : `<div class='ibox'>${pic}${inner}</div>`;
+  };
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const nextSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><div class='muted'>다음 퀘스트</div><div class='font-medium'>[${n.id}] ${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const linksSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><span class='pill'>연계</span><div class='font-medium'>${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>연계 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+  const avatarFor=who=>{
+    if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
+    if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
+    return '';
+  };
+  const dialogueRow=d=>{
+    d=d||{};
+    const left=!isPlayer(d.who);
+    const av=left?avatarFor(d.who):'';
+    const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
+    return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+  };
+
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    ${(q.dialogues&&q.dialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>`:''}
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2>
+      <div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
+    </section>
+    ${linksSection(q.links)}
+    ${(q.completionDialogues&&q.completionDialogues.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></section>`:''}
+    ${(q.rewards&&q.rewards.length)?`<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>`:''}
+    ${nextSection(q.nexts)}
+  `;
+})();
+</script>
+<script>
+(function(){
+  var a=document.getElementById('back-to-quests');
+  if(!a) return;
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    try{
+      var href=this.getAttribute('href')||'index.html?tab=quests';
+      var u=href+(href.indexOf('?')>-1?'&':'?')+'nocache='+Date.now();
+      location.replace(u);
+    }catch(err){ location.href='index.html?tab=quests'; }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>퀘스트 상세 • 나무상자의 비밀 [히든]</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {
+  "id": "21767",
+  "code": "테오 1-2",
+  "title": "나무상자의 비밀 [히든]",
+  "type": "대화",
+  "region": "리스항구",
+  "minLevel": 13,
+  "prereqs": [
+    { "id": "21766", "title": "수상한 존" }
+  ],
+  "start": {
+    "npc": {
+      "name": "존의 상자",
+      "img": "https://drive.google.com/thumbnail?id=1DoBl35WAXomBH6xYyfKyFkLWiI1aJ_Bp&sz=w120",
+      "id": "1204033"
+    },
+    "place": {
+      "name": "리스항구",
+      "img": "https://drive.google.com/thumbnail?id=1u8he4VAl-2zo7NNSdGxzRyImiNoTLljH&sz=w800",
+      "code": "104000000"
+    }
+  },
+  "finish": {
+    "npc": {
+      "name": "존",
+      "img": "https://drive.google.com/thumbnail?id=1OIjNNTJGknndN1AqYQwwRAirbqzXX-Xr&sz=w120",
+      "id": "20000"
+    },
+    "place": {
+      "name": "리스항구",
+      "img": "https://drive.google.com/thumbnail?id=1u8he4VAl-2zo7NNSdGxzRyImiNoTLljH&sz=w800",
+      "code": "104000000"
+    }
+  },
+  "dialogues": [
+    { "who": "존의 상자", "text": "(상자 안에 정체모를 약이 들어있었다.)" },
+    { "who": "플레이어", "text": "어라? 상자 안에 무슨 약이 들어있네.. 이것은 대체 뭐지?! 안되겠다. 이 약을 가져가서 존에게 직접 물어보는 수 밖에..." }
+  ],
+  "completionDialogues": [
+    { "who": "존", "text": "아니 그것은 내 괁덜염 약!! 이런 들켰군... 사실 신약을 구했는데 양이 적어서 몰래 혼자쓰고 있었어. 테오가 알게 되면 어색한 사이가 될텐데.. 음 테오에게 비밀을 지켜주지 않겠나..? 답례는 하겠네." },
+    { "who": "존", "text": "자네는 믿을 만하겠지? 꼭 비밀을 지키게. 그럼 여기 답례로 관절염 치료에 쓰이는 달팽이 껍질들을 좀 나눠주지." }
+  ],
+  "descHtml": "<p>나무상자 속에서 정체모를 약이 발견되었다. <b>존</b>에게 직접 약의 정체에 대해 물어보자.</p>",
+  "reqs": [],
+  "craftReqs": [],
+  "craftNpcs": [],
+  "rewards": [
+    { "name": "달팽이의 껍질", "qty": 10, "img": "https://drive.google.com/thumbnail?id=1YNKfo_W4KMtysSn5GVh_3EuQt7_96tGH&sz=w200", "itemId": "4000019" },
+    { "name": "파란 달팽이의 껍질", "qty": 10, "img": "https://drive.google.com/thumbnail?id=1LWHwyEnr-4aXwAk_JSJ70GpvgesYuLk6&sz=w200", "itemId": "4000000" },
+    { "name": "빨간 달팽이의 껍질", "qty": 10, "img": "https://drive.google.com/thumbnail?id=1k6KXa8dGMfYU_oOreF1wFaouf5t3eqR1&sz=w200", "itemId": "4000016" },
+    { "exp": 1750, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200" }
+  ],
+  "related": []
+};
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox = r => {
+  if (typeof r.exp === 'number') {
+    const pic = img(r.img, 'EXP', 'thumb');
+    const txt = `<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  if (typeof r.meso === 'number') {
+    const pic = img(r.img, 'MESO', 'thumb');
+    const txt = `<div class='text-sm font-medium'>${r.meso.toLocaleString()} 메소</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  if (typeof r.fame === 'number') {
+    const pic = img(r.img, 'FAME', 'thumb');
+    const txt = `<div class='text-sm font-medium'>인기도 +${r.fame.toLocaleString()}</div>`;
+    return `<div class='ibox'>${pic}${txt}</div>`;
+  }
+  const title = `${r.name || ''}${(r.qty && r.qty > 0) ? ' ×' + r.qty : ''}`;
+  const pic = img(r.img, r.name, 'thumb');
+  const inner = `<div class='text-sm font-medium'>${title}</div>`;
+  return r.itemId
+    ? boxLink(`https://linsuol13-bit.github.io/LO/item-${r.itemId}.html`, `${pic}${inner}`)
+    : `<div class='ibox'>${pic}${inner}</div>`;
+};
+
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>[${p.id}] ${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>테오 1-2 · 나무상자의 비밀 [히든]</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(d=>{
+      const isPlayer=/^(나|플레이어|주인공|Player|영웅)$/.test(d.who||'');
+      const left=!isPlayer;
+      const av = left ? (d.who==='존의 상자'? q.start.npc.img : (d.who==='존'? q.finish.npc.img : '')) : '';
+      const avatar = (left && av) ? `<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">` : '';
+      return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+    }).join("")}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2><div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(d=>{
+      const isPlayer=/^(나|플레이어|주인공|Player|영웅)$/.test(d.who||'');
+      const left=!isPlayer;
+      const av = left ? (d.who==='존'? q.finish.npc.img : '') : '';
+      const avatar = (left && av) ? `<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">` : '';
+      return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+    }).join("")}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2>
+      <div class='grid'>
+        ${(() => q.rewards.map(r => {
+          if (typeof r.exp === 'number') {
+            const pic = `<img src='${r.img}' alt='EXP' class='thumb' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+            return `<div class='ibox'>${pic}<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div></div>`;
+          }
+          const pic = `<img src='${r.img}' alt='${r.name||''}' class='thumb' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+          const title = `${r.name||''}${(r.qty&&r.qty>0)?' ×'+r.qty:''}`;
+          const href = r.itemId ? `https://linsuol13-bit.github.io/LO/item-${r.itemId}.html` : '';
+          const inner = `${pic}<div class='text-sm font-medium'>${title}</div>`;
+          return href ? `<a class='ibox' href='${href}'>${inner}</a>` : `<div class='ibox'>${inner}</div>`;
+        }).join(''))()}
+      </div>
+    </section>
+  `;
+})();
+</script>
+<script>
+(function(){
+  var a=document.getElementById('back-to-quests');
+  if(!a) return;
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    try{
+      var href=this.getAttribute('href')||'index.html?tab=quests';
+      var u=href+(href.indexOf('?')>-1?'&':'?')+'nocache='+Date.now();
+      location.replace(u);
+    }catch(err){ location.href='index.html?tab=quests'; }
+  });
+})();
+</script>
+</body>
+</html>

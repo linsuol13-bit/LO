@@ -1659,6 +1659,51 @@ addQuest({
 
 <script>
 addQuest({
+  id: 21000,
+  code: "아란 1-1",
+  title: "아이를 구해주세요 1",
+  region: "블랙로드",
+  minLevel: 1,
+  type: "대화",
+
+  // 시작 NPC: 헬레나 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=14dUSKcg7IINjBG-Zc5wwZo7PPE3t49Hm&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 0 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-21000.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 21001,
+  code: "아란 1-2",
+  title: "아이를 구해주세요 2",
+  region: "블랙로드",
+  minLevel: 1,
+  type: "대화",
+
+  // 시작 NPC: 길 잃은 아이 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1T0qBSsn0gNAHoBjXi7Z4zcUGefNchXBC&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 0 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-21001.html"
+});
+</script>
+
+
+<script>
+addQuest({
   id: 21010,
   title: "영웅의 귀환",
   code: "아란 2-1",
@@ -2541,6 +2586,55 @@ addQuest({ id: 21707, title: "테오의 정보", code: "아란 6-2-1", region: "
 </script>
 
 <script>
+addQuest({
+  id: 21766,
+  code: "테오 1-1",
+  title: "수상한 존 [히든]",
+  region: "리스항구",
+  minLevel: 13,
+  type: "퀘스트 완료",
+
+  // 시작/완료 NPC: 테오 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1R1VtZVpoiUoW40wS9UnXYcYvL_1Q30t6&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 8400 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-21766.html"
+});
+</script>
+
+
+<script>
+addQuest({
+  id: 21767,
+  code: "테오 1-2",
+  title: "나무상자의 비밀 [히든]",
+  region: "리스항구",
+  minLevel: 13,
+  type: "대화",
+
+  // 시작 NPC: '존의 상자' (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1DoBl35WAXomBH6xYyfKyFkLWiI1aJ_Bp&sz=w400",
+
+  // 완료 보상 (아이템 3종 + EXP)
+  rewards: [
+    { name: "달팽이의 껍질", qty: 10, itemId: 4000019 },
+    { name: "파란 달팽이의 껍질", qty: 10, itemId: 4000000 },
+    { name: "빨간 달팽이의 껍질", qty: 10, itemId: 4000016 },
+    { exp: 1750 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-21767.html"
+});
+</script>
+
+
+<script>
 addQuest({ id: 21708, title: "첫 번째 정보수집", code: "아란 7-1", region: "리스항구", type: "대화", minLevel: 10, npcImg: "https://drive.google.com/thumbnail?id=1zBYuyLSpPzu5TN_VeSYOcGv8utbMOnCV&sz=w400", href: "quest-21708.html", rewards: [{ exp: 1400 }] });
 </script>
 
@@ -2587,6 +2681,8 @@ addQuest({
   rewards: [{ exp: 1400 }]
 });
 </script>
+
+
 
 <script>
 addQuest({
@@ -2714,6 +2810,28 @@ addQuest({
 
   // 상세 페이지 링크
   href: "quest-3082.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 21713,
+  code: "아란 8-1",
+  title: "두 번째 정보수집",
+  region: "리스항구",
+  minLevel: 18,
+  type: "대화",
+
+  // 시작 NPC: 트루 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1Ip9V47qfc-7IctcRfbgBkh3C_G3oCnwc&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 2800 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-21713.html"
 });
 </script>
 
@@ -3748,6 +3866,99 @@ addQuest({
   ]
 });
 </script>
+
+<script>
+addQuest({
+  id: 2058,
+  code: "리엘 1-1",
+  title: "플로리나비치의 별미",
+  region: "플로리나비치",
+  minLevel: 35,
+  type: "아이템 수집",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상 (EXP + 메소)
+  rewards: [
+    { exp: 7000 },
+    { name: "500 메소" }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2058.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2059,
+  code: "리엘 1-2",
+  title: "플로리나비치의 별미 Ⅱ",
+  region: "플로리나비치",
+  minLevel: 35,
+  type: "아이템 수집",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상 (EXP + 메소)
+  rewards: [
+    { exp: 21000 },
+    { name: "7500 메소" }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2059.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2060,
+  code: "리엘 1-3",
+  title: "플로리나비치의 별미 Ⅲ",
+  region: "플로리나비치",
+  minLevel: 35,
+  type: "아이템 수집",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상 (EXP + 메소)
+  rewards: [
+    { exp: 49000 },
+    { name: "20000 메소" }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2060.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2061,
+  code: "리엘 1-4",
+  title: "플로리나비치의 별미 Ⅳ",
+  region: "플로리나비치",
+  minLevel: 35,
+  type: "아이템 수집",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상 (EXP + 메소)
+  rewards: [
+    { exp: 21000 },
+    { name: "3000 메소" }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2061.html"
+});
+</script>
+
 
 <script>
 addQuest({
@@ -5099,6 +5310,117 @@ addQuest({
 
   // 상세 페이지로 이동
   href: "quest-2095.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2157,
+  code: "리엘 2-1",
+  title: "킹크랑의 제물",
+  region: "플로리나비치",
+  minLevel: 55,
+  type: "퀘스트 완료",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 7000 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2157.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2158,
+  code: "리엘 2-1-1",
+  title: "리엘 돕기",
+  region: "플로리나비치",
+  minLevel: 55,
+  type: "몬스터 사냥",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 1400 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2158.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2159,
+  code: "리엘 2-1-2",
+  title: "로엘 돕기",
+  region: "플로리나비치",
+  minLevel: 55,
+  type: "몬스터 사냥",
+
+  // 시작/완료 NPC: 로엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1pBYSTYWFLT_1TXW_Xv3GmSfS17YT5HdP&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 1400 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2159.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2160,
+  code: "리엘 2-1-3",
+  title: "라엘 돕기",
+  region: "플로리나비치",
+  minLevel: 55,
+  type: "아이템 수집",
+
+  // 시작/완료 NPC: 라엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1f4KKrGKKOsWyMkNTy89WeseDZF-Ybw2O&sz=w400",
+
+  // 완료 보상
+  rewards: [
+    { exp: 1400 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2160.html"
+});
+</script>
+
+<script>
+addQuest({
+  id: 2161,
+  code: "리엘 2-2",
+  title: "킹크랑을 물리칠 용사 등장!",
+  region: "플로리나비치",
+  minLevel: 55,
+  type: "몬스터 사냥",
+
+  // 시작/완료 NPC: 리엘 (Drive 썸네일)
+  npcImg: "https://drive.google.com/thumbnail?id=1V9OcnC7n365bXsxJ6PurdPt6_oXJuIEg&sz=w400",
+
+  // 완료 보상 (EXP + 인기도)
+  rewards: [
+    { exp: 934500 },
+    { fame: 10 }
+  ],
+
+  // 상세 페이지 링크
+  href: "quest-2161.html"
 });
 </script>
 
