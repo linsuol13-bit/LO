@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>기억하고 있는 자 1-6 · 좀비버섯의 신호 체계 3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+  .pill {display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:.75rem;border:1px solid #c7d2fe}
+  .btn {border:1px solid #e5e7eb;border-radius:.5rem;padding:.4rem .6rem;background:#f8fafc}
+  .btn:hover {background:#eef2ff}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {
+    "id": "2251",
+    "code": "기억하고 있는 자 1-6",
+    "title": "좀비버섯의 신호 체계 3",
+    "type": "아이템 수집",
+    "region": "슬리피우드",
+    "minLevel": 24,
+    "prereqs": [{"id": "2250", "title": "좀비버섯의 신호 체계 2"}],
+    "start": {
+      "npc": {"name": "기억하고 있는 자", "img": "https://drive.google.com/thumbnail?id=1SxPWwkflKLDgfSdxnZ8qRnhECjHuN6dC&sz=w120", "id": "1061011"},
+      "place": {"name": "슬리피우드", "img": "https://drive.google.com/thumbnail?id=1h1iLbH6jpV31zyk-xMOjT8HD9udHbGt1&sz=w800", "code": "105000000"}
+    },
+    "finish": {
+      "npc": {"name": "기억하고 있는 자", "img": "https://drive.google.com/thumbnail?id=1SxPWwkflKLDgfSdxnZ8qRnhECjHuN6dC&sz=w120", "id": "1061011"},
+      "place": {"name": "슬리피우드", "img": "https://drive.google.com/thumbnail?id=1h1iLbH6jpV31zyk-xMOjT8HD9udHbGt1&sz=w800", "code": "105000000"}
+    },
+    "dialogues": [
+      {"who": "기억하고 있는 자", "text": "좋아. 이제 좀비버섯을 잡아보게. 아마 죽는소리가 녹음 돼서 떨어질 것이야."},
+      {"who": "기억하고 있는 자", "text": "소리를 담는 부적을 20개만 모아서 가져다주게. 좀비버섯을 잡으면 나올거야."}
+    ],
+    "completionDialogues": [
+      {"who": "기억하고 있는 자", "text": "아... 고마워 이 소리를 재생해보겠네. 이 소리가 맞는지 확인해주게."},
+      {"who": "기억하고 있는 자", "text": "'버섯의 성 머쉬킹이 위험하다. 페페킹을 조심하라! 레벨이 30이 넘는 용사에게 도움을 청하라.' 오.. 이 문장이 맞는 것 같은데? 버섯의 성이라.."},
+      {"who": "기억하고 있는 자", "text": "흠.. 버섯의 성이라. 들어본 것 같기도 한데.. 잘 므겠군. 아~ 니할 사막의 카르카사라면 알 수도 있을 듯 한데.. 사막은 조금 위험해서.. 어디보자.."},
+      {"who": "기억하고 있는 자", "text": "충분하군. 이 정도면 사막에서도 쉽게 죽지는 않을 것이야.. 잠시만 기다리게. 카ㅏ르카사에게  바로 갈 수 있는 방법을 찾아 볼테니.."},
+      {"who": "기억하고 있는 자", "text": "어떤가? 이 소리가 맞는가?"}
+    ],
+    "descHtml": "<p>기억하고 있는 자는 뿔버섯에 관한 연구는 끝났지만, 모호한 신호로 여전히 난폭해진 이유를 모르겠다며, 좀비버섯의 연구도 제안했다.</p>",
+    "reqs": [
+      {"type":"item","name":"소리를 담은 부적","qty":20,"img":"https://drive.google.com/thumbnail?id=1gkW11GriQjro5ki5wt-n8mpnPsWj_aYT&sz=w200","id":"4032399"}
+    ],
+    "tips": [
+      {"kind":"monster","id":"2230101","name":"좀비버섯","level":18,"img":"https://drive.google.com/thumbnail?id=1NUZhccIGWIU8POnGSyAMfuY1R_yx6cEz&sz=w200"}
+    ],
+    "links": [],
+    "nexts": [{"id": "2255", "title": "카르카사의 기억"}],
+    "rewards": [
+      {"exp": 0, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}
+    ],
+    "drive": {
+      "preview": "https://drive.google.com/file/d/1AHZ0o3ZqGiukW8ZDSab8SOoS047-9v_f/preview",
+      "view": "https://drive.google.com/file/d/1AHZ0o3ZqGiukW8ZDSab8SOoS047-9v_f/view?usp=sharing",
+      "download": "https://drive.google.com/uc?export=download&id=1AHZ0o3ZqGiukW8ZDSab8SOoS047-9v_f"
+    }
+  };
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox = r => {
+    if (typeof r.exp === 'number') {
+      const pic = img(r.img, 'EXP', 'thumb');
+      const txt = `<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+      return `<div class='ibox'>${pic}${txt}</div>`;
+    }
+    return '';
+  };
+  const reqBox = r => {
+    const qty = (r.qty && r.qty>0) ? ' ×'+r.qty : '';
+    const title = `${r.name||''}${qty}`;
+    const pic = img(r.img, r.name, 'thumb');
+    const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>필요 아이템</div><div class='font-medium'>${title}</div></div>`;
+    return boxLink(href, inner);
+  };
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const nextSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><span class='pill'>다음</span><div class='font-medium'>${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+  const avatarFor=who=>{
+    if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img;
+    if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img;
+    return '';
+  };
+  const dialogueRow=d=>{
+    d=d||{};
+    const left=!isPlayer(d.who);
+    const av=left?avatarFor(d.who):'';
+    const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:'';
+    return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`;
+  };
+
+  const tipBox=t=>{
+    const level = t.level?` (Lv.${t.level})`:'';
+    const pic = img(t.img, t.name, 'thumb');
+    const href = t.id?`https://linsuol13-bit.github.io/LO/monster-${t.id}.html`:'';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>몬스터 사냥</div><div class='font-medium'>${t.name}${level}</div></div>`;
+    return href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  };
+
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2>
+      <div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
+      <div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div><div class='grid' style='grid-template-columns:1fr 1fr; gap:.75rem'>${q.reqs.map(reqBox).join("")}</div></div>
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>TIP</h2>
+      <div class='grid'>${q.tips.map(tipBox).join('')}</div>
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>소리</h2>
+      
+    <div class='card'>
+      <audio controls preload="metadata" playsinline style="width:100%">
+        <source src="zombie-charm.mp3" type="audio/mpeg">
+        브라우저에서 오디오를 재생할 수 없습니다.
+        <a href="zombie-charm.mp3" download>여기를 눌러 파일 받기</a>
+      </audio>
+      <div class='muted text-xs mt-2'>오디오 파일: zombie-charm.mp3</div>
+    </div>
+    
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>
+    ${nextSection(q.nexts)}
+  `;
+})();
+</script>
+</body>
+</html>
