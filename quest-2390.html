@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>버섯의 성 1-1 · 위기의 머쉬킹 왕국</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; padding:1rem; }
+  .muted { color:#6b7280; }
+  .row { display:flex; align-items:center; gap:.75rem; }
+  .grid { display:grid; gap:1rem; }
+  img { max-width:100%; height:auto; }
+  .thumb { width:56px; height:56px; object-fit:contain; background:#fff; border:1px solid #e5e7eb; border-radius:0.5rem; padding:4px; }
+  .ibox { display:flex; align-items:center; gap:.75rem; padding:.5rem; border:1px solid #e5e7eb; border-radius:0.75rem; background:#fff; transition: background .15s ease; }
+  .ibox:hover { background:#f9fafb; }
+  .bubble{position:relative;max-width:80%;padding:.625rem .75rem;border-radius:1rem;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.06); font-size:0.9rem; white-space:pre-line;}
+  .bubble-left{background:#f8fafc;border:1px solid #e5e7eb;color:#111827}
+  .bubble-right{background:#3b82f6;border:1px solid #1d4ed8;color:#fff}
+  .bubble-name{font-weight:600;font-size:.875rem;margin-bottom:.125rem}
+  .avatar{width:40px;height:40px;border-radius:9999px;border:1px solid #e5e7eb;object-fit:cover;background:#fff}
+  .pill {display:inline-flex;align-items:center;gap:.4rem;padding:.15rem .5rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:.75rem;border:1px solid #c7d2fe}
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+<a class="inline-flex items-center gap-1 text-sm mb-4 text-blue-600 hover:underline" href="index.html?tab=quests" id="back-to-quests">← 퀘스트 목록으로</a>
+<article id="detail"></article>
+</div>
+<script>
+(()=>{
+  'use strict';
+  const q = {"id": "2390", "code": "버섯의 성 1-1", "title": "위기의 머쉬킹 왕국", "type": "아이템 전달", "region": "버섯의 성", "minLevel": 30, "prereqs": [], "start": {"npc": {"name": "직업 별 전직관", "img": "", "id": ""}, "place": {"name": "", "img": "", "code": ""}}, "finish": {"npc": {"name": "경호대장", "img": "https://drive.google.com/thumbnail?id=119EtMlJgLYKE-b9F-8r9aiu1ST84rJYY&sz=w120", "id": "1300005"}, "place": {"name": "버섯의 숲 길목", "img": "https://drive.google.com/thumbnail?id=1wMvaZVLaK45xu0KBWLcQOzcJowDxWfMK&sz=w800", "code": "106020000"}}, "dialogues": [{"who": "전직관", "text": "전직 시험을 훌륭히 통화 했군요. 좋아요. 외부로부터 도움 요청이 들어와 마땅한 사람을 찾고 있었는데, 좀 도와주실 수 있겠어요?"}, {"who": "전직관", "text": "다름이 아니라 머쉬킹 왕국에 지금 큰 위기가 닥쳤다고 해요. 머쉬킹 왕국은 헤네시스 근처에 위치한 버섯왕국으로써 선왕인 머쉬킹은 평화를 사랑하고 현명한 정치를 펼치는 분으로 명망이 높은 분이셨어요. 그런데 최근에 건강이 악화되어 그의 하나 뿐인 딸 비올레타공주에게 왕위를 물려주고 요양 중이라고 알고 있었는데 무슨 변고가 생긴 모양이에요."}, {"who": "전직관", "text": "무슨일인지 자세한 사정은 모르겠지만 큰 어려움이 닥친 것 같으니 한번 가서 사정을 들어보고 도와주는 게 좋을 것 같아요. 용사님 정도면 위기에 빠진 머쉬킹 왕국을 구해낼 수 있을 거에요. 자, 여기 추천서를 써 두었으니 어서 머쉬킹 왕국으로 가보도록 하세요. 경호대장을 찾아가면 될 거에요."}, {"who": "전직관", "text": "그런데, 머쉬킹 왕국의 위치를 알고 있나요? 혼자 찾아갈 수 있으면 상관 없지만, 괜찮다면 입구까지 보내드릴게요."}, {"who": "전직관", "text": "좋아요. 머쉬킹 왕국으로 보내드릴게요. 행운을 빕니다."}], "completionDialogues": [{"who": "경호대장", "text": "응? 전직관의 추천서 !!! 뭐야 네가 .. 아니 당신이 우리 머쉬킹 왕국을 구해주러 온 용사란 말이오?"}, {"who": "플레이어", "text": "그... 그런데요."}, {"who": "경호대장", "text": "음 …. 알겠소. 전직관들이 인정했을 정도면 용사님이 맞겠지요. 인사가 늦었군요. 저는 머쉬킹 왕실의 경호를 맡고있는 경호대장이라고 합니다. 보시다시피 지금은 이 곳 임시거처의 경비와 요인들의 경호를 책임지고 있습니다. 상황은 좋지 않지만 어쨌든 머쉬킹 왕국에 오신 것을 환영합니다."}], "descHtml": "<p>전직관이 써준 <b>추천서</b>를 가지고 머쉬킹 왕국의 경호대장을 찾아가 보자.</p>", "reqs": [{"type": "item", "name": "전직관의 추천서", "qty": 1, "img": "https://drive.google.com/thumbnail?id=1QkFlpPxWhlg8lSRRlp9oHqLSaYGfhBLW&sz=w200", "id": "4032375"}], "rewards": [{"exp": 42000, "img": "https://drive.google.com/thumbnail?id=1O9FuxyZEG_nZVJikWShUPKvb5zCH7t-z&sz=w200"}], "nexts": [{"id": "2312", "title": "용사의 시험"}]};
+
+  const img=(src,alt='',cls='')=>`<img src="${src||''}" alt="${alt||''}" ${cls?`class="${cls}"`:''} onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`;
+  const row=(l,il,nl,r,ir,nr,ll='',lr='')=>{
+    const cell=(label,im,name,link)=>{
+      const inner=`${im?img(im,name):''}<div class='text-sm'><div class='muted'>${label}</div><div class='font-medium'>${name||'-'}</div></div>`;
+      return link?`<a class='row' href='${link}'>${inner}</a>`:`<div class='row'>${inner}</div>`;
+    };
+    return `<div class='row'>${cell(l,il,nl,ll)}<div class='muted' style='padding:0 .5rem'>|</div>${cell(r,ir,nr,lr)}</div>`;
+  };
+  const boxLink=(href,inner)=> href?`<a class='ibox' href='${href}'>${inner}</a>`:`<div class='ibox'>${inner}</div>`;
+  const rewardBox = r => {
+    if (typeof r.exp === 'number') {
+      const pic = img(r.img, 'EXP', 'thumb');
+      const txt = `<div class='text-sm font-medium'>경험치 ${r.exp.toLocaleString()} exp</div>`;
+      return `<div class='ibox'>${pic}${txt}</div>`;
+    }
+    return '';
+  };
+  const reqBox = r => {
+    const qty = (r.qty && r.qty>0) ? ' ×'+r.qty : '';
+    const title = `${r.name||''}${qty}`;
+    const pic = img(r.img, r.name, 'thumb');
+    const href = r.id ? `https://linsuol13-bit.github.io/LO/item-${r.id}.html` : '';
+    const inner = `${pic}<div class='text-sm'><div class='muted'>필요 아이템</div><div class='font-medium'>${title}</div></div>`;
+    return boxLink(href, inner);
+  };
+  const prereqSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(p=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${p.id}.html'><div class='text-sm'><div class='muted'>선행 퀘스트</div><div class='font-medium'>${p.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>선행 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const nextSection=list=>{
+    if(!Array.isArray(list)||!list.length)return'';
+    const boxes=list.map(n=>`<a class='ibox' href='https://linsuol13-bit.github.io/LO/quest-${n.id}.html'><div class='text-sm'><span class='pill'>다음</span><div class='font-medium'>${n.title}</div></div></a>`).join('');
+    return `<section class='mb-6'><h2 class='text-sm font-semibold mb-2'>다음 퀘스트</h2><div class='grid'>${boxes}</div></section>`;
+  };
+  const isPlayer=w=>/^(나|플레이어|주인공|Player|영웅)$/i.test((w||'').toString().trim());
+  const avatarFor=who=>{ if(who===(q.start.npc&&q.start.npc.name))return q.start.npc.img; if(who===(q.finish.npc&&q.finish.npc.name))return q.finish.npc.img; return ''; };
+  const dialogueRow=d=>{ d=d||{}; const left=!isPlayer(d.who); const av=left?avatarFor(d.who):''; const avatar=(left&&av)?`<img class='avatar' src='${av}' alt='${d.who||''}' onerror="if(!this.dataset.fbk){this.dataset.fbk=1;this.src=this.src.replace('thumbnail?id=','uc?export=view&id=');}else{this.style.display='none'}">`:''; return `<div class='flex items-start ${left?'justify-start':'justify-end'} gap-2'>${left?avatar:''}<div class='bubble ${left?'bubble-left':'bubble-right'}'><div class='bubble-name'>${d.who||''}</div><div>${d.text||''}</div></div></div>`; };
+
+  const $detail=document.getElementById('detail');
+  $detail.innerHTML=`
+    <header class='mb-4'><h1 class='text-2xl font-bold'>${q.code} · ${q.title}</h1><p class='text-sm muted'>${q.region} · ${q.type} · Lv.${q.minLevel}</p></header>
+    ${prereqSection(q.prereqs)}
+    <section class='grid' style='grid-template-columns:1fr 1fr;'>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>시작</h2>${row('시작 NPC', q.start.npc.img, q.start.npc.name, '시작 장소', q.start.place.img, q.start.place.name, (q.start.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.start.npc.id}.html`:''), (q.start.place.code?`https://linsuol13-bit.github.io/LO/map-${q.start.place.code}.html`:''))}</div>
+      <div class='card'><h2 class='text-sm font-semibold mb-3'>완료</h2>${row('완료 NPC', q.finish.npc.img, q.finish.npc.name, '완료 장소', q.finish.place.img, q.finish.place.name, (q.finish.npc.id?`https://linsuol13-bit.github.io/LO/npc-${q.finish.npc.id}.html`:''), (q.finish.place.code?`https://linsuol13-bit.github.io/LO/map-${q.finish.place.code}.html`:''))}</div>
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>진행 대사</h2><div class='card'>${q.dialogues.map(dialogueRow).join("")}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>퀘스트 조건</h2>
+      <div class='card text-sm leading-relaxed text-gray-800 mb-3'>${q.descHtml}</div>
+      <div class='mt-3'><div class='muted text-xs mb-1'>요구 조건</div>
+        <div class='grid' style='grid-template-columns:1fr; gap:.75rem'>${q.reqs.map(reqBox).join("")}</div>
+      </div>
+    </section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 대사</h2><div class='card'>${q.completionDialogues.map(dialogueRow).join("")}</div></section>
+    <section class='mb-6'><h2 class='text-sm font-semibold mb-2'>완료 보상</h2><div class='grid'>${q.rewards.map(rewardBox).join('')}</div></section>
+    ${nextSection(q.nexts)}
+  `;
+})();
+</script>
+</body>
+</html>
